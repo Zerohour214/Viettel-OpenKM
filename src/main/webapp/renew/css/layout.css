@@ -1,0 +1,835 @@
+.okm-MainPanel {
+    background-image: url(../image/background2.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+}
+.okm-TopPanel-Border, .okm-VerticalBorderPanel, .okm-bottomPanel, .okm-TopPanel, .okm-TopMenuBar, .okm-MainMenuBar {
+	background-color: transparent;
+}
+.gwt-TabLayoutPanelContent {
+	background-color: #FFF;
+}
+.okm-MainMenuBar {
+	color:  #FFF;
+	border: 0px;
+	padding: 4px 78px 4px 6px;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 15px;
+}
+.gwt-MenuItem {
+	font-size: 13px
+}
+.okm-renew-searchbox-image {
+    position: absolute;
+    left: 10px;
+    top: 9px;
+}
+.okm-renew-search-input:focus {
+	border: 1px solid rgba(255, 255, 255, 0.9);
+	outline: none;
+}
+.okm-renew-position-relative {
+	position: relative;
+}
+.okm-renew-search-input {
+	border-radius: 5px;
+	height: 30px;
+	background-color: rgba(255, 255, 255, 0.3);
+	border-width: 0px;
+	padding-left: 30px;
+    border: 1px solid transparent;
+    color: white;
+}
+.okm-renew-ToolBar {
+	background-color: rgba(255,255,255,0);
+}
+.okm-ToolBar-button-renew, .okm-ToolBar-button-disabled-renew {
+	background-color: rgba(255,255,255,0.15);
+	border-radius: 2px;
+}
+.gwt-TabBar .gwt-TabBarItem {
+	margin: 0px 0px 0px 9px;
+	background-color: rgba(255,255,255,0.2);
+	border-radius: 6px 6px 0 0;
+    padding: 12px 10px 10px 10px;
+}
+.gwt-TabBar .gwt-TabBarItem,
+.gwt-TabBar .gwt-TabBarItem-selected {
+    border-color: transparent;
+    outline: none;
+}
+.gwt-TabBar .gwt-TabBarItem-selected:focus,
+.gwt-TabBar .gwt-TabBarItem:focus {
+	border-color: rgba(255,255,255,0.9);
+}
+.gwt-TabBar .gwt-TabBarItem div {
+	font-size: 12px;
+}
+.gwt-TabBar .gwt-TabBarItem .gwt-Label{
+    color: #FFF;
+    font-weight: bold;
+}
+.gwt-TabBar .gwt-TabBarItem-selected .gwt-Label{
+    color: #000000;
+    font-weight: bold;
+}
+.gwt-TabBar .gwt-TabBarItem-selected {
+	background-color: #F3F6F9;
+	color: #000000;
+	border-bottom: none;
+}
+.gwt-TabBar .gwt-Label{
+	color: #333;
+}
+.gwt-TabBar {
+	background-color: rgba(255,255,255,0);
+}
+.gwt-TabBarRest-wrapper {
+	display: none;
+}
+.okm-TopMenuBar .gwt-MenuItem-selected {
+    cursor: default;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    background-color: rgba(255,255,255,0.5);
+    color: #000;
+}
+.okm-SubMenuBar {
+    box-shadow: 0px 1px 0 #dfe5ec;
+    border-radius: 0 0 3px 3px;
+    border-top: 1px solid #dfe5ec;
+    border-left: 1px solid #dfe5ec;
+    border-right: 1px solid #dfe5ec;
+    border-bottom: 1px solid #d2dbe3;
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.9), rgba(255,255,255,0.9));
+    color: #fff;
+}
+.okm-SubMenuBar .gwt-MenuItem,
+.okm-MainMenuItem {
+	height: 25px;
+}
+.okm-SubMenuBar .gwt-MenuItem-selected{
+	border: none;
+	background-color: #4194b2;
+}
+.okm-StackPanel .gwt-StackLayoutPanelHeader {
+	background-image: none;
+	background: #F3F6F9;
+	height: 32px;
+}
+.gwt-ScrollTable .headerWrapper {
+	background: linear-gradient(to top, #F6F6EE 0%, #FFF 100%);
+}
+.okm-renew-TopPanel td {
+	vertical-align: bottom !important;
+}
+.gwt-SplitLayoutPanel-HDragger {
+    background-position: 50% 50%;
+    cursor: col-resize;
+    font-family: "Small Fonts";
+    font-size: 4px;
+    background-color: #FFF;
+}
+.okm-FilePath-Title-renew {
+	background-color: #F3F6F9
+}
+.okm-renew-TopPanel > tbody > tr:nth-child(2) > td > table > tbody > tr > td:first-child{
+    vertical-align: top !important;
+}
+.okm-renew-ToolBar td {
+    vertical-align: middle !important;
+}
+.gwt-SplitLayoutPanel-HDragger,
+.gwt-SplitLayoutPanel-VDragger {
+	background-color: transparent;
+}
+.okm-Input,
+.okm-Properties-Tab,
+.okm-Input,
+.okm-FilePath-Title,
+.okm-StackPanel {
+	border-color: #e5e5e9;
+}
+.okm-StackPanel {
+	border: none;
+}
+.okm-StackPanel .gwt-StackLayoutPanelContent,
+.okm-StackPanel .gwt-StackLayoutPanelHeader {
+    border-top: 1px solid #e5e5e9;
+}
+.okm-StackPanel .gwt-StackLayoutPanelHeader {
+    background-color: #fbfbfd;
+    padding-top: 3px;
+    box-sizing: border-box;
+}
+.gwt-TabLayoutPanelTabs {
+	background-color: #F3F6F9;
+	height: 34px;
+	border-bottom: 1px solid #e5e5e9;
+}
+.gwt-TabLayoutPanelTab {
+    white-space: nowrap;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    padding: 7px 26px 0px 25px;
+    background-color: #F3F6F9;
+    cursor: pointer;
+    cursor: hand;
+    height: 24px;
+}
+.gwt-TabLayoutPanelTab-selected {
+	border-bottom: 3px solid #27B45F;
+}
+.gwt-TabLayoutPanelTabInner .gwt-Label {
+	font-size: 12px;
+}
+.okm-KeyMap-Suggest {
+	box-shadow: none;
+	border-radius: 5px;
+	height: 23px !important;
+    width: 192px;
+}
+.gwt-ScrollTable .headerWrapper {
+    background: linear-gradient(to top, #fff 0%, #fff 100%);
+}
+.gwt-ScrollTable .dataTable tr, .gwt-ScrollTable .dataTable tr td,
+.gwt-ScrollTable .headerWrapper tr, .gwt-ScrollTable .headerTable tr td {
+	border-left: 1px solid #e5e5e9;
+    border-right: 1px solid #e5e5e9;
+    border-bottom: 1px solid #e5e5e9;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.okm-wide-padding-header-table .dataTable tr, .okm-wide-padding-header-table .dataTable tr td,
+.okm-wide-padding-header-table .headerWrapper tr, .okm-wide-padding-header-table .headerTable tr td {
+    padding-right: 16px;
+}
+.gwt-ScrollTable .headerWrapper tr, .gwt-ScrollTable .headerTable tr td {
+    background: linear-gradient(to top, #fff 0%, #fff 100%);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.gwt-ScrollTable .dataTable tr.selected,
+.gwt-ScrollTable .dataTable tr:hover {
+	background-color: #EBEEF1;
+}
+.okm-FilePath-Title-renew .gwt-HTML,
+.headerTable td {
+	font-weight: bold;
+	font-size: 110%;
+}
+div[tabindex]:focus {
+	outline: none;
+}
+.okm-FilePath-Title-renew .gwt-HTML {
+	padding-left: 20px;
+}
+.okm-Input {
+	box-shadow: none;
+	box-sizing: border-box;
+}
+.gwt-ScrollTable .dataTable tr td {
+	height: 25px;
+	font-size: 105%;
+}
+.gwt-ScrollTable .dataTable tr {
+	border-bottom: 1px solid #e5e5e9;
+}
+.okm-AddButton, .okm-NoButton, .okm-ChangeButton, .okm-ViewButton, .btnReturnRenew, .okm-CompactButton, .okm-YesButton,
+    .okm-CleanButton, .okm-SearchButton, .okm-SaveButton, .okm-DeleteButton {
+	color: white;
+	box-shadow: none;
+	height: 28px;
+	background-position: 4px center;
+}
+.okm-NoButton{
+    background-color: #FFA500;
+    border: 1px solid #FFA500;
+}
+.okm-CleanButton, .okm-DeleteButton {
+    background-color: #FF0000;
+    border: 1px solid #FF0000;
+}
+.okm-AddButton, .okm-ChangeButton, .btnReturnRenew, .okm-YesButton, .okm-SaveButton {
+    background-color: #27B45F;
+    border: 1px solid #27B45F;
+}
+.okm-ViewButton, .okm-CompactButton, .okm-SearchButton {
+	color: #000;
+	background-color: white;
+	box-shadow: none;
+	border: 1px solid #e5e5e9;
+	height: 28px;
+}
+:focus {
+    outline-color: #27B45F;
+    outline-style: auto;
+}
+.okm-Input:focus, .okm-TextArea:focus, .okm-Select:focus {
+    border: solid 1px #469408;
+}
+
+.okm-FileBrowser-TextBox {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E9;
+    font-family: verdana, arial, sans-serif;
+}
+
+.dialogTopCenterInner {
+    background-color: #F3F6F9;
+}
+.okm-Popup, .okm-Popup-Error {
+	background-color: #fbfbfd;
+	overflow: hidden;
+}
+.okm-Popup-text {
+	background-color: #FFF;
+	border: 1px solid #e5e5e9;
+	box-sizing: border-box;
+}
+.okm-AddButton:hover, .okm-ChangeButton:hover, .okm-YesButton:hover, .yesButton:hover, .okm-SaveButton:hover {
+    background-color: rgba(39, 180, 95, 0.6);
+    border-color: rgba(39, 180, 95, 0.6);
+    box-shadow: none;
+}
+.okm-NoButton:hover {
+	background-color: rgba(255, 165, 0, 0.6);
+	box-shadow: none;
+}
+.okm-CleanButton:hover, .okm-DeleteButton:hover {
+	background-color: rgba(255, 0, 0, 0.6);
+	box-shadow: none;
+}
+.okm-ViewButton:hover, .okm-CompactButton:hover, .okm-SearchButton:hover {
+    background-color: rgba(211, 239, 222, 1);
+}
+.okm-Border-Left {
+	border-left: 1px solid #e5e5e9;
+}
+.okm-Border-Right {
+	border-right: 1px solid #e5e5e9;
+}
+.okm-Border-Bottom {
+	border-bottom: 1px solid #e5e5e9;
+}
+.okm-tableProperties-renew tr {
+	line-height: 25px;
+}
+.okm-Popup .Caption,
+.okm-Popup, .okm-Popup-Error {
+	border-color: #e5e5e9;
+	border-radius: 0px;
+}
+.okm-Popup .Caption {
+	height: 23px;
+	padding-top: 10px;
+}
+button {
+	border-radius: 0px;
+	padding: 5px 15px 5px 20px;
+	font-family: "Roboto", sans-serif;
+	font-size: 12px;
+	padding-left: 32px !important;
+}
+input {
+    font: 400 12px "Roboto", sans-serif;
+}
+.okm-Select {
+	box-shadow: none;
+	border: 1px solid #E5E5E9;
+	font-size: 12px;
+}
+.CalendarWidget .empty, .CalendarWidget .navbar {
+    background-color: #FFF;
+}
+.CalendarWidget .cell {
+    cursor: pointer;
+    background-color: white;
+}
+.CalendarWidget .cell .gwt-HTML {
+    border: none;
+    background-color: white;
+}
+.CalendarWidget .cell .gwt-HTML:hover {
+    background-color: #EEE;
+}
+.CalendarWidget .today .gwt-HTML {
+    background-color: green;
+    color: white;
+}
+.CalendarWidget .weekheader {
+	height: 32px;
+	background-color: #f0f0f5;
+}
+.okm-calendarButton-renew {
+	border:none;
+    background-color: #e5e5e9;
+}
+.CalendarWidget .navbar .gwt-Button {
+    padding-left: 5px;
+    padding-right: 0px;
+    padding-left: 10px !important;
+    padding: 3px 6px 5px 10px;
+}
+.CalendarWidget .navbar {
+    border-bottom: 1px solid #E5E5E9;
+    background-color: #e5e5e9;
+}
+.okm-searchNormal-table-renew {
+	padding: 8px 29px 29px 40px;
+}
+.okm-searchNormal-select-renew, .okm-searchNormal-input-renew {
+	width: 300px;
+	height: 28px !important;
+	box-sizing: border-box;
+}
+.okm-searchNormal-select-renew {
+	padding: 1px 2px;
+}
+.CalendarWidget {
+    border: 1px solid #e5e5e9;
+    background-color: #fff;
+    padding: 2px;
+}
+.CalendarWidget .header {
+	background-color: #e5e5e9;
+}
+.gwt-StackLayoutPanelContent {
+	background-color: #FFF;
+}
+.okm-tableProperties-renew > tbody > tr > td {
+	border: 1px dotted #e5e5e9;
+}
+.okm-SearchSaved td, .okm-userNews td {
+    padding-left: 7px;
+    border-bottom: 1px solid #f2f2f7;
+}
+.okm-checkbox-search-renew input {    
+	height: 16px;
+    width: 16px;
+}
+.okm-checkbox-search-renew label{
+    padding-left: 8px;
+}
+.okm-advancedSearch-mail-renew {
+	width : 303px;
+}
+.okm-checkbox-distance-renew {
+	padding-right: 42px;
+}
+.okm-checkbox-distance-renew input {
+    width: 15px;
+    height: 15px;
+}
+.okm-Table-SelectedRow {
+	background-color: #F3F6F9;
+}
+.okm-SearchSaved:hover, .okm-userNews:hover {
+/* 	background-color: #EEE; */
+}
+.gwt-StackLayoutPanelHeader:hover {
+	background-color: #EEE
+}
+.okm-Select-folderSelect-renew {
+	width: 160px;
+    font-size: 12px;
+    padding-left: 4px;
+    height: 28px;
+}
+.okm-DashboardWidget .header, .okm-WorkflowFormPanel-Title, .okm-KeyMapControl, .okm-PaginationControl, 
+    .okm-cloudSeparator {
+    background: #F3F6F9;
+    border-radius: 0px;
+    border: 1px solid #E5E5E9;
+}
+.okm-DashboardWidget .okm-NoWrap {
+    background: #FFF;
+    border-radius: 0px;
+    border: none;
+}
+.okm-DashboardWidget .okm-NoWrap tbody tr {
+	height:30px;
+}
+.okm-DashboardWidget .okm-NoWrap tbody tr td {
+	border-bottom: 1px solid #E5E5E9;
+}
+.okm-DashboardWidget .data {
+	border-left: 1px solid #e5e5e9;
+	border-bottom: none;
+	border-right: 1px solid #e5e5e9;
+	box-sizing: border-box;
+}
+.okm-DashboardWidget .data tr:hover {
+    background-color: #F3F6F9;
+}
+.okm-ToolBar-control-tab-renew {
+    background-color: #F3F6F9;
+    border-top: none;
+    border-left: 1px solid #E5E5E9;
+    border-right: 1px solid #E5E5E9;
+    border-bottom: 1px solid #E5E5E9;
+}
+.okm-Input-result-page-renew {
+	border:none;
+	padding-left: 0px !important
+}
+.okm-ToolBar-Big-selected, .okm-ToolBar-BigTMP-selected  {
+	background-color: #dce0e3;
+}
+.okm-WorkflowFormPanel {
+    background-color: #FFF;
+    border-left: 1px solid #E5E5E9;
+}
+.okm-Input, .okm-Select {
+    height: 28px;
+    box-sizing: border-box;
+    border-radius: 0px;
+	font-size: 12px
+}
+.okm-Select {
+	padding-left: 5px;
+}
+input.okm-Input {
+	height: 28px !important;
+	border-radius: 0px;
+	padding-left: 8px;
+	font-size: 12px
+}
+.okm-SearchSaved, .okm-userNews{
+    height: 29px;
+	border-bottom: 1px solid #E5E5E9;
+}
+.okm-DashboardWidget .header {
+	height: 35px !important;
+}
+.okm-DashboardWidget .okm-NoWrap {
+    background: none;
+}
+.okm-WorkflowFormPanel .okm-NoWrap tbody tr {
+    height: 30px;
+}
+.okm-WorkflowFormPanel-Title {
+	height: 32px !important;
+}
+.okm-WorkflowFormPanel-Title table tbody tr td{
+	vertical-align: middle ! important;
+}
+.okm-KeyMap-Selected {
+    background-color: yellow;
+    padding: 5px 5px 0 9px;
+    border: none;
+}
+.okm-Table-BottomBorder, .okm-KeywordWidget-Header  {
+    border-bottom: 1px solid #E5E5E9;
+}
+.okm-KeywordWidget-Header {
+    background-color: #F3F6F9;
+    cursor: pointer;
+}
+.okm-Table-SelectedRow:hover {
+	background-color: #F3F6F9;
+}
+.glyphicons-renew {
+    border: none;
+    padding: 10px 8px;
+    font-size: 40px
+}
+.okm-ToolBar-button-disabled-renew .gwt-HTML .glyphicons {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 15px;
+}
+.okm-Vertical-Line-Border {
+	background-image: none;
+	background-color: #e5e5e9;
+}
+.okm-ToolBar-button-renew .gwt-HTML .glyphicons {
+    color: #FFF;
+    font-size: 15px;
+}
+.child-menuitem-glyphicon-renew {
+    color: #27B45F;
+    font-size: 15px;
+    padding-bottom: 4px;
+}
+.okm-MenuItem-strike .child-menuitem-glyphicon-renew {
+	color: #8D8D7A;
+}
+.icon-folderTree-renew .icon-orange-renew .icon-red-renew {
+	font-size: 15px;
+}
+.icon-orange-renew {
+	color: #FFA500;
+	font-size: 15px;
+}
+.icon-red-renew {
+	color: red;
+	font-size: 15px;
+}
+.icon-green-renew {
+	color: #27B45F;
+	font-size: 15px;
+}
+.icon-white-renew {
+	color: #FFF;
+	font-size: 15px;
+}
+.gwt-TreeItem .glyphicons-folder-open, .gwt-TreeItem .glyphicons-folder-new  {
+	padding-right: 3px;
+}
+.icon-black-renew {
+	color: #000;
+	font-size: 15px;
+}
+.icon-disable-renew {
+	color: #8D8D7A;
+	font-size: 15px;
+}
+.icon-search-disable-renew {
+	color: #FFF;
+	font-size: 15px;
+}
+.popupContent .gwt-MenuItem {
+    font-size: 13px;
+    padding: 3px 20px 4px 1px;
+}
+.popupContent .okm-MenuBar {
+    background-image: none;
+    cursor: default;
+    background-color: white;
+    border: 1px solid #e5e5e9;
+}
+.popupContent .okm-MenuBar .gwt-MenuItem-selected {
+    background-color: #4194b2;
+    cursor: default;
+    border: none;
+    white-space: nowrap;
+}
+.okm-MenuPopup {
+    background-color: none;
+    border: none;
+    padding: 1px;
+}
+.icon-DashboardWidget-renew {
+	font-size: 18px;
+}
+.okm-ToolBar-selected {
+	background-image: none;
+	background-color: rgba(255,255,255,0.5);
+}
+.okm-FilePath-Title {
+	border-top: none;
+	border-bottom: 1px solid #e5e5e9;
+	border-left: 0px;
+	border-right: 0px;	
+}
+.okm-scrollTable-renew {
+	box-sizing: unset;
+	border-bottom: 1px solid #e5e5e9;
+	border-left: 1px solid #e5e5e9;
+	border-right: 1px solid #e5e5e9;
+	border-top: none;
+}
+.searchIn-searchControl-renew {
+	background: #F3F6F9;
+}
+.okm-searchIn-renew {
+	border-top: none;
+}
+.okm-Iframe-admin-renew {
+    border-top: none;
+    border-right: #F3F6F9;
+}
+[disabled] {
+    color: #777;
+    background-color: #DBDBDB;
+    border-color: #DBDBDB;
+}
+.okm-Security-Title-renew {
+	border: 1px solid #e5e5e9;
+	background: #F3F6F9;
+}
+/* button {
+    background-image: none !important;
+} */
+.icon-button-renew {
+    font-size: 15px;
+    padding-right: 2px;
+}
+.icon-red-button {
+    color: red;
+}
+.okm-TextArea {
+	border: 1px solid #e5e5e9;
+	box-shadow: none;
+}
+.okm-Popup-Error .dialogTop .dialogTopCenter .dialogTopCenterInner {
+	background: red;
+}
+.okm-Popup-Error .Caption {
+	color: white;
+}
+.okm-Popup-Error .Caption {
+	border-bottom: 1px #FF0000 solid;
+}
+button {
+	position: relative;
+}
+.btn {
+	transition: all 0.3s ease;
+	color: white;
+}
+button > .glyphicons {
+	font-size: 16px;
+    position: absolute;
+    color: white;
+    top: 4px;
+    left: 9px;
+}
+.btn-default {
+	background: gainsboro;
+    border: solid 1px gainsboro;
+    color: #212121 !important;
+}
+.btn-default:hover, .btn-default:focus, .btn-default[disabled] {
+    background: rgba(220, 220, 220, 0.85);
+    border: solid 1px rgba(220, 220, 220, 0.1);
+}
+.btn-info {
+	background: #dc4666;
+    border: solid 1px #dc4666;
+}
+.btn-info:hover, .btn-info:focus, .btn-info[disabled] {
+    background: rgba(220, 70, 102, 0.85);
+    border: solid 1px rgba(220, 70, 102, 0.1);
+}
+.btn-primary {
+	background: #177ec1;
+    border: solid 1px #177ec1;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary[disabled] {
+	background: rgba(23, 126, 193, 0.85);
+    border: solid 1px rgba(23, 126, 193, 0.1);
+}
+.btn-success {
+	background: #469408;
+    border: solid 1px #469408;
+}
+.btn-success:hover, .btn-success:focus, .btn-success[disabled] {
+    background: rgba(70, 148, 8, 0.85);
+    border: solid 1px rgba(70, 148, 8, 0.1);
+}
+.btn-danger {
+	background: #ea6c41;
+    border: solid 1px #ea6c41;
+}
+.btn-danger:hover, .btn-danger:focus, .btn-danger[disabled] {
+	background: rgba(234, 108, 65, 0.85);
+    border: solid 1px rgba(234, 108, 65, 0.1);
+}
+.btn-warning {
+	background: #e69a2a;
+    border: solid 1px #e69a2a;
+}
+.btn-warning:hover, .btn-warning:focus, .btn-warning[disabled] {
+	background: rgba(230, 154, 42, 0.85);
+    border: solid 1px rgba(230, 154, 42, 0.1);
+}
+.okm-KeywordWidget-table {
+	padding: 14px;
+}
+.okm-KeywordWidget-table tr.okm-Table-Row td {
+	font-size: 16px;
+}
+.okm-KeywordWidget-table tr.okm-Table-Row {
+	height: 24px;
+}
+.okm-doc-search-result-renew tr td {
+    border-bottom: 1px solid #e5e5e9;
+}
+.okm-doc-search-result-renew tr:hover {
+    background-color: #F3F6F9;
+}
+input[type="file"]{
+    padding-top: 3px;
+}
+.okm-tableProperties-renew > tbody > tr > td:empty {
+	border: none;
+}
+.okm-KeyMap-Suggest, .okm-TextArea, .okm-Input, .okm-Select {
+	font-family: "Roboto", sans-serif;
+	font-size: 12px;
+}
+.okm-link-renew {
+	text-decoration: underline;
+}
+.okm-non-x-scroll-renew {
+	overflow-x: hidden;
+}
+input:focus, select:focus, textarea:focus, .chosen-container:focus, .chosen-with-drop {
+    border: solid 1px #469408 !important;
+}
+.gwt-ScrollTable .role-headerTable-renew tr td {
+  height: 30px;
+}
+table.log-panel.debug-panel-renew {
+    border: 1px solid #E5E5E9;
+}
+.debug-panel-renew BUTTON {
+    font-family: "Roboto", sans-serif;
+    font-size: 10pt;
+    padding: 3px 33px 2px 20px;
+    padding-left: 33px !important;
+    border: 1px solid #E5E5E9;
+    background: white;
+    box-shadow: none;
+    margin: 4px 4px 6px 2px;
+}
+.debug-panel-renew BUTTON:hover {
+    background: #EEE;
+    box-shadow: none;
+}
+.debug-panel-renew .com-allen_sauer-gwt-log-client-impl-LogClientBundle-LogCssResource-log-clear-button {
+    margin: 4px 4px 6px 2px;
+}
+.debug-text-renew {
+	margin-bottom: 9px;
+}
+.flip-horizontal-glyphicon {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+.keyword-text-renew {
+	padding: 9px 5px 5px 8px;
+}
+.white-place-holder::placeholder {
+  color: #FFF;
+  padding-left: 3px;
+}
+.content-panel-renew {
+	overflow-x: hidden !important;
+}
+.bottomPanel-userInfo-renew {
+    background: white;
+    border: 1px solid transparent;
+    background-color: rgba(255,255,255,0.15);
+}
+.okm-Input-System {
+	border: none;
+	background-color: transparent;
+	font-size: 12px;
+	box-shadow: none;
+}
+.white-text {
+    color: white;
+}
+.wide-padding-footer {
+	padding-left: 23px;
+}
