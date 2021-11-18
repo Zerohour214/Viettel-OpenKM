@@ -408,7 +408,7 @@ input {
     padding-left: 7px;
     border-bottom: 1px solid #f2f2f7;
 }
-.okm-checkbox-search-renew input {    
+.okm-checkbox-search-renew input {
 	height: 16px;
     width: 16px;
 }
@@ -440,7 +440,7 @@ input {
     padding-left: 4px;
     height: 28px;
 }
-.okm-DashboardWidget .header, .okm-WorkflowFormPanel-Title, .okm-KeyMapControl, .okm-PaginationControl, 
+.okm-DashboardWidget .header, .okm-WorkflowFormPanel-Title, .okm-KeyMapControl, .okm-PaginationControl,
     .okm-cloudSeparator {
     background: #F3F6F9;
     border-radius: 0px;
@@ -624,7 +624,7 @@ input.okm-Input {
 	border-top: none;
 	border-bottom: 1px solid #e5e5e9;
 	border-left: 0px;
-	border-right: 0px;	
+	border-right: 0px;
 }
 .okm-scrollTable-renew {
 	box-sizing: unset;
@@ -833,3 +833,4 @@ table.log-panel.debug-panel-renew {
 .wide-padding-footer {
 	padding-left: 23px;
 }
+

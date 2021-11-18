@@ -63,7 +63,13 @@ public class SecContextFilter extends SecurityContextPersistenceFilter {
 				res.sendRedirect(cnn.getPassportLoginURL() + "?appCode=" + cnn.getDomainCode() + "&service=" + URLEncoder.encode(cnn.getServiceURL(), "UTF-8"));
 			}
 		} else {
-//			UserToken userInfo = (UserToken) req.getSession().getAttribute("vsaUserToken");
+
+
+			chain.doFilter(req, response);
+		}
+
+		//			UserToken userInfo = (UserToken) req.getSession().getAttribute("vsaUserToken");
+
 //			try {
 //
 //				User usr = AuthDAO.findUserByPk(userInfo.getStaffCode());
@@ -96,8 +102,6 @@ public class SecContextFilter extends SecurityContextPersistenceFilter {
 //				e.printStackTrace();
 //			}
 
-			chain.doFilter(req, response);
-		}
 	}
 	private Boolean alowURL(String url, String[] listAlowUrl) {
 		String[] var6 = listAlowUrl;

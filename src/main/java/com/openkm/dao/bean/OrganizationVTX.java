@@ -113,7 +113,7 @@ public class OrganizationVTX {
 		this.order = order;
 	}
 
-	public long getParent() {
+	public Long getParent() {
 		return parent;
 	}
 

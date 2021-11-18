@@ -52,6 +52,7 @@ import com.openkm.frontend.client.widget.findsimilar.FindSimilarDocumentSelectPo
 import com.openkm.frontend.client.widget.foldertree.FolderTree;
 import com.openkm.frontend.client.widget.massive.*;
 import com.openkm.frontend.client.widget.notify.NotifyPopup;
+import com.openkm.frontend.client.widget.organizationVTX.OrganizationVtxSelectPopup;
 import com.openkm.frontend.client.widget.security.SecurityPopup;
 import com.openkm.frontend.client.widget.startup.StartUp;
 import com.openkm.frontend.client.widget.startup.StartUpPopup;
@@ -127,6 +128,8 @@ public final class Main implements EntryPoint, HasLanguageHandlerExtension, HasL
 	public UpdatePropertyGroupPopup updatePropertyGroupPopup;
 	public ConvertPopup convertPopup;
 	public OmrPopup omrPopup;
+
+	public OrganizationVtxSelectPopup organizationVtxSelectPopup;
 
 	// User workspace properties
 	public WorkspaceUserProperties workspaceUserProperties;

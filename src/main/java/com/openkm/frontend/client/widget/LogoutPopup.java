@@ -105,12 +105,14 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 	public void onClick(ClickEvent event) {
 		super.hide();
 //
-//		String logoutUrl = "https://10.60.156.97:8225/sso/logout";
-//		String service = "http://localhost:8080/kms";
+
+		String logoutUrl = "https://10.60.156.97:8225/sso/logout";
+		String service = "http://localhost:8080/kms";
 
 //		REAL
-		String logoutUrl = "https://sso2.viettel.vn:8002/sso/logout";
-		String service = "http://kms.viettel.vn/kms";
+//		String logoutUrl = "https://sso2.viettel.vn:8002/sso/logout";
+//		String service = "http://kms.viettel.vn/kms";
+
 
 //		String logoutUrl = "https://sso2.viettel.vn:8002/sso/logout";
 //		String service = "http://10.60.133.37:8080/kms";

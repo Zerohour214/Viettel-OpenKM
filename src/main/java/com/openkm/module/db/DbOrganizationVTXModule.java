@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.util.List;
 
 @Component
@@ -35,6 +36,11 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	}
 
 	@Override
+	public void updateOrg(OrganizationVTXBean organizationVTXBean) throws DatabaseException {
+		OrganizationVTXDAO.getInstance().updateOrg(organizationVTXBean);
+	}
+
+	@Override
 	public List<OrganizationVTX> search(String name, String code) throws DatabaseException {
 		return OrganizationVTXDAO.getInstance().search(name, code);
 	}
@@ -47,6 +53,11 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	@Override
 	public void addUserToOrg(String userId, Long orgId) throws DatabaseException {
 		OrganizationVTXDAO.getInstance().addUserToOrg(userId, orgId);
+	}
+
+	@Override
+	public void importUserToOrg(InputStream fileContent, Long orgId) {
+		OrganizationVTXDAO.getInstance().importUserToOrg(fileContent, orgId);
 	}
 
 	@Override
@@ -63,5 +74,11 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	public void deleteOrg(Long orgId) throws DatabaseException {
 		OrganizationVTXDAO.getInstance().deleteOrg(orgId);
 	}
+
+	@Override
+	public List<OrganizationVTX> getAllChild(long parent) throws DatabaseException {
+		return OrganizationVTXDAO.getInstance().getAllChild(parent);
+	}
+
 
 }

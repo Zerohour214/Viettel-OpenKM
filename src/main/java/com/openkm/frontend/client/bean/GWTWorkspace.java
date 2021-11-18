@@ -127,6 +127,9 @@ public class GWTWorkspace implements IsSerializable {
 	private boolean tabDocumentPreviewVisible;
 	private boolean tabDocumentRelatedVisible;
 	private boolean tabDocumentActivityVisible;
+
+	private boolean tabDocumentTransmitVisible;
+
 	private boolean tabDocumentPropertyGroupsVisible;
 	private boolean tabDocumentVersionDownloadVisible;
 	private boolean tabFolderPropertiesVisible;
@@ -707,6 +710,15 @@ public class GWTWorkspace implements IsSerializable {
 	public void setTabDocumentPreviewVisible(boolean tabDocumentPreview) {
 		this.tabDocumentPreviewVisible = tabDocumentPreview;
 	}
+
+	public boolean isTabDocumentTransmitVisible() {
+		return tabDocumentTransmitVisible;
+	}
+
+	public void setTabDocumentTransmitVisible(boolean tabDocumentTransmitVisible) {
+		this.tabDocumentTransmitVisible = tabDocumentTransmitVisible;
+	}
+
 
 	public boolean isTabDocumentRelatedVisible() {
 		return tabDocumentRelatedVisible;

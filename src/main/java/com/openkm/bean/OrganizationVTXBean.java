@@ -3,6 +3,7 @@ package com.openkm.bean;
 import java.io.Serializable;
 
 public class OrganizationVTXBean implements Serializable {
+	private Long id;
 	private String orgName;
 	private String orgCode;
 	private Long orgParent;
@@ -29,5 +30,13 @@ public class OrganizationVTXBean implements Serializable {
 
 	public void setOrgParent(Long orgParent) {
 		this.orgParent = orgParent;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

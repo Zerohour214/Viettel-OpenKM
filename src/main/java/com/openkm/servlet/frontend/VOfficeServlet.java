@@ -94,7 +94,11 @@ public class VOfficeServlet extends OKMRemoteServiceServlet implements VOfficeSe
 			params.put("startRecord", "0"); // Tham so truyen vao
 
 			JSONObject obj = new JSONObject();
-			obj.put("code", code);
+			try {
+				obj.put("code", code);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			params.put("document", obj);
 
 			String result = service.getData("DocumentAction.search", params);

@@ -27,9 +27,10 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.URL;
+import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
@@ -66,6 +67,9 @@ public class Document extends Composite {
 	private Image proposeSubscribeImage;
 	private HorizontalPanel hPanelSubscribedUsers;
 	private CategoryManager categoryManager;
+
+	private TransmitManager transmitManager;
+
 	private KeywordManager keywordManager;
 	private ScrollPanel scrollPanel;
 	private boolean remove = true;
@@ -75,6 +79,7 @@ public class Document extends Composite {
 	 */
 	public Document() {
 		categoryManager = new CategoryManager(CategoryManager.ORIGIN_DOCUMENT);
+		transmitManager = new TransmitManager(TransmitManager.ORIGIN_DOCUMENT);
 		keywordManager = new KeywordManager(ThesaurusSelectPopup.DOCUMENT_PROPERTIES);
 		document = new GWTDocument();
 		table = new FlexTable();
@@ -158,10 +163,16 @@ public class Document extends Composite {
 		vPanel2.add(space2);
 		vPanel2.add(keywordManager.getKeywordCloudText());
 		vPanel2.add(keywordManager.getKeywordCloud());
+
 		HTML space3 = new HTML("");
 		vPanel2.add(space3);
 		vPanel2.add(categoryManager.getPanelCategories());
 		vPanel2.add(categoryManager.getSubscribedCategoriesTable());
+
+		HTML space4 = new HTML("");
+		vPanel2.add(space4);
+		vPanel2.add(transmitManager.getPanelCategories());
+		vPanel2.add(transmitManager.getSubscribedCategoriesTable());
 
 		vPanel2.setCellHeight(space2, "10px");
 		vPanel2.setCellHeight(space3, "10px");
@@ -197,6 +208,9 @@ public class Document extends Composite {
 		proposeSubscribeImage.addStyleName("okm-Hyperlink");
 		tableProperties.addStyleName("okm-tableProperties-renew");
 		vtTable.addStyleName("okm-tableProperties-renew");
+
+
+
 
 		initWidget(scrollPanel);
 	}
@@ -321,6 +335,8 @@ public class Document extends Composite {
 		}
 
 		getVersionHistorySize();
+
+		getOrgsByDocId();
 
 		// Sets wordWrap for al rows
 		for (int i = 0; i < 11; i++) {
@@ -493,6 +509,7 @@ public class Document extends Composite {
 	public void setVisibleButtons(boolean visible) {
 		keywordManager.setVisible(visible);
 		categoryManager.setVisible(visible);
+		transmitManager.setVisible(visible);
 	}
 
 	/**
@@ -579,5 +596,35 @@ public class Document extends Composite {
 	 */
 	public void showRemoveKeyword() {
 		keywordManager.showRemoveKeyword();
+	}
+
+	public void transmit(String orgs) {
+		transmitManager.transmit(orgs, document.getUuid());
+	}
+
+	public void getOrgsByDocId() {
+		RequestBuilder builder = new RequestBuilder(
+				RequestBuilder.GET, Main.CONTEXT + "/services/rest/document/getOrgsByDocId?docId=" + document.getUuid());
+		builder.setHeader("Accept", "application/json");
+
+		try {
+			builder.sendRequest(null, new RequestCallback() {
+						@Override
+						public void onResponseReceived(Request request,
+													   Response response) {
+							transmitManager.setOrgs(response.getText());
+
+						}
+
+						@Override
+						public void onError(Request request, Throwable throwable) {
+
+						}
+					}
+			);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

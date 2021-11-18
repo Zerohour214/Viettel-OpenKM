@@ -57,13 +57,17 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
 
+
 public class LoginFilter implements Filter {
+
 	private static Logger log = Logger.getLogger(LoginFilter.class);
 	private static HashSet<String> casAllowedURL = new HashSet();
 
 	@Autowired
 	@Qualifier
+
 	private static AuthenticationManager authenticationManager;
+
 
 	public static HashSet<String> getCasAllowedURL() {
 		return casAllowedURL;
@@ -82,6 +86,7 @@ public class LoginFilter implements Filter {
 				int var4 = (var5 = KmConnector.getAllowedUrls()).length;
 
 				for (int var3 = 0; var3 < var4; ++var3) {
+
 					String temp = var5[var3];
 					getCasAllowedURL().add(temp);
 				}
@@ -97,6 +102,7 @@ public class LoginFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = null;
 		HttpServletResponse res = null;
+
 		if (request instanceof HttpServletRequest) {
 			req = (HttpServletRequest) request;
 		}
@@ -105,83 +111,64 @@ public class LoginFilter implements Filter {
 			res = (HttpServletResponse) response;
 		}
 
-		String pathReq = req.getRequestURI().substring(req.getContextPath().length());
-		if ("/login_desktop.jsp".equals(pathReq)) {
-			request.getRequestDispatcher("/login_desktop.jsp").forward(request, response);
-		} else {
-
-			KmConnector cnn = new KmConnector(req, res);
-			if (this.alowURL(req.getRequestURI(), KmConnector.getAllowedUrls())) {
-				chain.doFilter(req, res);
-			} else if (!cnn.isAuthenticate()) {
-				if (cnn.hadTicket()) {
-					String jwt1 = req.getHeader("Authorization");
-					String ticket_tmp = req.getParameter("ticket");
-					if (!cnn.getAuthenticate()) {
-						res.sendRedirect(KmConnector.getErrorUrl());
-					} else {
-						chain.doFilter(request, response);
-					}
-				} else {
-//				res.sendRedirect(cnn.getPassportLoginURL() + "?appCode=" + cnn.getDomainCode() + "&service=" + URLEncoder.encode(cnn.getServiceURL(), "UTF-8"));
-					request.setAttribute("urlSSO", cnn.getPassportLoginURL() + "?appCode=" + cnn.getDomainCode() + "&service=" + URLEncoder.encode(cnn.getServiceURL(), "UTF-8"));
-					request.setAttribute("urlLogin", "/kms/login_desktop.jsp");
-
-
-					request.getRequestDispatcher("/loginVTX.jsp").forward(request, response);
+		KmConnector cnn = new KmConnector(req, res);
+		if (!cnn.isAuthenticate()) {
+			if (cnn.hadTicket()) {
+				if (!cnn.getAuthenticate()) {
+					res.sendRedirect(KmConnector.getErrorUrl());
 				}
-			} else {
-				UserToken userInfo = (UserToken) req.getSession().getAttribute("vsaUserToken");
-				String tmpTicket = (String) req.getSession().getAttribute("AuthTicket");
+			}
+		}
 
-				AuthTicket authTicket = new AuthTicket();
-				authTicket.setTicket(tmpTicket);
-				authTicket.setEmpCode(userInfo.getStaffCode());
+		UserToken userInfo = (UserToken) req.getSession().getAttribute("vsaUserToken");
+		String tmpTicket = (String) req.getSession().getAttribute("AuthTicket");
+
+		AuthTicket authTicket = new AuthTicket();
+		authTicket.setTicket(tmpTicket);
+		authTicket.setEmpCode(userInfo.getStaffCode());
+		try {
+			AuthTicketDao.saveOrUpdate(authTicket);
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		if (userInfo != null) {
+			userInfo.setUserID(132415L);
+			userInfo.setStaffCode("132415");
+			if (req.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) == null) {
 				try {
-					AuthTicketDao.saveOrUpdate(authTicket);
-				} catch (DatabaseException e) {
-					e.printStackTrace();
-				}
-				if (userInfo != null) {
-					userInfo.setUserID(132415L);
-					userInfo.setStaffCode("132415");
-					if (req.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) == null) {
-						try {
-							List<Role> roles = AuthDAO.findRolesByUser(userInfo.getStaffCode(), true);
-							List<String> listGranted = new ArrayList<>();
-							if (roles.isEmpty()) {
-								String service = cnn.getServiceURL();
-								res.sendRedirect(service + "/unauthorized.jsp");
-							} else {
-								for (Role r : roles) {
-									listGranted.add(r.getId());
-								}
-								SecurityContextHolder.getContext();
+					List<Role> roles = AuthDAO.findRolesByUser(userInfo.getStaffCode(), true);
+					List<String> listGranted = new ArrayList<>();
+					if (roles.isEmpty()) {
+						String service = cnn.getServiceURL();
+						res.sendRedirect(service + "/unauthorized.jsp");
+					} else {
+						for (Role r : roles) {
+							listGranted.add(r.getId());
+						}
+						SecurityContextHolder.getContext();
 
-								AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
-								UsernamePasswordAuthenticationToken userAuth = new UsernamePasswordAuthenticationToken(userInfo.getStaffCode(), null, AuthorityUtils.createAuthorityList(listGranted.toArray(new String[listGranted.size()])));
-								userAuth.setDetails(authenticationDetailsSource.buildDetails(req));
+						AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
+						UsernamePasswordAuthenticationToken userAuth = new UsernamePasswordAuthenticationToken(userInfo.getStaffCode(), null, AuthorityUtils.createAuthorityList(listGranted.toArray(new String[listGranted.size()])));
+						userAuth.setDetails(authenticationDetailsSource.buildDetails(req));
 
 //							Authentication authentication = authenticationManager.authenticate(userAuth);
 
-								SecurityContextHolder.getContext().setAuthentication(userAuth);
-								SecurityContext sc = SecurityContextHolder.getContext();
-								HttpSession session = req.getSession(true);
-								session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
+						SecurityContextHolder.getContext().setAuthentication(userAuth);
+						SecurityContext sc = SecurityContextHolder.getContext();
+						HttpSession session = req.getSession(true);
+						session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
 
-								chain.doFilter(request, response);
-							}
-
-						} catch (DatabaseException e) {
-							e.printStackTrace();
-						}
-					} else {
-						chain.doFilter(request, response);
+						res.sendRedirect( "/kms");
 					}
-				} else {
-					chain.doFilter(request, response);
+
+				} catch (DatabaseException e) {
+					e.printStackTrace();
 				}
+			} else {
+				res.sendRedirect( "/kms");
 			}
+		} else {
+			res.sendRedirect( "/kms");
 		}
 	}
 
@@ -195,6 +182,7 @@ public class LoginFilter implements Filter {
 		int var5 = listAlowUrl.length;
 
 		for (int var4 = 0; var4 < var5; ++var4) {
+
 			String str = var6[var4];
 			if (url.equalsIgnoreCase(str)) {
 				return true;
@@ -205,12 +193,14 @@ public class LoginFilter implements Filter {
 	}
 
 	private HashSet<String> getVsaAllowedServletPath(HttpServletRequest request) {
+
 		UserToken vsaUserToken = (UserToken) request.getSession().getAttribute("vsaUserToken");
 		HashSet<String> vsaAllowedURL = new HashSet();
 		Iterator var5 = vsaUserToken.getObjectTokens().iterator();
 
 		while (var5.hasNext()) {
 			ObjectToken ot = (ObjectToken) var5.next();
+
 			String servletPath = ot.getObjectUrl();
 			if (!"#".equals(servletPath)) {
 				vsaAllowedURL.add(servletPath.split("\\?")[0]);

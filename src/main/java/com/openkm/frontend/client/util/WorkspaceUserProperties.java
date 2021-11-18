@@ -312,6 +312,11 @@ public class WorkspaceUserProperties {
 			if (workspace.isTabDocumentActivityVisible()){
 				Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.showActivity();
 			}
+
+			if (workspace.isTabDocumentTransmitVisible()){
+				Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.showActivity();
+			}
+
 			if (workspace.isTabDocumentPropertyGroupsVisible()) {
 				Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.showPropertyGroups();
 				Main.get().mainPanel.desktop.browser.tabMultiple.tabFolder.showPropertyGroups();

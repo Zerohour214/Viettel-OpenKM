@@ -34,6 +34,8 @@ import com.openkm.util.FormatUtil;
 import com.openkm.util.PathUtils;
 import com.openkm.util.SystemProfiling;
 import org.hibernate.*;
+import org.hibernate.engine.query.sql.NativeSQLQueryCollectionReturn;
+import org.hibernate.engine.query.sql.NativeSQLQueryReturn;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -806,7 +808,7 @@ public class NodeBaseDAO {
 	 * Change security of multiples nodes
 	 */
 	public void changeSecurity(String uuid, Map<String, Integer> grantUsers, Map<String, Integer> revokeUsers,
-	                           Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles, boolean recursive) throws PathNotFoundException,
+							   Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles, boolean recursive) throws PathNotFoundException,
 			AccessDeniedException, DatabaseException {
 		log.debug("changeSecurity({}, {}, {}, {})", new Object[]{uuid, grantUsers, revokeUsers, grantRoles, revokeRoles, recursive});
 		Session session = null;
@@ -855,7 +857,7 @@ public class NodeBaseDAO {
 	 * @see com.openkm.util.pendtask.ChangeSecurityTask
 	 */
 	public int changeSecurity(Session session, NodeBase node, Map<String, Integer> grantUsers, Map<String, Integer> revokeUsers,
-	                          Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles, boolean recursive) throws PathNotFoundException,
+							  Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles, boolean recursive) throws PathNotFoundException,
 			AccessDeniedException, DatabaseException, HibernateException {
 		log.debug("changeSecurity({}, {}, {}, {}, {})", new Object[]{node.getUuid(), grantUsers, revokeUsers, grantRoles, revokeRoles});
 		boolean canModify = true;
@@ -933,7 +935,7 @@ public class NodeBaseDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public int changeSecurityInDepth(Session session, NodeBase node, Map<String, Integer> grantUsers, Map<String, Integer> revokeUsers,
-	                                 Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles) throws PathNotFoundException, AccessDeniedException,
+									 Map<String, Integer> grantRoles, Map<String, Integer> revokeRoles) throws PathNotFoundException, AccessDeniedException,
 			DatabaseException, HibernateException {
 		int total = changeSecurity(session, node, grantUsers, revokeUsers, grantRoles, revokeRoles, true);
 
@@ -1218,6 +1220,7 @@ public class NodeBaseDAO {
 			HibernateUtil.close(session);
 		}
 	}
+
 	/**
 	 * Test for category in a node
 	 */
@@ -1799,8 +1802,8 @@ public class NodeBaseDAO {
 	 * Check for same node name in same parent
 	 *
 	 * @param session Hibernate session.
-	 * @param parent Parent node uuid.
-	 * @param name Name of the child node to test.
+	 * @param parent  Parent node uuid.
+	 * @param name    Name of the child node to test.
 	 * @return true if child item exists or false otherwise.
 	 */
 	public boolean testItemExistence(Session session, String parent, String name) throws HibernateException, DatabaseException {
@@ -1816,8 +1819,8 @@ public class NodeBaseDAO {
 	 * Check for same node name in same parent
 	 *
 	 * @param session Hibernate session.
-	 * @param parent Parent node uuid.
-	 * @param name Name of the child node to test.
+	 * @param parent  Parent node uuid.
+	 * @param name    Name of the child node to test.
 	 */
 	public void checkItemExistence(Session session, String parent, String name) throws PathNotFoundException, HibernateException,
 			DatabaseException, ItemExistsException {
@@ -2366,6 +2369,132 @@ public class NodeBaseDAO {
 			Hibernate.initialize(nBase);
 			Hibernate.initialize(nBase.getUserPermissions());
 			Hibernate.initialize(nBase.getRolePermissions());
+		}
+	}
+
+	OrganizationVTXDAO organizationVTXDAO = new OrganizationVTXDAO();
+
+	public void getAllChildOfOrgChecked(List<String> org, List<Long> orgCheckeds) throws DatabaseException {
+		for (String s : org) {
+			List<OrganizationVTX> vtxdaoList = organizationVTXDAO.getAllChild(Long.parseLong(s));
+			List<String> childs = new ArrayList<>();
+			vtxdaoList.forEach((o) -> {
+				orgCheckeds.add(o.getId());
+				childs.add(String.valueOf(o.getId()));
+			});
+			getAllChildOfOrgChecked(childs, orgCheckeds);
+		}
+
+	}
+
+	public OrgDocumentVTX getOrgDocById(String docId, Long orgId) throws DatabaseException {
+		String qs = "from OrgDocumentVTX o where o.docId = :docId and o.orgId = :orgId";
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Query q = session.createQuery(qs);
+			q.setLong("orgId", orgId);
+			q.setString("docId", docId);
+			OrgDocumentVTX ret = (OrgDocumentVTX) q.setMaxResults(1).uniqueResult();
+			log.debug("getOrg: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public void hqlTruncate(String docId) {
+		Session session = null;
+		session = HibernateUtil.getSessionFactory().openSession();
+		String hql = "delete from OrgDocumentVTX od where od.docId = :docId";
+		Query query = session.createQuery(hql);
+		query.setString("docId", docId);
+		session.beginTransaction();
+		query.executeUpdate();
+		session.getTransaction().commit();
+	}
+
+	public void transmit(String docId, String orgs) throws DatabaseException {
+		Session session = null;
+		OrganizationVTXDAO organizationVTXDAO = new OrganizationVTXDAO();
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+
+			List<String> org = Arrays.asList(orgs.split(","));
+			if (orgs.equals("")) org = new ArrayList<>();
+
+			List<Long> orgCheckeds = new ArrayList<>();
+
+			for (String s : org) {
+				/*OrganizationVTX organizationVTX = organizationVTXDAO.getOrganizationbyId(Long.parseLong(s));
+				String orgPath = organizationVTX.getPath();
+				List<String> orgParentIds = Arrays.asList(orgPath.split("/"));
+				orgParentIds.forEach(op -> {
+					if(!op.equals("") && !orgCheckeds.contains(Long.parseLong(op))) {
+						orgCheckeds.add(Long.parseLong(op));
+					}
+				});*/
+				orgCheckeds.add(Long.parseLong(s));
+			}
+
+//			getAllChildOfOrgChecked(org, orgCheckeds);
+
+			hqlTruncate(docId);
+
+			session.beginTransaction();
+
+			for (Long l : orgCheckeds) {
+				if (getOrgDocById(docId, l) == null) {
+					OrgDocumentVTX orgDocumentVTX = new OrgDocumentVTX();
+					orgDocumentVTX.setOrgId(l);
+					orgDocumentVTX.setDocId(docId);
+					session.save(orgDocumentVTX);
+					session.flush();
+					session.clear();
+				}
+
+
+			}
+
+			session.getTransaction().commit();
+
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException {
+		String qs = "from OrganizationVTX o " +
+				"  join OrgDocumentVTX od on o.id = od.orgId " +
+				"  join NodeDocument d on d.uuid = od.docId " +
+				" where d.uuid = :docId";
+
+		String sqlQuery = "SELECT o.ID as id, o.CODE as code, o.NAME as name, o.ORG_PARENT as parent, o.PATH " +
+				" FROM ORGANIZATION_VTX o " +
+				" JOIN ORG_DOC od ON o.ID = od.ORG_ID " +
+				" JOIN OKM_NODE_DOCUMENT d ON d.NBS_UUID = od.DOC_ID " +
+				" WHERE d.NBS_UUID = :docId";
+
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			/*Query q = session.createQuery(qs);
+			q.setString("docId", docId);
+			List<OrganizationVTXBean> ret = (List<OrganizationVTXBean>) q.list();
+			log.debug("getAllChild: {}", ret);
+			return ret;*/
+			SQLQuery q = session.createSQLQuery(sqlQuery);
+			q.setString("docId", docId);
+			List<OrganizationVTXBean> ret = q.list();
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
 		}
 	}
 }

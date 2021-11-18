@@ -22,10 +22,7 @@
 package com.openkm.module;
 
 import com.openkm.automation.AutomationException;
-import com.openkm.bean.Document;
-import com.openkm.bean.ExtendedAttributes;
-import com.openkm.bean.LockInfo;
-import com.openkm.bean.Version;
+import com.openkm.bean.*;
 import com.openkm.core.*;
 import com.openkm.extension.core.ExtensionException;
 import com.openkm.principal.PrincipalAdapterException;
@@ -448,4 +445,8 @@ public interface DocumentModule {
 	 */
 	public String getPath(String token, String uuid) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
+
+	public void transmit(String docId, String orgs) throws DatabaseException;
+
+	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException;
 }

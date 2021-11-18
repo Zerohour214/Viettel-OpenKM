@@ -144,7 +144,7 @@ public class CategoriesSelectPopup extends DialogBox {
 	}
 
 	/**
-	 * Shows the popup 
+	 * Shows the popup
 	 */
 	public void show() {
 		initButtons();

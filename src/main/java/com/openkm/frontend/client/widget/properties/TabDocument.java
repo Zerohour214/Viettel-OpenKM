@@ -75,6 +75,9 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	public Preview preview;
 	public RelatedScrollTable related;
 	public ActivityDocumentTable activity;
+
+	public TransmitDocument transmitDocument;
+
 	private int selectedTab = 0; // Used to determine selected tab to mantain on
 	// change document, because not all documents
 	// have the same number of tabs ( document
@@ -93,6 +96,7 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	private boolean relatedVisible = false;
 	private boolean activityVisible = false;
 	private boolean propertyGroupsVisible = false;
+	private boolean transmitVisible = false;
 	private List<PropertyGroupHandlerExtension> propertyGroupHandlerExtensionList;
 	private int IEBugCorrections = 0;
 
@@ -161,7 +165,7 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	/**
 	 * Sets the size
 	 *
-	 * @param width With of the widget
+	 * @param width  With of the widget
 	 * @param height Height of the widget
 	 */
 	@Override
@@ -230,7 +234,8 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 			Main.get().mainPanel.desktop.browser.tabMultiple.status.setRelated();
 		}
 
-		if (activityVisible){
+
+		if (activityVisible) {
 			Main.get().mainPanel.desktop.browser.tabMultiple.status.setActivity();
 		}
 
@@ -273,7 +278,9 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 			related.getRelatedDoc();
 		}
 
-		if(activityVisible){
+
+		if (activityVisible) {
+
 			activity.set(doc);
 			activity.getActivity();
 		}
@@ -397,6 +404,11 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 		if (activityVisible) {
 			tabPanel.add(activity, Main.i18n("tab.document.activity"));
 			activity.langRefresh();
+		}
+
+		if (transmitVisible) {
+			tabPanel.add(transmitDocument, "Transmit");
+			security.langRefresh();
 		}
 
 		for (Iterator<TabDocumentExtension> it = widgetExtensionList.iterator(); it.hasNext(); ) {
@@ -652,6 +664,15 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 			tabPanel.add(extension, extension.getTabText());
 			extension.setPixelSize(width, height - TAB_HEIGHT);
 		}
+	}
+
+	/**
+	 * showTransmit
+	 */
+	public void showTransmit() {
+		tabPanel.add(transmitDocument, "Transmit");
+		transmitVisible = true;
+		SECURITY_TAB = tabPanel.getWidgetCount() - 1; // starts at 0
 	}
 
 	/**

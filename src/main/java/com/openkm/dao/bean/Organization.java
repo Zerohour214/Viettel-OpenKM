@@ -15,7 +15,7 @@ import java.util.Calendar;
 @Indexed
 @Table(name = "ORGANIZATION")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Organization {
+public class 	Organization {
 
 	@Id
 	@Column(name = "ID")

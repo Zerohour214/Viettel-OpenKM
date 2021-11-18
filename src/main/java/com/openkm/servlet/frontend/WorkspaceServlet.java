@@ -225,6 +225,7 @@ public class WorkspaceServlet extends OKMRemoteServiceServlet implements OKMWork
 			// Tab document visibility
 			workspace.setTabDocumentPropertiesVisible(up.getPrfTab().getPrfDocument().isPropertiesVisible());
 			workspace.setTabDocumentSecurityVisible(up.getPrfTab().getPrfDocument().isSecurityVisible());
+			workspace.setTabDocumentTransmitVisible(up.getPrfTab().getPrfDocument().isTransmitVisible());
 			workspace.setTabDocumentNotesVisible(up.getPrfTab().getPrfDocument().isNotesVisible());
 			workspace.setTabDocumentVersionVisible(up.getPrfTab().getPrfDocument().isVersionsVisible());
 			workspace.setTabDocumentPreviewVisible(up.getPrfTab().getPrfDocument().isPreviewVisible());

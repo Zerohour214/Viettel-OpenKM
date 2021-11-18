@@ -9,11 +9,14 @@ import com.openkm.module.ModuleManager;
 import com.openkm.module.OrgVTXModule;
 import com.openkm.servlet.admin.BaseServlet;
 import io.swagger.annotations.Api;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -33,9 +36,40 @@ public class OrganizationService extends BaseServlet {
 		OrganizationVTXBean organizationVTXBean = new OrganizationVTXBean();
 		organizationVTXBean.setOrgCode(orgCode);
 		organizationVTXBean.setOrgName(orgName);
-		organizationVTXBean.setOrgParent(orgParentId);
+
+		if(orgParentId != null)
+			organizationVTXBean.setOrgParent(orgParentId);
+		else {
+			organizationVTXBean.setOrgParent(-1L);
+		}
+
 		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+
 		om.createOrg(organizationVTXBean);
+	}
+
+	@POST
+	@Path("/update")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public void updateOrg(@FormParam("orgName") String orgName,
+						  @FormParam("orgCode") String orgCode,
+						  @FormParam("orgParentId") String orgParentId,
+						  @QueryParam("orgId") Long orgId
+						  ) throws DatabaseException {
+		OrganizationVTXBean organizationVTXBean = new OrganizationVTXBean();
+		organizationVTXBean.setOrgCode(orgCode);
+		organizationVTXBean.setOrgName(orgName);
+		organizationVTXBean.setId(orgId);
+
+
+		if(!orgParentId.equals("#"))
+			organizationVTXBean.setOrgParent(Long.parseLong(orgParentId));
+		else {
+			organizationVTXBean.setOrgParent(-1L);
+		}
+
+		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+		om.updateOrg(organizationVTXBean);
 	}
 
 	@POST
@@ -93,6 +127,23 @@ public class OrganizationService extends BaseServlet {
 		});
 	}
 
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("/importUserToOrg")
+	public void importUserToOrg(
+			List<Attachment> atts,
+			@QueryParam("orgId") Long orgId
+	) throws DatabaseException, IOException {
+		InputStream is = null;
+		for (Attachment att : atts) {
+
+				is = att.getDataHandler().getInputStream();
+
+		}
+		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+		om.importUserToOrg(is, orgId);
+	}
+
 	@GET
 	@Path("/findUsersbyOrg")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -124,6 +175,17 @@ public class OrganizationService extends BaseServlet {
 
 		OrgVTXModule om = ModuleManager.getOrgVTXModule();
 		om.deleteOrg(orgId);
+	}
+
+	@GET
+	@Path("/getAllOrgChild")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getAllOrg(@QueryParam("parent") Long parent) throws DatabaseException {
+
+		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+
+		String json = new Gson().toJson(om.getAllChild(parent));
+		return json;
 	}
 
 }

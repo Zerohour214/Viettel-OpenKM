@@ -388,9 +388,9 @@ public class AuthServlet extends BaseServlet {
 		for(int i=1; i<sheet.getRows(); ++i) {
 			String id = sheet.getCell(0, i).getContents(),
 					name = sheet.getCell(1, i).getContents(),
-					email = sheet.getCell(2, i).getContents();
-			String active = sheet.getCell(3, i).getContents();
-			String roles = sheet.getCell(4, i).getContents();
+					email = sheet.getCell(2, i).getContents(),
+			 //active = sheet.getCell(3, i).getContents(),
+			 roles = sheet.getCell(3, i).getContents();
 			List<String> usrRoles = Arrays.asList(roles.split(","));
 
 			User userById = AuthDAO.findUserByPk(id);
@@ -400,10 +400,13 @@ public class AuthServlet extends BaseServlet {
 				usr.setName(name);
 				usr.setPassword(id);
 				usr.setEmail(email);
-				if(active.equals("1"))
+
+				usr.setActive(true);
+
+				/*if(active.equals("1"))
 					usr.setActive(true);
 				else
-					usr.setActive(false);
+					usr.setActive(false);*/
 
 				for (String rolId : usrRoles) {
 					usr.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));

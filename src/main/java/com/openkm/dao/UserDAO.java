@@ -29,8 +29,10 @@ public class UserDAO {
 			Query q = session.createSQLQuery(
 					"select u.USR_NAME as name, u.USR_ID as id, u.USR_EMAIL as email " +
 							" from OKM_USER u " +
-							" where u.USR_NAME like concat('%', :search, '%') or u.USR_ID like concat('%', :search, '%') or u.USR_EMAIL like concat('%', :search, '%')" +
-							" and u.USR_ACTIVE = 'T'");
+
+							" where (u.USR_NAME like concat('%', :search, '%') or u.USR_ID like concat('%', :search, '%') or u.USR_EMAIL like concat('%', :search, '%') )" +
+							" and u.USR_ACTIVE = 'T' and u.USR_ID != 'okmAdmin'");
+
 			q.setString("search", search);
 			List<User> ret = q.list();
 			log.debug("getAllUser: {}", ret);

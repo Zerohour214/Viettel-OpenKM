@@ -43,7 +43,9 @@
   </filter>
 
   <!--  SSO FILTER -->
+    <!--<filter>
     <filter>
+
       <filter-name>VSA Filter</filter-name>
       <filter-class>viettel.filter.LoginFilter</filter-class>
     </filter>
@@ -54,6 +56,16 @@
     <filter-mapping>
       <filter-name>VSA Filter</filter-name>
       <url-pattern>*.do</url-pattern>
+
+    </filter-mapping>-->
+
+    <filter>
+        <filter-name>SSOLogin</filter-name>
+        <filter-class>viettel.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SSOLogin</filter-name>
+        <url-pattern>/login_sso</url-pattern>
     </filter-mapping>
   <!--  END SSO FILTER-->
 

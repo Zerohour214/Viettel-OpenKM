@@ -22,11 +22,10 @@
 package com.openkm.rest.endpoint;
 
 import com.google.gson.Gson;
-import com.openkm.bean.Document;
-import com.openkm.bean.ExtendedAttributes;
-import com.openkm.bean.LockInfo;
-import com.openkm.bean.Version;
+import com.openkm.bean.*;
 import com.openkm.core.MimeTypeConfig;
+import com.openkm.dao.bean.Organization;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.frontend.client.Main;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
@@ -632,6 +631,34 @@ public class DocumentService {
 			extAttr.setWiki(wiki);
 			dm.extendedCopy(null, docId, dstId, name, extAttr);
 			log.debug("extendedCopy: void");
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
+	@POST
+	@Path("/transmit")
+	public void extendedCopy(@QueryParam("docId") String docId, @QueryParam("orgs") String orgs) throws GenericException {
+		try {
+			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{orgs});
+			DocumentModule dm = ModuleManager.getDocumentModule();
+			dm.transmit(docId, orgs);
+			log.debug("extendedCopy: void");
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
+	@GET
+	@Path("/getOrgsByDocId")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getOrgsByDocId(@QueryParam("docId") String docId) throws GenericException {
+		try {
+			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{docId});
+			DocumentModule dm = ModuleManager.getDocumentModule();
+			String json = new Gson().toJson(dm.getOrgsByDocId(docId));
+			return json;
+
 		} catch (Exception e) {
 			throw new GenericException(e);
 		}

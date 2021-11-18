@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -230,6 +234,10 @@ public class KmConnector {
 		}
 
 		return tmps;
+	}
+
+	public static String getSSOLink() throws UnsupportedEncodingException {
+		return KmConnector.passportLoginURL + "?appCode=" + KmConnector.domainCode + "&service=" + URLEncoder.encode(KmConnector.serviceURL, "UTF-8");
 	}
 
 }

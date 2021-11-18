@@ -1566,6 +1566,17 @@ public class DbDocumentModule implements DocumentModule {
 		}
 	}
 
+	@Override
+	public void transmit(String docId, String orgs) throws DatabaseException {
+		NodeBaseDAO.getInstance().transmit(docId, orgs);
+	}
+
+	@Override
+	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException {
+		return NodeBaseDAO.getInstance().getOrgsByDocId(docId);
+	}
+
+
 	/*
 	 * ========================
 	 * LiveEdit methods

@@ -96,8 +96,10 @@
   <!-- http://info.michael-simons.eu/2011/01/28/disable-jsessionid-path-parameter-in-java-web-applications/ -->
   <security:http access-decision-manager-ref="accessDecisionManager" access-denied-page="/unauthorized.jsp">
 
+      <security:intercept-url pattern="/login_sso*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+      <security:intercept-url pattern="/login_sso/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <!-- GWT -->
-    <security:intercept-url pattern="/frontend/**" access="IS_AUTHENTICATED_FULLY"/>
+    <security:intercept-url pattern="/frontend/**" access="IS_AUTHENTICATED_FULLY" />
 
     <!-- JSPs -->
     <security:intercept-url pattern="/login.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>

@@ -131,6 +131,7 @@ public class HibernateUtil {
 		cfg.addAnnotatedClass(Organization.class);
 		cfg.addAnnotatedClass(OrganizationVTX.class);
 		cfg.addAnnotatedClass(UserOrganizationVTX.class);
+		cfg.addAnnotatedClass(OrgDocumentVTX.class);
 		cfg.addAnnotatedClass(AuthTicket.class);
 		return cfg;
 	}

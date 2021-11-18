@@ -22,10 +22,7 @@
 package com.openkm.api;
 
 import com.openkm.automation.AutomationException;
-import com.openkm.bean.Document;
-import com.openkm.bean.ExtendedAttributes;
-import com.openkm.bean.LockInfo;
-import com.openkm.bean.Version;
+import com.openkm.bean.*;
 import com.openkm.core.*;
 import com.openkm.extension.core.ExtensionException;
 import com.openkm.module.DocumentModule;
@@ -361,5 +358,17 @@ public class OKMDocument implements DocumentModule {
 		String path = dm.getPath(token, uuid);
 		log.debug("getPath: {}", path);
 		return path;
+	}
+
+	@Override
+	public void transmit(String docId, String orgs) throws DatabaseException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		dm.transmit(docId, orgs);
+	}
+
+	@Override
+	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.getOrgsByDocId(docId);
 	}
 }

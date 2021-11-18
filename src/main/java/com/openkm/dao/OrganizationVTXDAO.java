@@ -1,24 +1,32 @@
 package com.openkm.dao;
 
 import com.openkm.bean.OrganizationVTXBean;
+import com.openkm.core.AccessDeniedException;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.Organization;
 import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.dao.bean.User;
 import com.openkm.dao.bean.UserOrganizationVTX;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+import org.docx4j.wml.U;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrganizationVTXDAO {
 	private static Logger log = LoggerFactory.getLogger(OrganizationVTXDAO.class);
 	private static OrganizationVTXDAO single = new OrganizationVTXDAO();
 
-	private OrganizationVTXDAO() {
+	public OrganizationVTXDAO() {
 	}
 
 	public static OrganizationVTXDAO getInstance() {
@@ -27,11 +35,13 @@ public class OrganizationVTXDAO {
 
 	public List<Organization> getAllOrg() throws DatabaseException {
 		log.debug("getAllOrg({})");
-		String qs = "from Organization";
+		String qs = "from OrganizationVTX o";
+
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			Query q = session.createQuery(qs);
+
 			List<Organization> ret = q.list();
 			log.debug("getAllOrg: {}", ret);
 			return ret;
@@ -44,6 +54,8 @@ public class OrganizationVTXDAO {
 
 	public void createOrg (OrganizationVTXBean newOrg) throws DatabaseException {
 		log.debug("createOrg({})");
+
+		if(getOrganizationbyCode(newOrg.getOrgCode()) != null) return;
 
 		Session session = null;
 		try {
@@ -58,7 +70,7 @@ public class OrganizationVTXDAO {
 			Long id = (Long) session.save(organizationVTX);
 			session.getTransaction().commit();
 
-			if(newOrg.getOrgParent() == null) {
+			if(newOrg.getOrgParent() == -1L) {
 				organizationVTX.setPath('/' + String.valueOf(id) + '/');
 			} else {
 				organizationVTX.setPath(getOrganizationbyId(newOrg.getOrgParent()).getPath() + id + '/');
@@ -91,8 +103,25 @@ public class OrganizationVTXDAO {
 		}
 	}
 
+	public OrganizationVTX getOrganizationbyCode(String code) throws DatabaseException {
+		String qs = "from OrganizationVTX o where o.code= :code";
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Query q = session.createQuery(qs);
+			q.setString("code", code);
+			OrganizationVTX ret = (OrganizationVTX) q.setMaxResults(1).uniqueResult();
+			log.debug("getOrg: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
 	public List<OrganizationVTX> search(String name, String code) throws DatabaseException {
-		String qs = "from OrganizationVTX o where o.name like concat('%', :name, '%' )  and o.code like concat('%', :code, '%' ) ";
+		String qs = "from OrganizationVTX o where o.name like concat('%', :name, '%' ) and o.code like concat('%', :code, '%' ) ";
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
@@ -115,7 +144,7 @@ public class OrganizationVTXDAO {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			Query q = session.createQuery(qs);
-			q.setString("param", "");
+			q.setString("param", "-1");
 			List<OrganizationVTX> ret = (List<OrganizationVTX>) q.list();
 			log.debug("getAllOrg: {}", ret);
 			return ret;
@@ -131,15 +160,23 @@ public class OrganizationVTXDAO {
 
 		Session session = null;
 		try {
+			OrganizationVTX organizationVTX = getOrganizationbyId(orgId);
+			List<String> orgIds = Arrays.asList(organizationVTX.getPath().split("/"));
 			session = HibernateUtil.getSessionFactory().openSession();
-			UserOrganizationVTX userOrganizationVtx = new UserOrganizationVTX();
-			userOrganizationVtx.setUserId(userId);
-			userOrganizationVtx.setOrgId(orgId);
-
 			session.beginTransaction();
-			session.save(userOrganizationVtx);
-			session.getTransaction().commit();
+			for(String s : orgIds) {
+				if(!s.equals("")) {
 
+					UserOrganizationVTX userOrganizationVtx = new UserOrganizationVTX();
+					userOrganizationVtx.setUserId(userId);
+					userOrganizationVtx.setOrgId(Long.parseLong(s));
+
+					session.save(userOrganizationVtx);
+					session.flush();
+					session.clear();
+				}
+			}
+			session.getTransaction().commit();
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
@@ -196,6 +233,92 @@ public class OrganizationVTXDAO {
 			session.delete(organizationVTX);
 			session.getTransaction().commit();
 		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public List<OrganizationVTX> getAllChild(Long parent) throws DatabaseException {
+		String qs = "from OrganizationVTX o where o.parent = :parent ";
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Query q = session.createQuery(qs);
+			q.setLong("parent", parent);
+			List<OrganizationVTX> ret = (List<OrganizationVTX>) q.list();
+			log.debug("getAllChild: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+    public void importUserToOrg(InputStream fileContent, Long orgId) {
+
+		try {
+			Workbook workbook = null;
+			workbook = Workbook.getWorkbook(fileContent);
+			Sheet sheet = workbook.getSheet(0);
+
+			for(int i=1; i<sheet.getRows(); ++i) {
+				String id = sheet.getCell(0, i).getContents(),
+				name = sheet.getCell(1, i).getContents(),
+						email = sheet.getCell(2, i).getContents(),
+				roles = sheet.getCell(3, i).getContents();
+				List<String> usrRoles = Arrays.asList(roles.split(","));
+				User user = new User();
+				user.setId(id);
+				user.setName(name);
+				user.setEmail(email);
+				user.setPassword(id);
+				user.setActive(true);
+				for (String rolId : usrRoles) {
+					user.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));
+				}
+				AuthDAO.createUser(user);
+				addUserToOrg(id, orgId);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BiffException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void updateOrg(OrganizationVTXBean newOrg) throws DatabaseException {
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			OrganizationVTX organizationVTX = new OrganizationVTX();
+			organizationVTX.setId(newOrg.getId());
+			organizationVTX.setCode(newOrg.getOrgCode());
+			organizationVTX.setName(newOrg.getOrgName());
+			organizationVTX.setParent(newOrg.getOrgParent());
+			organizationVTX.setPath("");
+
+			session.beginTransaction();
+			session.update(organizationVTX);
+			session.getTransaction().commit();
+
+			if(newOrg.getOrgParent() == -1L) {
+				organizationVTX.setPath('/' + String.valueOf(newOrg.getId()) + '/');
+			} else {
+				organizationVTX.setPath(getOrganizationbyId(newOrg.getOrgParent()).getPath() + newOrg.getId() + '/');
+			}
+
+			session.beginTransaction();
+			session.save(organizationVTX);
+			session.getTransaction().commit();
+		} catch (HibernateException | DatabaseException e) {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
 			HibernateUtil.close(session);

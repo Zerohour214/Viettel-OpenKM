@@ -23,6 +23,15 @@
     <div id="wrapper-org" class="row">
         <div class="col-md-4">
             <div class="card mt-3">
+                <div class="card-header">
+                    <button type="button" class="btn btn-success" id="tree-open-all">
+                        <i class="fa fa-folder-open-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#warning-delete-org">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                </div>
                 <div class="card-body">
                     <div id="jstree_demo_div">
                     </div>
@@ -37,9 +46,11 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
                         <i class="fa fa-user-plus"></i>
                     </button>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#warning-delete-org">
-                        <i class="fa fa-trash-o"></i>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#importUserModal">
+                        <i class="fa fa-upload"></i>
                     </button>
+
                 </div>
                 <div class="card-body">
                     <table class="table" id="tbl-user-by-org">
@@ -55,7 +66,7 @@
                     </table>
                 </div>
             </div>
-            <!-- The Modal -->
+            <!-- The Modal add user-->
             <div class="modal fade" id="addUserModal">
                 <div class="modal-dialog modal-dialog-scrollable modal-lg ">
                     <div class="modal-content">
@@ -66,17 +77,11 @@
 
                         <div class="modal-body">
                             <form id="form-search-user">
-                                <div class="row">
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control"
-                                               placeholder="Mã nhân viên, tên nhân viên, ..."
-                                               name="userSearch">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-success" id="userSearchSubmitBtn">
-                                            Tìm kiếm
-                                        </button>
-                                    </div>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control"
+                                           placeholder="Mã nhân viên, họ tên, email,..." name="userSearch">
+                                    <button class="btn btn-success" type="button" id="userSearchSubmitBtn">Tìm kiếm
+                                    </button>
                                 </div>
                             </form>
                             <table class="table" id="table-user-search">
@@ -92,8 +97,33 @@
                                 </tbody>
                             </table>
                             <div class="d-flex flex-row-reverse">
-                                <button type="button" class="btn btn-success" id="add-user-org" data-bs-dismiss="modal">Thêm</button>
+                                <button type="button" class="btn btn-success" id="add-user-org" data-bs-dismiss="modal">
+                                    Thêm
+                                </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Modal import user-->
+            <div class="modal fade" id="importUserModal">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form id="form-import-user" enctype="multipart/form-data">
+                                <div class="input-group mb-3">
+                                    <input type="file" class="form-control" name="userFile" id="input-file-user">
+                                    <button class="btn btn-success" type="button" id="import-user-org"
+                                            data-bs-dismiss="modal">Import
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -231,12 +261,16 @@
             var orgChoosed;
             var userRemoved;
             let userChecked = [];
+            let userCurrentOrg = [];
 
             getAllOrgRoot();
 
             function renderOrgTree(treeData) {
                 $('#jstree_demo_div').jstree("destroy").empty();
                 $('#jstree_demo_div')
+                    /*.on('ready.jstree', function() {
+                        $("#jstree_demo_div").jstree("open_all");
+                    })*/
                     .on('changed.jstree', function (e, data) {
                         let nodeSelected = data.node.original;
 
@@ -247,8 +281,8 @@
 
                         getUsersByOrgId(nodeSelected.id);
 
-
                         orgChoosed = nodeSelected.id;
+                        $('#import-user-orgId-input').val(orgChoosed);
                         userChecked = [];
                     })
                     .jstree({
@@ -258,6 +292,10 @@
                     });
             }
 
+            $("#tree-open-all").click(e => {
+                $("#jstree_demo_div").jstree("open_all");
+            })
+
             function getUsersByOrgId(orgId) {
                 $.ajax({
                     url: `/kms/services/rest/organization/findUsersbyOrg?orgId=` + orgId,
@@ -265,7 +303,6 @@
                     processData: false,
                     contentType: 'application/json',
                     success: (res) => {
-                        console.log(res);
                         $('#tbl-user-by-org tbody').empty();
                         res.forEach(u => {
                             let tr = document.createElement('tr');
@@ -275,11 +312,12 @@
                             tdCode.innerText = u[0];
                             tdEmail.innerText = u[2];
 
+                            userCurrentOrg.push(u[0]);
+
                             let divTmp = document.createElement('div');
                             let buttonRemove = '<button type="button" class="btn btn-danger btn-sm" id="btn-remove-user" data-bs-toggle="modal" data-bs-target="#warning-remove-user"><i class="fa fa-trash"></i></button>'
                             divTmp.innerHTML = buttonRemove;
                             divTmp.onclick = () => {
-                                console.log(u);
                                 userRemoved = u[0];
                             }
                             tdRemove.appendChild(divTmp);
@@ -292,7 +330,6 @@
 
                             buttonRemove.onclick = (e) => {
                                 userRemoved = u[0];
-                                console.log(userRemoved)
                             }
                         })
                     }
@@ -309,16 +346,15 @@
                         treeDataGlobal = res;
                         let treeData = res.map(org => {
                             let obj = {};
-                            obj.id = org.id
-                            obj.parent = org.parent ? org.parent : "#";
+                            obj.id = org.id;
+                            obj.parent = org.parent !== -1 ? org.parent : "#";
                             obj.text = org.name;
 
                             obj.code = org.code;
-                            obj.name = org.name
+                            obj.name = org.name;
                             obj.parentName = res.filter(o => o.id === org.parent)[0] ? res.filter(o => o.id === org.parent)[0].name : null
                             return obj;
                         })
-
                         renderOrgTree(treeData)
                     }
                 })
@@ -328,6 +364,20 @@
                 e.preventDefault();
                 $.ajax({
                     url: '/kms/services/rest/organization/create',
+                    type: 'POST',
+                    processData: false,
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: $("#form-create-org").serialize(),
+                    success: (res) => {
+                        getAllOrgRoot();
+                    }
+                });
+            })
+
+            $("#orgUpdateSubmitBtn").click((e) => {
+                e.preventDefault();
+                $.ajax({
+                    url: '/kms/services/rest/organization/update?orgId=' + orgChoosed,
                     type: 'POST',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
@@ -369,7 +419,10 @@
 
             $('#approve-remove-user').click((e) => {
                 $.ajax({
-                    url: `/kms/services/rest/organization/removeUserOrg?` + $.param({"orgId": orgChoosed, "userId": userRemoved}),
+                    url: `/kms/services/rest/organization/removeUserOrg?` + $.param({
+                        "orgId": orgChoosed,
+                        "userId": userRemoved
+                    }),
                     type: 'DELETE',
                     processData: false,
                     contentType: 'application/json',
@@ -380,18 +433,19 @@
                 })
             })
 
-        $('#approve-delete-org').click((e) => {
-            $.ajax({
-                url: `/kms/services/rest/organization/deleteOrg?` + $.param({"orgId": orgChoosed}),
-                type: 'DELETE',
-                processData: false,
-                contentType: 'application/json',
-                success: (res) => {
-                    console.log(res)
-                    getAllOrgRoot();
-                }
+            $('#approve-delete-org').click((e) => {
+                if(!orgChoosed) alert("Bạn cần chọn 1 đơn vị!")
+                $.ajax({
+                    url: `/kms/services/rest/organization/deleteOrg?` + $.param({"orgId": orgChoosed}),
+                    type: 'DELETE',
+                    processData: false,
+                    contentType: 'application/json',
+                    success: (res) => {
+                        console.log(res)
+                        getAllOrgRoot();
+                    }
+                })
             })
-        })
 
 
             function loadOrgSearchParent(jsonData) {
@@ -425,37 +479,42 @@
             function loadUserSearch(data) {
                 userChecked = [];
                 $('#table-user-search tbody').empty()
+                console.log(userCurrentOrg)
                 data.forEach(user => {
                     let tr = document.createElement('tr');
                     let tdName = document.createElement('td'),
                         tdCode = document.createElement('td'),
                         tdMail = document.createElement('td'),
                         tdCheckbox = document.createElement('td');
-                    tdName.innerText = user[0];
-                    tdCode.innerText = user[1];
-                    tdCode.setAttribute('id', user[1].toString());
-                    tdMail.innerText = user[2];
 
-                    let inputCheckbox = document.createElement('input');
-                    inputCheckbox.setAttribute('type', 'checkbox');
-                    inputCheckbox.onchange = (e) => {
-                        if (inputCheckbox.checked) {
-                            userChecked.push({
-                                userId: user[1],
-                                orgId: orgChoosed
-                            });
-                        } else {
-                            userChecked = userChecked.filter(u => u.userId !== user[1])
+                    if (!userCurrentOrg.includes(user[1])) {
+
+                        tdName.innerText = user[0];
+                        tdCode.innerText = user[1];
+                        tdCode.setAttribute('id', user[1].toString());
+                        tdMail.innerText = user[2];
+
+                        let inputCheckbox = document.createElement('input');
+                        inputCheckbox.setAttribute('type', 'checkbox');
+                        inputCheckbox.onchange = (e) => {
+                            if (inputCheckbox.checked) {
+                                userChecked.push({
+                                    userId: user[1],
+                                    orgId: orgChoosed
+                                });
+                            } else {
+                                userChecked = userChecked.filter(u => u.userId !== user[1])
+                            }
+
                         }
+                        tdCheckbox.appendChild(inputCheckbox)
 
+                        tr.appendChild(tdCode);
+                        tr.appendChild(tdName);
+                        tr.appendChild(tdMail);
+                        tr.appendChild(tdCheckbox);
+                        $('#table-user-search tbody').append(tr);
                     }
-                    tdCheckbox.appendChild(inputCheckbox)
-
-                    tr.appendChild(tdCode);
-                    tr.appendChild(tdName);
-                    tr.appendChild(tdMail);
-                    tr.appendChild(tdCheckbox);
-                    $('#table-user-search tbody').append(tr);
                 })
 
 
@@ -481,11 +540,50 @@
 
             })
 
+            $('#import-user-org').click(e => {
+                if (orgChoosed) {
+
+                    let files = document.getElementById('input-file-user').files;
+                    let formData = new FormData();
+                    if (files.length > 0) {
+                        formData.append("file", files[0]);
+
+                        $.ajax({
+                            url: '/kms/services/rest/organization/importUserToOrg?orgId=' + orgChoosed,
+                            type: 'POST',
+                            enctype: 'multipart/form-data',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            success: () => {
+                                getUsersByOrgId(orgChoosed);
+                            }
+                        })
+                    }
+
+                } else {
+                    alert("Chưa chọn đơn vị")
+                }
+
+            })
+
+
             $('#addUserModal').on('show.bs.modal', function (e) {
                 userChecked = [];
                 $('#table-user-search tbody').empty()
+                $.ajax({
+                    url: `/kms/services/rest/user/getAllUser`,
+                    type: 'POST',
+                    processData: false,
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: $("#form-search-user").serialize(),
+                    success: (res) => {
+                        console.log(res)
+                        loadUserSearch(res);
+                    }
+                })
             })
-
 
         }
     )

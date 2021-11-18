@@ -34,6 +34,7 @@ public class ProfileTabDocument implements Serializable {
 	private boolean relatedVisible;
 	private boolean activityVisible;
 	private boolean propertyGroupsVisible;
+	private boolean transmitVisible;
 
 	public boolean isPropertiesVisible() {
 		return propertiesVisible;
@@ -106,6 +107,15 @@ public class ProfileTabDocument implements Serializable {
 	public void setActivityVisible(boolean activityVisible) {
 		this.activityVisible = activityVisible;
 	}
+
+	public boolean isTransmitVisible() {
+		return transmitVisible;
+	}
+
+	public void setTransmitVisible(boolean transmitVisible) {
+		this.transmitVisible = transmitVisible;
+	}
+
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
