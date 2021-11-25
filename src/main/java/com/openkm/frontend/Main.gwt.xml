@@ -42,12 +42,18 @@
 
   <!-- Suppress compilation warnings -->
   <set-property name="gwt.suppressNonStaticFinalFieldWarnings" value="true"/>
-  
+
+    <!-- Super Dev Mode Config: -->
+    <add-linker name="xsiframe" />
+    <set-configuration-property name="devModeRedirectEnabled" value="true" />
+    <set-configuration-property name="gwt.superdevmode" value="on" />
+    <set-property name="compiler.useSourceMaps" value="true"/>
+
   <!--
-  Use GWT 2.7.0 to debug in Firefox  
-  <add-linker name="xsiframe"/> 
-  <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>  
-  <set-configuration-property name="devModeUrlWhitelistRegexp" value="http://(localhost|127\.0\.0\.1|192\.168\.1\.34)(:\d+)?/.*" /> 
+  Use GWT 2.7.0 to debug in Firefox
+  <add-linker name="xsiframe"/>
+  <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+  <set-configuration-property name="devModeUrlWhitelistRegexp" value="http://(localhost|127\.0\.0\.1|192\.168\.1\.34)(:\d+)?/.*" />
   -->
-  
+
 </module>

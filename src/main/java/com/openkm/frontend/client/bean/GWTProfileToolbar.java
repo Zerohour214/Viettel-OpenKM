@@ -54,6 +54,7 @@ public class GWTProfileToolbar implements IsSerializable {
 	private boolean uploaderVisible;
 	private boolean splitterResizeVisible;
 	private boolean omrVisible;
+	private boolean exportActivityVisible;
 
 	public boolean isCreateFolderVisible() {
 		return createFolderVisible;
@@ -238,7 +239,7 @@ public class GWTProfileToolbar implements IsSerializable {
 	public void setSplitterResizeVisible(boolean splitterResizeVisible) {
 		this.splitterResizeVisible = splitterResizeVisible;
 	}
-	
+
 	public boolean isOmrVisible() {
 		return omrVisible;
 	}
@@ -246,7 +247,15 @@ public class GWTProfileToolbar implements IsSerializable {
 	public void setOmrVisible(boolean omrVisible) {
 		this.omrVisible = omrVisible;
 	}
-	
+
+	public boolean isExportActivityVisible() {
+		return exportActivityVisible;
+	}
+
+	public void setExportActivityVisible(boolean exportActivityVisible) {
+		this.exportActivityVisible = exportActivityVisible;
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -269,9 +278,9 @@ public class GWTProfileToolbar implements IsSerializable {
 		sb.append(", addSubscriptionVisible=").append(addSubscriptionVisible);
 		sb.append(", removeSubscriptionVisible=").append(removeSubscriptionVisible);
 		sb.append(", homeVisible=").append(homeVisible);
-		sb.append(", refreshVisible=").append(refreshVisible);		
+		sb.append(", refreshVisible=").append(refreshVisible);
 		sb.append(", uploaderVisible=").append(uploaderVisible);
-		sb.append(", splitterResizeVisible=").append(splitterResizeVisible);		
+		sb.append(", splitterResizeVisible=").append(splitterResizeVisible);
 		sb.append(", omrVisible=").append(omrVisible);
 		sb.append("}");
 		return sb.toString();

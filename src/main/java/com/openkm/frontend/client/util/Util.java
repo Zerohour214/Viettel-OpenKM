@@ -55,7 +55,7 @@ public class Util {
 		return "<span style='text-align:left; margin-right:4px;'><img align=\"absmidle\" style='margin-right:4px; white-space:nowrap;' src='"
 				+ imageUrl.toLowerCase() + "'>" + title + "</span>";
 	}
-	
+
 	/**
 	 * Generates HTML for item with an attached icon.
 	 * @param imageUrl
@@ -233,7 +233,7 @@ public class Util {
 
 	/**
 	 * Creates an HTML fragment that places an image & caption together, for use
-	 * in a group header renew, and set more width between 
+	 * in a group header renew, and set more width between
 	 *
 	 * @param imageUrl the url of the icon image to be used
 	 * @param caption  the group caption
@@ -244,10 +244,10 @@ public class Util {
 				+ "<td style='vertical-align:middle'><b style='white-space:nowrap; cursor:default; font-size: 12px;'>" + caption + "</b></td>"
 				+ "</tr></table>";
 	}
-	
+
 	/**
 	 * Creates an HTML fragment that places an image & caption together, for use
-	 * in a group header renew, and set more width between 
+	 * in a group header renew, and set more width between
 	 *
 	 * @param imageUrl the url of the icon image to be used
 	 * @param caption  the group caption
@@ -660,6 +660,7 @@ public class Util {
         width: width,
         height: height
       }, {allowscriptaccess: "always", allowfullscreen: "true"}, {id: "jsmediaplayer", name: "jsmediaplayer"});
+		$wnd.alert(mediaUrl + " " + mediaProvider)
     }-*/;
 
 	public static native void resizeMediaPlayer(String width, String height) /*-{

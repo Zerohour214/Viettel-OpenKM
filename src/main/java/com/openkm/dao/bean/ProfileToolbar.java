@@ -48,7 +48,8 @@ public class ProfileToolbar implements Serializable {
 	private boolean homeVisible;
 	private boolean splitterResizeVisible;
 	private boolean omrVisible;
-	
+	private boolean exportActivityVisible;
+
 	public boolean isCreateFolderVisible() {
 		return createFolderVisible;
 	}
@@ -229,10 +230,19 @@ public class ProfileToolbar implements Serializable {
 		return omrVisible;
 	}
 
+
 	public void setOmrVisible(boolean omrVisible) {
 		this.omrVisible = omrVisible;
 	}
-	
+
+	public boolean isExportActivityVisible() {
+		return exportActivityVisible;
+	}
+
+	public void setExportActivityVisible(boolean exportActivityVisible) {
+		this.exportActivityVisible = exportActivityVisible;
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -256,8 +266,8 @@ public class ProfileToolbar implements Serializable {
 		sb.append(", addSubscriptionVisible=").append(addSubscriptionVisible);
 		sb.append(", removeSubscriptionVisible=").append(removeSubscriptionVisible);
 		sb.append(", homeVisible=").append(homeVisible);
-		sb.append(", refreshVisible=").append(refreshVisible);	
-		sb.append(", splitterResizeVisible=").append(splitterResizeVisible);		
+		sb.append(", refreshVisible=").append(refreshVisible);
+		sb.append(", splitterResizeVisible=").append(splitterResizeVisible);
 		sb.append(", omrVisible=").append(omrVisible);
 		sb.append("}");
 		return sb.toString();

@@ -370,6 +370,7 @@ public class WorkspaceServlet extends OKMRemoteServiceServlet implements OKMWork
 			profileToolbar.setUnlockVisible(up.getPrfToolbar().isUnlockVisible() && availableOption.isUnLockOption());
 			profileToolbar.setSplitterResizeVisible(up.getPrfToolbar().isSplitterResizeVisible());
 			profileToolbar.setOmrVisible(up.getPrfToolbar().isOmrVisible());
+			profileToolbar.setExportActivityVisible(up.getPrfToolbar().isExportActivityVisible());
 			workspace.setProfileToolbar(profileToolbar);
 
 			// file broser

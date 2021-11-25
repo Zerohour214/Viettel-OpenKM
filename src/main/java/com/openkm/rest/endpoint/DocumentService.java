@@ -22,16 +22,21 @@
 package com.openkm.rest.endpoint;
 
 import com.google.gson.Gson;
-import com.openkm.bean.*;
-import com.openkm.core.MimeTypeConfig;
-import com.openkm.dao.bean.Organization;
-import com.openkm.dao.bean.OrganizationVTX;
+import com.openkm.api.OKMDocument;
+import com.openkm.api.OKMRepository;
+import com.openkm.bean.Document;
+import com.openkm.bean.ExtendedAttributes;
+import com.openkm.bean.LockInfo;
+import com.openkm.bean.Version;
+import com.openkm.core.*;
 import com.openkm.frontend.client.Main;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
 import com.openkm.rest.GenericException;
 import com.openkm.rest.util.DocumentList;
 import com.openkm.rest.util.VersionList;
+import com.openkm.util.FormatUtil;
+import com.openkm.util.PathUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -48,7 +53,6 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -662,5 +666,31 @@ public class DocumentService {
 		} catch (Exception e) {
 			throw new GenericException(e);
 		}
+	}
+
+	@GET
+	@Path("video")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response video(@QueryParam("uuid") String uuid, @QueryParam("path") String path) throws  IOException, AccessDeniedException, RepositoryException, PathNotFoundException, DatabaseException {
+
+		InputStream is = null;
+
+		// Now an document can be located by UUID
+		if (uuid != null && !uuid.isEmpty()) {
+			path = OKMRepository.getInstance().getNodePath(null, uuid);
+		} else if (path != null && !path.isEmpty()) {
+			path = FormatUtil.sanitizeInput(path);
+		}
+
+		Document doc = OKMDocument.getInstance().getProperties(null, path);
+		String fileName = PathUtils.getName(doc.getPath());
+
+
+		is = OKMDocument.getInstance().getContent(null, path, false);
+
+		//WebUtils.sendFile(request, response, fileName, doc.getMimeType(), inline, is, doc.getActualVersion().getSize());
+
+		return Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
+				.build();
 	}
 }

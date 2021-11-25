@@ -24,9 +24,11 @@ package com.openkm.frontend.client.widget.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.openkm.frontend.client.Main;
 import com.openkm.frontend.client.bean.GWTDocument;
@@ -249,9 +251,10 @@ public class Preview extends Composite {
 	 *
 	 * @param mediaUrl The media file url
 	 */
-	public void showMediaFile(String mediaUrl, String mimeType) {
+	public void showMediaFile(String mediaUrl, String mimeType, String docUuid) {
 		hideWidgetExtension();
 		vPanel.clear();
+
 
 		if (previewEvent != null) {
 			vPanel.add(hReturnPanel);
@@ -264,9 +267,16 @@ public class Preview extends Composite {
 
 		this.mediaUrl = mediaUrl;
 		Util.removeMediaPlayer();
-		video.setHTML("<div id=\"mediaplayercontainer\"></div>\n");
+		video.setHTML(
+				"<div id=\"mediaplayercontainer\">" +
+						"<video width=\"854\" height=\"480\" controls >\n" +
+						"    <source src=\"/kms/services/rest/document/video?uuid=" + docUuid + "\"" +
+						" type=\"video/mp4\">\n" +
+						"</video>" +
+				"</div>\n"
+		);
 
-		if (mimeType.equals("audio/mpeg")) {
+/*		if (mimeType.equals("audio/mpeg")) {
 			mediaProvider = "sound";
 		} else if (mimeType.equals("video/x-flv") || mimeType.equals("video/mp4")) {
 			mediaProvider = "video";
@@ -274,7 +284,8 @@ public class Preview extends Composite {
 			mediaProvider = "";
 		}
 
-		Util.createMediaPlayer(mediaUrl, mediaProvider, "" + width, "" + height);
+
+		Util.createMediaPlayer(mediaUrl, mediaProvider, "" + width, "" + height);*/
 	}
 
 	/**
@@ -344,9 +355,11 @@ public class Preview extends Composite {
 	 * previewDocument
 	 */
 	public void previewDocument(boolean refreshing, GWTDocument doc) {
+		GWT.log("MIME: " + doc.getMimeType());
 		if (doc.getMimeType().equals("video/x-flv") || doc.getMimeType().equals("video/mp4") || doc.getMimeType().equals("audio/mpeg")) {
 			if (!refreshing) {
-				showMediaFile(RPCService.DownloadServlet + "?uuid=" + URL.encodeQueryString(doc.getUuid()), doc.getMimeType());
+				showMediaFile(RPCService.DownloadServlet + "?uuid=" + URL.encodeQueryString(doc.getUuid()), doc.getMimeType(), doc.getUuid());
+//			showHTML(doc);
 			} else {
 				resizeMediaPlayer(width, height);
 			}
@@ -409,19 +422,19 @@ public class Preview extends Composite {
 	 * Preview PDF, take in consideration profile selection
 	 */
 	public void showPDF(String uuid) {
-			hideWidgetExtension();
-			vPanel.clear();
+		hideWidgetExtension();
+		vPanel.clear();
 
-			vPanel.add(pdf);
-			vPanel.setCellHorizontalAlignment(pdf, HasAlignment.ALIGN_CENTER);
-			vPanel.setCellVerticalAlignment(pdf, HasAlignment.ALIGN_MIDDLE);
+		vPanel.add(pdf);
+		vPanel.setCellHorizontalAlignment(pdf, HasAlignment.ALIGN_CENTER);
+		vPanel.setCellVerticalAlignment(pdf, HasAlignment.ALIGN_MIDDLE);
 
-			if (previewAvailable) {
-				pdf.setHTML("<div id=\"" + pdfContainer + "\"></div>\n"); // needed for rewriting  purpose
-					showSystemEmbeddedPreview(EmbeddedPreview.PDFJS_URL + URL.encodeQueryString(RPCService.ConverterServlet +"?toPdf=true&inline=true&uuid=" + uuid));
-			} else {
-				pdf.setHTML("<div id=\"" + pdfContainer + "\" align=\"center\"><br><br>" + Main.i18n("preview.unavailable") + "</div>\n");
-			}
+		if (previewAvailable) {
+			pdf.setHTML("<div id=\"" + pdfContainer + "\"></div>\n"); // needed for rewriting  purpose
+			showSystemEmbeddedPreview(EmbeddedPreview.PDFJS_URL + URL.encodeQueryString(RPCService.ConverterServlet + "?toPdf=true&inline=true&uuid=" + uuid));
+		} else {
+			pdf.setHTML("<div id=\"" + pdfContainer + "\" align=\"center\"><br><br>" + Main.i18n("preview.unavailable") + "</div>\n");
+		}
 	}
 
 	/**

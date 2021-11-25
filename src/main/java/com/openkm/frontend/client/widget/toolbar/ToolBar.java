@@ -22,6 +22,7 @@ package com.openkm.frontend.client.widget.toolbar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.openkm.frontend.client.Main;
@@ -80,6 +81,7 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 	private ToolBarButtonGlyphicon home;
 	private ToolBarButtonGlyphicon refresh;
 	private ToolBarButtonGlyphicon splitterResize;
+	private ToolBarButtonGlyphicon exportActivity;
 	private ToolBarButton omr;
 	private Object node;
 	private ResizeToolBarMenu resizeToolBarMenu;
@@ -949,6 +951,14 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 			}
 		});
 
+		exportActivity = new ToolBarButtonGlyphicon(new HTML("<span class=\"glyphicons glyphicons-file-export\"></span>"),
+				"Báo cáo hoạt động", new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.alert("Báo cáo hoạt động");
+			}
+		});
+
 		omr = new ToolBarButton(new Image(OKMBundleResources.INSTANCE.omr()), Main.i18n("general.menu.file.omr"), omrHandler);
 
 		find.addMouseOverHandler(mouseOverHandler);
@@ -1075,6 +1085,8 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 		panel.add(splitterResize);
 		panel.add(space());
 		panel.add(omr);
+		panel.add(space());
+		panel.add(exportActivity);
 		panel.add(space());
 
 		// Hide all buttons at startup
@@ -3776,6 +3788,9 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 		// space
 		omr.setVisible(option.isOmrVisible());
 		panel.getWidget(51).setVisible(option.isOmrVisible()); // hide space
+
+		exportActivity.setVisible(option.isExportActivityVisible());
+		panel.getWidget(52).setVisible(option.isExportActivityVisible());
 	}
 
 	/**

@@ -26,6 +26,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
@@ -123,6 +124,7 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 			@Override
 			public void onSelection(SelectionEvent<Integer> event) {
 				final int tabIndex = event.getSelectedItem().intValue();
+
 				Main.get().mainPanel.topPanel.toolBar.evaluateRemovePropertyGroup(isRemovePropertyGroupEnabled(tabIndex));
 				selectedTab = tabIndex;
 

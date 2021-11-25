@@ -424,6 +424,8 @@ public class ProfileServlet extends BaseServlet {
 		prf.getPrfToolbar().setHomeVisible(WebUtils.getBoolean(request, "prf_toolbar_home_visible"));
 		prf.getPrfToolbar().setSplitterResizeVisible(WebUtils.getBoolean(request, "prf_toolbar_splitter_resize_visible"));
 		prf.getPrfToolbar().setOmrVisible(WebUtils.getBoolean(request, "prf_toolbar_omr_visible"));
+		prf.getPrfToolbar().setExportActivityVisible(WebUtils.getBoolean(request, "prf_toolbar_export_act_visible"));
+//		prf.getPrfToolbar().setExportActivityVisible(true);
 
 		// File browser
 		prf.getPrfFileBrowser().setStatusVisible(WebUtils.getBoolean(request, "prf_filebrowser_status_visible"));
