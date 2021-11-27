@@ -345,4 +345,40 @@ public class OrganizationVTXDAO {
 			HibernateUtil.close(session);
 		}
 	}
+
+	public void importOrg(InputStream is) {
+		try {
+			Workbook workbook = null;
+			workbook = Workbook.getWorkbook(is);
+			Sheet sheet = workbook.getSheet(0);
+
+			for(int i=1; i<sheet.getRows(); ++i) {
+				String code = sheet.getCell(0, i).getContents(),
+						name = sheet.getCell(1, i).getContents(),
+						parent = sheet.getCell(2, i).getContents();
+
+				OrganizationVTXBean newOrg = new OrganizationVTXBean();
+				newOrg.setOrgCode(code);
+				newOrg.setOrgName(name);
+
+				if(parent != null && !parent.equals("")) {
+					OrganizationVTX orgParent = getOrganizationbyCode(parent);
+					newOrg.setOrgParent(orgParent.getId());
+				}
+				else {
+					newOrg.setOrgParent(-1L);
+				}
+
+				createOrg(newOrg);
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BiffException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+	}
 }

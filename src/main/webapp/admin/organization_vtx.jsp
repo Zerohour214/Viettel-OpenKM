@@ -31,9 +31,36 @@
                             data-bs-target="#warning-delete-org">
                         <i class="fa fa-trash-o"></i>
                     </button>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#importOrgModal" id="btn-import_org">
+                        <i class="fa fa-upload"></i>
+                    </button>
                 </div>
                 <div class="card-body">
                     <div id="jstree_demo_div">
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Modal import org-->
+            <div class="modal fade" id="importOrgModal">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form id="form-import-org" enctype="multipart/form-data">
+                                <div class="input-group mb-3">
+                                    <input type="file" class="form-control" name="userFile" id="input-file-org">
+                                    <button class="btn btn-success" type="button" id="import-org-submit"
+                                            data-bs-dismiss="modal">Import
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -567,6 +594,30 @@
                 }
 
             })
+
+        $('#import-org-submit').click(e => {
+            let files = document.getElementById('input-file-org').files;
+            let formData = new FormData();
+            if (files.length > 0) {
+                formData.append("file", files[0]);
+
+                $.ajax({
+                    url: '/kms/services/rest/organization/importOrg',
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: () => {
+                        getAllOrgRoot();
+                    }
+                })
+            } else {
+                alert("Bạn chưa chọn file!")
+            }
+
+        })
 
 
             $('#addUserModal').on('show.bs.modal', function (e) {

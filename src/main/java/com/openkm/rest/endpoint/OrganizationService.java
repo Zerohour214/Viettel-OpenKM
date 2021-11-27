@@ -188,4 +188,18 @@ public class OrganizationService extends BaseServlet {
 		return json;
 	}
 
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("/importOrg")
+	public void importOrg(
+			List<Attachment> atts
+	) throws DatabaseException, IOException {
+		InputStream is = null;
+		for (Attachment att : atts) {
+			is = att.getDataHandler().getInputStream();
+		}
+		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+		om.importOrg(is);
+	}
+
 }
