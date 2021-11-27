@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -160,11 +161,11 @@ public class OrganizationVTXDAO {
 
 		Session session = null;
 		try {
-			OrganizationVTX organizationVTX = getOrganizationbyId(orgId);
-			List<String> orgIds = Arrays.asList(organizationVTX.getPath().split("/"));
+//			OrganizationVTX organizationVTX = getOrganizationbyId(orgId);
+//			List<String> orgIds = Arrays.asList(organizationVTX.getPath().split("/"));
 			session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
-			for(String s : orgIds) {
+			/*for(String s : orgIds) {
 				if(!s.equals("")) {
 
 					UserOrganizationVTX userOrganizationVtx = new UserOrganizationVTX();
@@ -175,7 +176,14 @@ public class OrganizationVTXDAO {
 					session.flush();
 					session.clear();
 				}
-			}
+			}*/
+			UserOrganizationVTX userOrganizationVtx = new UserOrganizationVTX();
+			userOrganizationVtx.setUserId(userId);
+			userOrganizationVtx.setOrgId(orgId);
+
+			session.save(userOrganizationVtx);
+			session.flush();
+			session.clear();
 			session.getTransaction().commit();
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
@@ -188,8 +196,21 @@ public class OrganizationVTXDAO {
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			Query q = session.createSQLQuery("SELECT u.USR_ID as id, u.USR_NAME as name, u.USR_EMAIL as email FROM OKM_USER u JOIN USER_ORG_VTX uo ON u.USR_ID = uo.USER_ID where uo.ORG_ID = :orgId");
-			q.setString("orgId", orgId);
+
+			Query q1 = session.createQuery("from OrganizationVTX o where o.path like '%/" + orgId + "/%' ");
+			List <OrganizationVTX> orgs = q1.list();
+
+			List<Long> orgSuit = new ArrayList<>();
+			for(OrganizationVTX o : orgs) {
+				orgSuit.add(o.getId());
+			}
+
+			Query q = session.createSQLQuery(
+					"SELECT u.USR_ID as id, u.USR_NAME as name, u.USR_EMAIL as email " +
+							"FROM OKM_USER u JOIN USER_ORG_VTX uo ON u.USR_ID = uo.USER_ID " +
+							"where uo.ORG_ID IN :orgId"
+			);
+			q.setParameterList("orgId", orgSuit);
 			List<User> ret = (List<User>) q.list();
 			log.debug("getAllOrg: {}", ret);
 			return ret;

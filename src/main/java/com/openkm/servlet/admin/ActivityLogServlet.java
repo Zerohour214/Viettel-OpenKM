@@ -22,12 +22,18 @@
 package com.openkm.servlet.admin;
 
 import com.openkm.api.OKMAuth;
+import com.openkm.bean.ActivityLogExportBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ActivityDAO;
+import com.openkm.dao.bean.Activity;
 import com.openkm.dao.bean.ActivityFilter;
 import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.UserActivity;
 import com.openkm.util.WebUtils;
+import com.spire.data.table.DataRow;
+import com.spire.doc.*;
+import org.apache.commons.lang.time.DateUtils;
+import org.docx4j.wml.Tc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +41,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.*;
 
 /**
  * Activity log servlet
@@ -113,7 +122,7 @@ public class ActivityLogServlet extends BaseServlet {
 			"ADMIN_TWITTER_ACCOUNT_CREATE", "ADMIN_TWITTER_ACCOUNT_EDIT", "ADMIN_TWITTER_ACCOUNT_DELETE",
 			"ADMIN_USER_CONFIG_EDIT", "ADMIN_SCRIPTING",
 			"ADMIN_OMR_CREATE", "ADMIN_OMR_EDIT", "ADMIN_OMR_DELETE", "ADMIN_OMR_EXECUTE", "ADMIN_OMR_CHECK_TEMPLATE",
-			
+
 			//---------------------------------
 			"Misc",
 			"MISC_OPENKM_START", "MISC_OPENKM_STOP",
@@ -130,6 +139,8 @@ public class ActivityLogServlet extends BaseServlet {
 		String user = WebUtils.getString(request, "user");
 		String action = WebUtils.getString(request, "action");
 		String item = WebUtils.getString(request, "item");
+		String action_ = WebUtils.getString(request, "action_");
+
 
 		try {
 			if (!dbegin.equals("") && !dend.equals("")) {
@@ -153,28 +164,185 @@ public class ActivityLogServlet extends BaseServlet {
 				filter.setUser(user);
 				filter.setAction(action);
 				filter.setItem(item);
-				sc.setAttribute("results", ActivityDAO.findByFilter(filter));
 
-				// Activity log
-				UserActivity.log(request.getRemoteUser(), "ADMIN_ACTIVITY_LOG", null, null, filter.toString());
+				if("Export".equals(action_)) {
+					doExport(filter, response);
+				}
+
+				else {
+					sc.setAttribute("results", ActivityDAO.findByFilter(filter));
+
+					// Activity log
+					UserActivity.log(request.getRemoteUser(), "ADMIN_ACTIVITY_LOG", null, null, filter.toString());
+				}
+
+
 			} else {
 				sc.setAttribute("results", null);
 			}
+			if (!"Export".equals(action_)) {
+				sc.setAttribute("dbeginFilter", dbegin);
+				sc.setAttribute("dendFilter", dend);
+				sc.setAttribute("userFilter", user);
+				sc.setAttribute("actionFilter", action);
+				sc.setAttribute("itemFilter", item);
+				sc.setAttribute("actions", actions);
+				sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
 
-			sc.setAttribute("dbeginFilter", dbegin);
-			sc.setAttribute("dendFilter", dend);
-			sc.setAttribute("userFilter", user);
-			sc.setAttribute("actionFilter", action);
-			sc.setAttribute("itemFilter", item);
-			sc.setAttribute("actions", actions);
-			sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
-			sc.getRequestDispatcher("/admin/activity_log.jsp").forward(request, response);
+
+				sc.getRequestDispatcher("/admin/activity_log.jsp").forward(request, response);
+			}
+
+
 		} catch (ParseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (DatabaseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (PrincipalAdapterException e) {
 			sendErrorRedirect(request, response, e);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
+	}
+
+	public void doExport(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException {
+
+		List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
+
+
+		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		Document docSpire = new Document(absolutePath);
+		Map<String, String> map = new HashMap<String, String>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1) ));
+
+		Table table = docSpire.getSections().get(0).getTables().get(2);
+
+		int index1 = 1;
+		List<String> docNameList = new ArrayList<>();
+		for(ActivityLogExportBean elb : exportBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getDocumentName());
+
+			String actionName = "";
+			switch (elb.getAction()) {
+				case "CREATE_DOCUMENT":
+					actionName = "Thêm mới";
+					break;
+				case "CHECKIN_DOCUMENT":
+					actionName = "Sửa";
+					break;
+				case "DELETE_DOCUMENT":
+					actionName = "Xóa (thùng rác)";
+					break;
+				case "PURGE_DOCUMENT":
+					actionName = "Xóa";
+					break;
+				case "MOVE_DOCUMENT":
+					actionName = "Phục hồi";
+					break;
+			}
+			arrList.add(actionName);
+			TableRow dataRow = table.addRow();
+			for(int col=0; col < arrList.size(); ++col) {
+				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+			}
+			docNameList.add(elb.getDocumentName());
+			index1 ++;
+
+		}
+
+		TableRow dataRow = table.addRow();
+		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+
+
+		index1 = 1;
+		Table table2 = docSpire.getSections().get(0).getTables().get(4);
+		for(ActivityLogExportBean elb : exportBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getFullName());
+			arrList.add(elb.getEmployeeCode());
+			arrList.add(elb.getDocumentName());
+
+
+
+			String actionName = "";
+			switch (elb.getAction()) {
+				case "CREATE_DOCUMENT":
+					actionName = "Thêm mới";
+					break;
+				case "CHECKIN_DOCUMENT":
+					actionName = "Sửa";
+					break;
+				case "DELETE_DOCUMENT":
+					actionName = "Xóa (thùng rác)";
+					break;
+				case "PURGE_DOCUMENT":
+					actionName = "Xóa";
+					break;
+				case "MOVE_DOCUMENT":
+					actionName = "Phục hồi";
+					break;
+			}
+			arrList.add(actionName);
+			arrList.add(elb.getDateTime());
+			TableRow dataRow2 = table2.addRow();
+			for(int col=0; col < arrList.size(); ++col) {
+				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+
+			}
+			docNameList.add(elb.getDocumentName());
+			index1 ++;
+		}
+
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+		}
+
+
+		URL res_ = getClass().getClassLoader().getResource("template/tmp.doc");
+		File tmpFile = Paths.get(res_.toURI()).toFile();
+		String absoluteTmpPath = tmpFile.getAbsolutePath();
+
+		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
+
+		InputStream is = new FileInputStream(tmpFile);
+		ServletContext context = getServletContext();
+
+		String mimeType = context.getMimeType(absolutePath);
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+
+		response.setContentType(mimeType);
+		response.setContentLength((int) file.length());
+
+
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"", file.getName());
+		response.setHeader(headerKey, headerValue);
+		OutputStream os = response.getOutputStream();
+
+
+
+		int len;
+		byte[] buffer = new byte[40960];
+		while ((len = is.read(buffer, 0, buffer.length)) != -1) {
+			os.write(buffer, 0, len);
+		}
+
+		is.close();
+		os.close();
+
+
 	}
 }
