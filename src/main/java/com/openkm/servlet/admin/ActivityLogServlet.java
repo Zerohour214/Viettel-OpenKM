@@ -25,15 +25,12 @@ import com.openkm.api.OKMAuth;
 import com.openkm.bean.ActivityLogExportBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ActivityDAO;
-import com.openkm.dao.bean.Activity;
 import com.openkm.dao.bean.ActivityFilter;
 import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.UserActivity;
 import com.openkm.util.WebUtils;
-import com.spire.data.table.DataRow;
 import com.spire.doc.*;
 import org.apache.commons.lang.time.DateUtils;
-import org.docx4j.wml.Tc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -309,7 +306,7 @@ public class ActivityLogServlet extends BaseServlet {
 		}
 
 
-		URL res_ = getClass().getClassLoader().getResource("template/tmp.doc");
+		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
 		File tmpFile = Paths.get(res_.toURI()).toFile();
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
 
@@ -333,7 +330,6 @@ public class ActivityLogServlet extends BaseServlet {
 		OutputStream os = response.getOutputStream();
 
 
-
 		int len;
 		byte[] buffer = new byte[40960];
 		while ((len = is.read(buffer, 0, buffer.length)) != -1) {
@@ -342,7 +338,6 @@ public class ActivityLogServlet extends BaseServlet {
 
 		is.close();
 		os.close();
-
 
 	}
 }

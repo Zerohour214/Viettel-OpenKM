@@ -18,12 +18,13 @@ public class UserService {
 	@POST
 	@Path("/getAllUser")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getAllUser(@FormParam("userSearch") String userSearch) throws DatabaseException {
+	public String getAllUser(@FormParam("userSearch") String userSearch, @QueryParam("notInOrg") int isNotInOrg) throws DatabaseException {
 
 		UserModule um = ModuleManager.getUserModule();
 		if(userSearch == null) userSearch = "";
 
-		String json = new Gson().toJson(um.getAllUser(userSearch));
+
+		String json = new Gson().toJson(um.getAllUser(userSearch, isNotInOrg));
 		return json;
 	}
 }
