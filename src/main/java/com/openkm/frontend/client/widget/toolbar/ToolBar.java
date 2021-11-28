@@ -716,7 +716,7 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 		switch (Main.get().mainPanel.topPanel.tabWorkspace.getSelectedWorkspace()) {
 			case UIDockPanelConstants.DESKTOP:
 				int actualView = Main.get().mainPanel.desktop.navigator.stackPanel.getStackIndex();
-
+				Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
 				switch (actualView) {
 					case UIDesktopConstants.NAVIGATOR_TAXONOMY:
 					case UIDesktopConstants.NAVIGATOR_CATEGORIES:

@@ -91,6 +91,7 @@ public class ConfirmPopup extends DialogBox {
 	public static final int CONFIRM_LOCK_MASSIVE = 41;
 	public static final int CONFIRM_UNLOCK_MASSIVE = 42;
 	public static final int CONFIRM_DRAG_AND_DROP_UPDATE = 71;
+	public static final int CONFIRM_READ_DOC = 43;
 
 	private VerticalPanel vPanel;
 	private HorizontalPanel hPanel;
@@ -173,6 +174,12 @@ public class ConfirmPopup extends DialogBox {
 					Main.get().mainPanel.desktop.browser.fileBrowser.delete();
 				} else if (Main.get().activeFolderTree.isPanelSelected()) {
 					Main.get().activeFolderTree.delete();
+				}
+				break;
+
+			case CONFIRM_READ_DOC:
+				if (Main.get().mainPanel.desktop.browser.fileBrowser.isDocumentSelected()) {
+					Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.setReadDoc();
 				}
 				break;
 
@@ -534,6 +541,10 @@ public class ConfirmPopup extends DialogBox {
 
 			case CONFIRM_LOGOUT_DOCUMENTS_CHECKOUT:
 				text.setHTML(Main.i18n("confirm.logout.documents.checkout"));
+				break;
+
+			case CONFIRM_READ_DOC:
+				text.setHTML(Main.i18n("confirm.read.doc"));
 				break;
 
 			case CONFIRM_FORCE_CHAT_LOGIN:

@@ -172,7 +172,8 @@ public class Preview extends Composite {
 
 		if (previewAvailable) {
 			if (previewConversion) {
-				String url = RPCService.ConverterServlet + "?inline=true&toSwf=true&uuid=" + URL.encodeQueryString(uuid);
+				String url = RPCService.ConverterServlet + "?inline=true&toSwf=true&uuid=" + URL.encodeQueryString(uuid)
+						+"&userId="+Main.get().workspaceUserProperties.getUser().getId();
 				swf.setHTML("<div id=\"pdfviewercontainer\"></div>\n"); // needed for rewriting purpose
 
 				if (Main.get().workspaceUserProperties.getWorkspace().getPreviewer().equals("flexpaper")) {
@@ -431,7 +432,8 @@ public class Preview extends Composite {
 
 		if (previewAvailable) {
 			pdf.setHTML("<div id=\"" + pdfContainer + "\"></div>\n"); // needed for rewriting  purpose
-			showSystemEmbeddedPreview(EmbeddedPreview.PDFJS_URL + URL.encodeQueryString(RPCService.ConverterServlet + "?toPdf=true&inline=true&uuid=" + uuid));
+			showSystemEmbeddedPreview(EmbeddedPreview.PDFJS_URL + URL.encodeQueryString(RPCService.ConverterServlet + "?toPdf=true&inline=true&uuid=" + uuid
+			+"&userId="+Main.get().workspaceUserProperties.getUser().getId()));
 		} else {
 			pdf.setHTML("<div id=\"" + pdfContainer + "\" align=\"center\"><br><br>" + Main.i18n("preview.unavailable") + "</div>\n");
 		}

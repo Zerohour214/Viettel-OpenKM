@@ -484,4 +484,6 @@ public interface OKMBundleResources extends ClientBundle {
 	@Source("com/openkm/frontend/public/img/icon/actions/clipboard_small.png")
 	ImageResource clipboardSmall();
 
+	@Source("com/openkm/frontend/public/img/icon/actions/comment_add.png")
+	ImageResource mustRead();
 }

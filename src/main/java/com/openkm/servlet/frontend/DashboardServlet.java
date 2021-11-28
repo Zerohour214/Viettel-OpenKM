@@ -43,6 +43,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import com.google.gwt.core.client.GWT;
+import com.openkm.dao.HibernateUtil;
+import com.openkm.dao.bean.UserReadDocTimer;
+import com.openkm.module.DashboardModule;
+import com.openkm.module.ModuleManager;
 /**
  * Servlet Class
  *
@@ -789,4 +798,203 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 
 		log.debug("visiteNode: void");
 	}
+
+	@Override
+	public List<GWTDashboardDocumentResult> getMustReadDocuments() throws OKMException {
+		log.debug("getMustReadDocuments()");
+		List<GWTDashboardDocumentResult> mustReadList = new ArrayList<GWTDashboardDocumentResult>();
+		updateSessionManager();
+
+		try {
+			Collection<DashboardDocumentResult> col = OKMDashboard.getInstance().getMustReadDocuments(null);
+			for (Iterator<DashboardDocumentResult> it = col.iterator(); it.hasNext(); ) {
+				DashboardDocumentResult documentResult = it.next();
+				GWTDashboardDocumentResult documentResultClient;
+				documentResultClient = GWTUtil.copy(documentResult);
+				mustReadList.add(documentResultClient);
+			}
+		} catch (RepositoryException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_Repository), e.getMessage());
+		} catch (DatabaseException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_Database), e.getMessage());
+		} catch (PrincipalAdapterException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_PrincipalAdapter), e.getMessage());
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_IO), e.getMessage());
+		} catch (ParseException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_Parse), e.getMessage());
+		} catch (NoSuchGroupException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_NoSuchGroup), e.getMessage());
+		} catch (AccessDeniedException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_AccessDenied), e.getMessage());
+		} catch (PathNotFoundException e) {
+			log.error(e.getMessage(), e);
+			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMDashboardService, ErrorCode.CAUSE_PathNotFound), e.getMessage());
+		}
+
+
+		log.debug("getMustReadDocuments: {}", mustReadList);
+		return mustReadList;
+	}
+
+
+	/**
+	 * @Author: huynq79
+	 */
+	@Override
+	public boolean setUserReadDoc(String userId, String docId) {
+		log.debug("setUserReadDoc({})", userId);
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+
+			Query q_checkRead = session.createQuery("from UserReadDocTimer urdt where urdt.userId=:userId and urdt.docId=:docId");
+			q_checkRead.setParameter("userId", userId);
+			q_checkRead.setParameter("docId", docId);
+			List<UserReadDocTimer> ret = q_checkRead.list();
+			if (ret.size() == 0){
+				UserReadDocTimer userReadDocTimer = new UserReadDocTimer();
+				userReadDocTimer.setConfirm(true);
+				userReadDocTimer.setUserId(userId);
+				userReadDocTimer.setDocId(docId);
+				userReadDocTimer.setReading(false);
+				userReadDocTimer.setCreated(Calendar.getInstance());
+				userReadDocTimer.setTotalTime(0L);
+				session.save(userReadDocTimer);
+			} else {
+				UserReadDocTimer userReadDocTimer = ret.get(0);
+				userReadDocTimer.setConfirm(true);
+				session.update(userReadDocTimer);
+			}
+			HibernateUtil.commit(tx);
+		} catch (HibernateException e) {
+			HibernateUtil.rollback(tx);
+		} finally {
+			HibernateUtil.close(session);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean isUserReadDoc(String userId, String docId){
+		DashboardModule dm = ModuleManager.getDashboardModule();
+		try {
+			boolean check = false;
+			List<DashboardDocumentResult> result = dm.getMustReadDocuments(null);
+			for(int i=0;i<result.size();i++){
+				if(result.get(i).getDocument().getUuid().equalsIgnoreCase(docId)){
+					check = true;
+					break;
+				}
+			}
+			if(!check){
+				return true;
+			}
+			return haveUserReadDoc(userId,docId);
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	public boolean haveUserReadDoc(String userId, String docId) {
+		log.debug("getUserReadDoc({})", userId);
+		Session session = null;
+		Transaction tx = null;
+		String qs = "from UserReadDocTimer urd where urd.userId=:userId and urd.docId=:docId";
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			Query q = session.createQuery(qs).setCacheable(true);
+			q.setString("userId", userId);
+			q.setString("docId", docId);
+			List<UserReadDocTimer> ret = q.list();
+			HibernateUtil.commit(tx);
+			if(ret.isEmpty()) return false;
+			else if (!ret.get(0).isConfirm()) return false;
+		} catch (HibernateException e) {
+			return false;
+		} finally {
+			HibernateUtil.close(session);
+		}
+		return true;
+	}
+
+	@Override
+	public void startReadDoc(String userId, String docId){
+		log.debug("startReadDoc({})", userId);
+		Session session = null;
+		Transaction tx = null;
+		String qs = "from UserReadDocTimer urdt where urdt.userId=:userId and urdt.docId=:docId";
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			Query q = session.createQuery(qs).setCacheable(true);
+			q.setString("userId", userId);
+			q.setString("docId", docId);
+			List<UserReadDocTimer> ret = q.list();
+
+			if (ret.size() == 0 ){
+				UserReadDocTimer userReadDocTimer = new UserReadDocTimer();
+				userReadDocTimer.setDocId(docId);
+				userReadDocTimer.setUserId(userId);
+				userReadDocTimer.setCreated(Calendar.getInstance());
+				userReadDocTimer.setReading(true);
+				userReadDocTimer.setTotalTime(0);
+				session.save(userReadDocTimer);
+			}else if (!ret.get(0).isReading()){
+				UserReadDocTimer userReadDocTimer = ret.get(0);
+				userReadDocTimer.setReading(true);
+				userReadDocTimer.setCreated(Calendar.getInstance());
+				session.update(ret.get(0));
+			}
+
+			HibernateUtil.commit(tx);
+		} catch (HibernateException e) {
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	@Override
+	public void endReadDoc(String userId, String docId){
+		log.debug("startReadDoc({})", userId);
+		Session session = null;
+		Transaction tx = null;
+		String qs = "from UserReadDocTimer urdt where urdt.userId=:userId and urdt.docId=:docId";
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			Query q = session.createQuery(qs).setCacheable(true);
+			q.setString("userId", userId);
+			q.setString("docId", docId);
+			List<UserReadDocTimer> ret = q.list();
+
+			if (ret.size() != 0 && ret.get(0).isReading()){
+				UserReadDocTimer userReadDocTimer = ret.get(0);
+				userReadDocTimer.setReading(false);
+				userReadDocTimer.setTotalTime(userReadDocTimer.getTotalTime() + Calendar.getInstance().getTimeInMillis() - userReadDocTimer.getCreated().getTimeInMillis());
+				userReadDocTimer.setCreated(Calendar.getInstance());
+				session.save(userReadDocTimer);
+				HibernateUtil.commit(tx);
+			}
+		} catch (HibernateException e) {
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
 }

@@ -126,6 +126,9 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 				final int tabIndex = event.getSelectedItem().intValue();
 
 				Main.get().mainPanel.topPanel.toolBar.evaluateRemovePropertyGroup(isRemovePropertyGroupEnabled(tabIndex));
+				if (selectedTab == PREVIEW_TAB){
+					Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(), doc.getUuid());
+				}
 				selectedTab = tabIndex;
 
 				if (tabIndex == SECURITY_TAB) {
@@ -218,6 +221,9 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	 * @param doc The document object
 	 */
 	public void setProperties(GWTDocument doc) {
+		if (this.doc != null && this.doc.getUuid() != null && this.doc.getUuid() != doc.getUuid() && selectedTab == PREVIEW_TAB)
+			Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(),this.doc.getUuid());
+
 		// We must declare status here due pending downloading ( fired by status )
 		if (securityVisible) {
 			Main.get().mainPanel.desktop.browser.tabMultiple.status.setUserSecurity();
@@ -758,5 +764,13 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	 */
 	public boolean hasPropertyGroups() {
 		return (propertyGroup.size() > 0);
+	}
+
+	@Override
+	protected void onDetach(){
+		if (selectedTab == PREVIEW_TAB) {
+			Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(), doc.getUuid());
+		}
+		super.onDetach();
 	}
 }

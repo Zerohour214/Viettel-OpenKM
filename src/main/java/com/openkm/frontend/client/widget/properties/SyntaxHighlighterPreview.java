@@ -68,7 +68,8 @@ public class SyntaxHighlighterPreview extends Composite {
 			mime = "text/plain";
 		}
 		iframe.setUrl(Main.CONTEXT + "/SyntaxHighlighter?mimeType=" + mime + "&core=" + core
-				+ "&theme=" + theme + "&docPath=" + doc.getPath());
+				+ "&theme=" + theme + "&docPath=" + doc.getPath()+"&userId="+Main.get().workspaceUserProperties.getUser().getId()
+				+ "&uuid=" + doc.getUuid());
 	}
 
 	/**

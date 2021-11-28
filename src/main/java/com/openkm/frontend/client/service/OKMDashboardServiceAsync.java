@@ -70,4 +70,14 @@ public interface OKMDashboardServiceAsync {
 	public void getUserLastImportedMails(AsyncCallback<List<GWTDashboardMailResult>> callback);
 
 	public void visiteNode(String source, String node, Date date, AsyncCallback<?> callback);
+
+	public void getMustReadDocuments(AsyncCallback<List<GWTDashboardDocumentResult>> callback);
+
+	public void setUserReadDoc(String userId, String docId, AsyncCallback<Boolean> async);
+
+	public void isUserReadDoc(String userId, String docId, AsyncCallback<Boolean> async);
+
+	public void startReadDoc(String userId, String docId, AsyncCallback<Void> async);
+
+	public void endReadDoc(String userId, String docId, AsyncCallback<Void> async);
 }
