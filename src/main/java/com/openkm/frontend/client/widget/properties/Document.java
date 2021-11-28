@@ -46,6 +46,7 @@ import com.openkm.frontend.client.service.OKMDocumentServiceAsync;
 import com.openkm.frontend.client.util.OKMBundleResources;
 import com.openkm.frontend.client.util.Util;
 import com.openkm.frontend.client.widget.ClipboardIcon;
+import com.openkm.frontend.client.widget.ConfirmPopup;
 import com.openkm.frontend.client.widget.properties.CategoryManager.CategoryToRemove;
 import com.openkm.frontend.client.widget.properties.KeywordManager.KeywordToRemove;
 import com.openkm.frontend.client.widget.thesaurus.ThesaurusSelectPopup;
@@ -74,6 +75,11 @@ public class Document extends Composite {
 	private ScrollPanel scrollPanel;
 	private boolean remove = true;
 
+	//for must read check
+	private HorizontalPanel hPanelMustReads;
+	private Image mustReadImage;
+	private HTML mustReadText;
+
 	/**
 	 * Document
 	 */
@@ -87,6 +93,23 @@ public class Document extends Composite {
 		vtTable = new FlexTable();
 		tableSubscribedUsers = new FlexTable();
 		scrollPanel = new ScrollPanel(table);
+
+		//for must read check
+		hPanelMustReads = new HorizontalPanel();
+		mustReadText = new HTML("<b>" + Main.i18n("document.mustread") + "</b>");
+		hPanelMustReads.add(mustReadText);
+		hPanelMustReads.add(new HTML("&nbsp;"));
+		mustReadImage = new Image(OKMBundleResources.INSTANCE.news());
+		mustReadImage.addStyleName("okm-Hyperlink");
+		mustReadImage.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				executeReadDoc();
+			}
+		});
+		hPanelMustReads.add(mustReadImage);
+		hPanelMustReads.setCellVerticalAlignment(mustReadText, HasAlignment.ALIGN_MIDDLE);
+
 
 		tableProperties.setHTML(0, 0, "<b>" + Main.i18n("document.uuid") + "</b>");
 		tableProperties.setHTML(0, 1, "");
@@ -166,6 +189,8 @@ public class Document extends Composite {
 
 		HTML space3 = new HTML("");
 		vPanel2.add(space3);
+
+
 		vPanel2.add(categoryManager.getPanelCategories());
 		vPanel2.add(categoryManager.getSubscribedCategoriesTable());
 
@@ -174,8 +199,14 @@ public class Document extends Composite {
 		vPanel2.add(transmitManager.getPanelCategories());
 		vPanel2.add(transmitManager.getSubscribedCategoriesTable());
 
+		HTML space5 = new HTML("");
+		vPanel2.add(space5);
+		vPanel2.add(hPanelMustReads);
+
 		vPanel2.setCellHeight(space2, "10px");
 		vPanel2.setCellHeight(space3, "10px");
+		vPanel2.setCellHeight(space4, "10px");
+		vPanel2.setCellHeight(space5, "10px");
 
 		table.setWidget(0, 0, tableProperties);
 		table.setHTML(0, 1, "");
@@ -374,6 +405,9 @@ public class Document extends Composite {
 		categoryManager.removeAllRows();
 		categoryManager.setObject(doc, remove);
 		categoryManager.drawAll();
+
+		//getUserReadDoc
+		Main.get().mainPanel.dashboard.userDashboard.isUserReadDoc(Main.get().workspaceUserProperties.getUser().getId(), document.getUuid());
 	}
 
 	/**
@@ -626,5 +660,22 @@ public class Document extends Composite {
 			e.printStackTrace();
 		}
 
+	}
+	public void setReadDoc(){
+		try {
+			Main.get().mainPanel.dashboard.userDashboard.setUserReadDoc(Main.get().workspaceUserProperties.getUser().getId(), document.getUuid());
+			Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void executeReadDoc() {
+		Main.get().confirmPopup.setConfirm(ConfirmPopup.CONFIRM_READ_DOC);
+		Main.get().confirmPopup.center();
+	}
+
+	public void setMustReadIconVisiable(boolean visible){
+		mustReadImage.setVisible(visible);
 	}
 }

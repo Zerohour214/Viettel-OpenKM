@@ -73,6 +73,7 @@ public class ConverterServlet extends OKMHttpServlet {
 		log.debug("service({}, {})", request, response);
 		request.setCharacterEncoding("UTF-8");
 		String uuid = WebUtils.getString(request, "uuid");
+		String userId = WebUtils.getString(request, "userId");
 		boolean inline = WebUtils.getBoolean(request, "inline");
 		boolean print = WebUtils.getBoolean(request, "print");
 		boolean toPdf = WebUtils.getBoolean(request, "toPdf");
@@ -95,6 +96,10 @@ public class ConverterServlet extends OKMHttpServlet {
 				String path = OKMRepository.getInstance().getNodePath(null, uuid);
 				Document doc = OKMDocument.getInstance().getProperties(null, path);
 				String fileName = PathUtils.getName(doc.getPath());
+
+				if (userId != null && userId != "")
+					new com.openkm.servlet.frontend.DashboardServlet().startReadDoc(userId,doc.getUuid());
+
 
 				// Optinal append version to download
 				if (Config.VERSION_APPEND_DOWNLOAD) {

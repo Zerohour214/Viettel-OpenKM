@@ -1338,4 +1338,104 @@ public class DbDashboardModule implements DashboardModule {
 		log.debug("getUserMails: {}", al);
 		return al;
 	}
+
+	@Override
+	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException {
+		log.debug("getMustReadDocuments({})", token);
+		Authentication auth = null, oldAuth = null;
+
+		try {
+			if (token == null) {
+				auth = PrincipalUtils.getAuthentication();
+			} else {
+				oldAuth = PrincipalUtils.getAuthentication();
+				auth = PrincipalUtils.getAuthenticationByToken(token);
+			}
+
+			List<DashboardDocumentResult> al = getMustReadDocumentsSrv(auth.getName());
+			log.debug("getUserLockedDocuments: {}", al);
+			return al;
+		} finally {
+			if (token != null) {
+				PrincipalUtils.setAuthentication(oldAuth);
+			}
+		}
+	}
+
+	public List<DashboardDocumentResult> getMustReadDocumentsSrv(String user) throws RepositoryException,
+			DatabaseException {
+		log.debug("getMustReadDocumentsSrv({})", user);
+		long begin = System.currentTimeMillis();
+		List<DashboardDocumentResult> al = executeQueryDocumentNative(user, "MUST_READ_DOCUMENT", Integer.MAX_VALUE);
+
+		// Check for already visited results
+		checkVisitedDocuments(user, "UserLockedDocuments", al);
+		SystemProfiling.log(user, System.currentTimeMillis() - begin);
+		log.trace("getUserLockedDocumentsSrv.Time: {}", System.currentTimeMillis() - begin);
+		log.debug("getUserLockedDocumentsSrv: {}", al);
+		return al;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<DashboardDocumentResult> executeQueryDocumentNative(String user, String action, int maxResults)
+			throws RepositoryException, DatabaseException {
+		log.debug("executeQueryDocumentNative({}, {}, {})", new Object[]{user, action, maxResults});
+		List<DashboardDocumentResult> al = new ArrayList<DashboardDocumentResult>();
+		Session session = null;
+		int i = 0;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+
+			Query queryGr = session.createSQLQuery("SELECT od.DOC_ID FROM org_doc od INNER JOIN user_org_vtx uov WHERE od.ORG_ID = uov.ORG_ID AND uov.USER_ID = (:userId)");
+			queryGr.setParameter("userId",user);
+			List<String> arrDoc = queryGr.list();
+			String qs = "from NodeDocument nd where nd.uuid in (:ids)";
+
+			Query q = session.createQuery(qs).setCacheable(true);
+
+			q.setParameterList("ids", arrDoc);
+			List<NodeDocument> results;
+			if(arrDoc.size()==0)
+				return new ArrayList<DashboardDocumentResult>();
+			else
+				results = q.list();
+
+			Query q_checkRead = session.createSQLQuery("SELECT urdt.DOC_ID FROM user_read_doc_timer urdt WHERE urdt.USER_ID=(:userId) and urdt.confirm = 'T'");
+			q_checkRead.setParameter("userId", user);
+			List<String> ret = q_checkRead.list();
+
+			results.removeIf(child -> ret.contains(child.getUuid()));
+
+			for (Iterator<NodeDocument> it = results.iterator(); it.hasNext() && i < maxResults; ) {
+				NodeDocument nDoc = it.next();
+
+				if (SecurityHelper.getAccessManager().isGranted(nDoc, Permission.READ)) {
+					NodeDocumentDAO.getInstance().initialize(nDoc, false);
+					Document doc = BaseDocumentModule.getProperties(user, nDoc);
+					DashboardDocumentResult vo = new DashboardDocumentResult();
+					vo.setDocument(doc);
+					vo.setDate(ActivityDAO.getActivityDate(user, action, nDoc.getUuid()));
+					vo.setVisited(false);
+					al.add(vo);
+					i++;
+				}
+			}
+		} catch (PathNotFoundException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+
+		// Sort results
+		Collections.sort(al, new Comparator<DashboardDocumentResult>() {
+			public int compare(DashboardDocumentResult doc1, DashboardDocumentResult doc2) {
+				return doc2.getDate().compareTo(doc1.getDate());
+			}
+		});
+
+		return al;
+	}
 }

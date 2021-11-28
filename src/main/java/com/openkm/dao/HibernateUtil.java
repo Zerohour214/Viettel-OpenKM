@@ -24,6 +24,7 @@ package com.openkm.dao;
 import com.openkm.core.Config;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.*;
+import com.openkm.dao.bean.UserReadDocTimer;
 import com.openkm.dao.bean.cache.UserItems;
 import com.openkm.dao.bean.cache.UserNodeKeywords;
 import com.openkm.extension.dao.bean.WikiPage;
@@ -133,6 +134,7 @@ public class HibernateUtil {
 		cfg.addAnnotatedClass(UserOrganizationVTX.class);
 		cfg.addAnnotatedClass(OrgDocumentVTX.class);
 		cfg.addAnnotatedClass(AuthTicket.class);
+		cfg.addAnnotatedClass(UserReadDocTimer.class);
 		return cfg;
 	}
 

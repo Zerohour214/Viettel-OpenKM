@@ -73,4 +73,14 @@ public interface OKMDashboardService extends RemoteService {
 	public List<GWTDashboardMailResult> getUserLastImportedMails() throws OKMException;
 
 	public void visiteNode(String source, String node, Date date) throws OKMException;
+
+	public List<GWTDashboardDocumentResult> getMustReadDocuments() throws OKMException;
+
+	public boolean setUserReadDoc(String userId, String docId);
+
+	public boolean isUserReadDoc(String userId, String docId);
+
+	public void startReadDoc(String userId, String docId);
+
+	public void endReadDoc(String userId, String docId);
 }

@@ -37,6 +37,12 @@ import java.util.List;
 public interface DashboardModule {
 
 	/**
+	 * Get list of must read documents by user
+	 */
+	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException;
+
+	/**
 	 * Get list of locked documents by user
 	 */
 	public List<DashboardDocumentResult> getUserLockedDocuments(String token) throws AccessDeniedException, RepositoryException,
@@ -61,13 +67,13 @@ public interface DashboardModule {
 			DatabaseException;
 
 	/**
-	 * Get user last uploaded documents 
+	 * Get user last uploaded documents
 	 */
 	public List<DashboardDocumentResult> getUserLastUploadedDocuments(String token) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
 
 	/**
-	 * Get user last modified documents 
+	 * Get user last modified documents
 	 */
 	public List<DashboardDocumentResult> getUserLastModifiedDocuments(String token) throws AccessDeniedException, RepositoryException,
 			DatabaseException;

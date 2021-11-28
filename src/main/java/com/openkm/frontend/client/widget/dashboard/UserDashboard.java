@@ -58,6 +58,7 @@ public class UserDashboard extends Composite {
 	private DashboardWidget subscribedFolder;
 	private DashboardWidget lastDownloadedDocuments;
 	private DashboardWidget lastUploadedDocuments;
+	private DashboardWidget sharedDocument;
 
 	private boolean showStatus = false;
 	private int tmpSubscriptions = 0;
@@ -92,6 +93,8 @@ public class UserDashboard extends Composite {
 		lastUploadedDocuments = new DashboardWidget("UserLastUploadedDocuments",
 				"dashboard.user.last.uploaded.documents", "glyphicons glyphicons-file-cloud-upload", true,
 				"userLastUploadedDocuments");
+		sharedDocument = new DashboardWidget("UserLastUploadedDocuments", "dashboard.user.shared.document","img/icon/actions/download.gif",
+				true,"userSubscribedDocuments");
 
 		vPanelLeft.add(lockedDocuments);
 		vPanelLeft.add(chechoutDocuments);
@@ -100,6 +103,7 @@ public class UserDashboard extends Composite {
 		vPanelRight.add(lastUploadedDocuments);
 		vPanelLeft.add(subscribedDocuments);
 		vPanelLeft.add(subscribedFolder);
+		vPanelRight.add(sharedDocument);
 
 		initWidget(hPanel);
 	}
@@ -131,6 +135,7 @@ public class UserDashboard extends Composite {
 		subscribedDocuments.langRefresh();
 		subscribedFolder.langRefresh();
 		lastUploadedDocuments.langRefresh();
+		sharedDocument.langRefresh();
 	}
 
 	/**
@@ -149,6 +154,7 @@ public class UserDashboard extends Composite {
 		subscribedDocuments.setWidth(columnWidth);
 		subscribedFolder.setWidth(columnWidth);
 		lastUploadedDocuments.setWidth(columnWidth);
+		sharedDocument.setWidth(columnWidth);
 	}
 
 	/**
@@ -272,6 +278,23 @@ public class UserDashboard extends Composite {
 	};
 
 	/**
+	 * Gets the must read documents
+	 */
+	final AsyncCallback<List<GWTDashboardDocumentResult>> callbackGetMustReadDocuments = new AsyncCallback<List<GWTDashboardDocumentResult>>() {
+		public void onSuccess(List<GWTDashboardDocumentResult> result) {
+			sharedDocument.setDocuments(result);
+			sharedDocument.setHeaderResults(result.size());
+			Main.get().mainPanel.bottomPanel.userInfo.setMustReadDocuments(result.size());
+			sharedDocument.unsetRefreshing();
+		}
+
+		public void onFailure(Throwable caught) {
+			Main.get().showError("callbackGetMustReadDocuments", caught);
+			sharedDocument.unsetRefreshing();
+		}
+	};
+
+	/**
 	 * getUserLockedDocuments
 	 */
 	public void getUserLockedDocuments() {
@@ -373,5 +396,45 @@ public class UserDashboard extends Composite {
 		getUserSubscribedDocuments();
 		getUserLastDownloadedDocuments();
 		getUserLastUploadedDocuments();
+		getMustReadDocuments();
+	}
+
+	/**
+	 * getMustReadDocuments
+	 */
+	public void getMustReadDocuments() {
+		if (showStatus) {
+			sharedDocument.setRefreshing();
+		}
+
+		dashboardService.getMustReadDocuments(callbackGetMustReadDocuments);
+	}
+
+	/**
+	 * set a user read a doc
+	 */
+	public void setUserReadDoc(String userid, String docId) {
+		dashboardService.setUserReadDoc(userid, docId, callbackIsUserReadDoc);
+	}
+
+	/**
+	 * check a user have read a doc or not
+	 * @return
+	 */
+	public void isUserReadDoc(String userid, String docId) {
+		dashboardService.isUserReadDoc(userid, docId, callbackIsUserReadDoc);
+	}
+	final AsyncCallback<Boolean> callbackIsUserReadDoc = new AsyncCallback<Boolean>() {
+		public void onSuccess(Boolean result) {
+			Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.setMustReadIconVisiable(!result);
+		}
+
+		public void onFailure(Throwable caught) {
+			Main.get().showError("isUserReadDoc", caught);
+		}
+	};
+
+	public void endReadDoc(String userid, String docId) {
+		dashboardService.endReadDoc(userid, docId, null);
 	}
 }

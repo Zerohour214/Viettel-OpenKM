@@ -70,6 +70,8 @@ public class UserInfo extends Composite {
 	private boolean getLoggedUsers = false;
 	private boolean getPendingChatRoomUser = false;
 	private boolean logoutDone = true;
+	private HTML mustReadDocuments;
+	private Image imgMustReadDocuments;
 
 	/**
 	 * UserInfo
@@ -131,6 +133,20 @@ public class UserInfo extends Composite {
 		imgNewsDocuments.setTitle(Main.i18n("user.info.news.new"));
 		imgWorkflowTasks.setTitle(Main.i18n("user.info.workflow.pending.tasks"));
 		imgWorkflowPooledTasks.setTitle(Main.i18n("user.info.workflow.pending.pooled.tasks"));
+
+		mustReadDocuments = new HTML("");
+		mustReadDocuments.setVisible(false);
+		imgMustReadDocuments = new Image(OKMBundleResources.INSTANCE.mustRead());
+		imgMustReadDocuments.setVisible(false);
+		imgMustReadDocuments.setTitle(Main.i18n("dashboard.user.shared.document"));
+
+		imgMustReadDocuments.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent clickEvent) {
+				Main.get().mainPanel.topPanel.tabWorkspace.changeSelectedTab(UIDockPanelConstants.DASHBOARD);
+				Main.get().mainPanel.dashboard.horizontalToolBar.showUserView();
+			}
+		});
 
 		imgLockedDocuments.addClickHandler(new ClickHandler() {
 			@Override
@@ -256,6 +272,10 @@ public class UserInfo extends Composite {
 		panel.add(imgWorkflowPooledTasks);
 		panel.add(newWorkflowPooledTasks);
 		panel.add(new HTML("&nbsp;"));
+		panel.add(imgMustReadDocuments);
+		panel.add(new HTML("&nbsp;"));
+		panel.add(mustReadDocuments);
+		panel.add(new HTML("&nbsp;"));
 
 		imgLockedDocuments.setStyleName("okm-Hyperlink");
 		imgCheckoutDocuments.setStyleName("okm-Hyperlink");
@@ -265,6 +285,7 @@ public class UserInfo extends Composite {
 		imgWorkflowPooledTasks.setStyleName("okm-Hyperlink");
 		imgChat.setStyleName("okm-Hyperlink");
 		imgNewChatRoom.setStyleName("okm-Hyperlink");
+		imgMustReadDocuments.setStyleName("okm-Hyperlink");
 
 		initWidget(panel);
 	}
@@ -322,6 +343,13 @@ public class UserInfo extends Composite {
 			}
 			quotaUsed.setHTML(percent + "%");
 		}
+	}
+
+	/**
+	 * Sets the must Read documents
+	 */
+	public void setMustReadDocuments(int value) {
+		mustReadDocuments.setHTML("&nbsp;" + value + "&nbsp;");
 	}
 
 	/**
@@ -426,6 +454,7 @@ public class UserInfo extends Composite {
 		imgNewsDocuments.setTitle(Main.i18n("user.info.news.new"));
 		imgWorkflowTasks.setTitle(Main.i18n("user.info.workflow.pending.tasks"));
 		imgWorkflowPooledTasks.setTitle(Main.i18n("user.info.workflow.pending.pooled.tasks"));
+		imgMustReadDocuments.setTitle(Main.i18n("dashboard.user.shared.document"));
 		quotaUsed.setHTML(percent + "%");
 
 		// Resfreshing actual chatrooms
@@ -727,6 +756,8 @@ public class UserInfo extends Composite {
 		lockedDocuments.setVisible(true);
 		checkoutDocuments.setVisible(true);
 		subscriptions.setVisible(true);
+		imgMustReadDocuments.setVisible(true);
+		mustReadDocuments.setVisible(true);
 	}
 
 	/**

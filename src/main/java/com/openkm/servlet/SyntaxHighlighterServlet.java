@@ -52,12 +52,17 @@ public class SyntaxHighlighterServlet extends BaseServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		log.debug("doGet({}, {})", request, response);
+		String uuid = WebUtils.getString(request, "uuid");
+		String userId = WebUtils.getString(request, "userId");
 		String path = WebUtils.getString(request, "docPath");
 		String mimeType = WebUtils.getString(request, "mimeType");
 		String core = WebUtils.getString(request, "core");
 		String theme = WebUtils.getString(request, "theme");
 		CharsetDetector detector = new CharsetDetector();
 		InputStream fis = null;
+
+		if (userId != null && userId != "")
+			new com.openkm.servlet.frontend.DashboardServlet().startReadDoc(userId,uuid);
 
 		try {
 			fis = OKMDocument.getInstance().getContent(null, path, false);

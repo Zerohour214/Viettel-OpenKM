@@ -239,4 +239,14 @@ public class OKMDashboard implements DashboardModule {
 		dm.visiteNode(token, source, node, date);
 		log.debug("visiteNode: void");
 	}
+
+	@Override
+	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException {
+		log.debug("getMustReadDocuments({})", token);
+		DashboardModule dm = ModuleManager.getDashboardModule();
+		List<DashboardDocumentResult> result = dm.getMustReadDocuments(token);
+		log.debug("getUserLockedDocuments: {}", result);
+		return result;
+	}
 }
