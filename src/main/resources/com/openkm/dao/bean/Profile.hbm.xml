@@ -519,9 +519,9 @@
                 <column name="PRF_TB_OMR_VIS" default="'F'"/>
             </property>
 
-            <property name="exportActivityVisible" type="true_false" not-null="true">
+            <!--<property name="exportActivityVisible" type="true_false" not-null="true">
                 <column name="PRF_TB_EXPORT_ACT_VIS" default="'T'"/>
-            </property>
+            </property>-->
         </component>
 
         <!-- FILE BROWSER -->

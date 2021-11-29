@@ -312,6 +312,7 @@ public class ActivityLogServlet extends BaseServlet {
 
 		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
 
+
 		InputStream is = new FileInputStream(tmpFile);
 		ServletContext context = getServletContext();
 
