@@ -1387,7 +1387,7 @@ public class DbDashboardModule implements DashboardModule {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 
-			Query queryGr = session.createSQLQuery("SELECT od.DOC_ID FROM org_doc od INNER JOIN user_org_vtx uov WHERE od.ORG_ID = uov.ORG_ID AND uov.USER_ID = (:userId)");
+			Query queryGr = session.createSQLQuery("SELECT od.DOC_ID FROM ORG_DOC od INNER JOIN USER_ORG_VTX uov WHERE od.ORG_ID = uov.ORG_ID AND uov.USER_ID = (:userId)");
 			queryGr.setParameter("userId",user);
 			List<String> arrDoc = queryGr.list();
 			String qs = "from NodeDocument nd where nd.uuid in (:ids)";
@@ -1401,7 +1401,7 @@ public class DbDashboardModule implements DashboardModule {
 			else
 				results = q.list();
 
-			Query q_checkRead = session.createSQLQuery("SELECT urdt.DOC_ID FROM user_read_doc_timer urdt WHERE urdt.USER_ID=(:userId) and urdt.confirm = 'T'");
+			Query q_checkRead = session.createSQLQuery("SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) and urdt.confirm = 'T'");
 			q_checkRead.setParameter("userId", user);
 			List<String> ret = q_checkRead.list();
 

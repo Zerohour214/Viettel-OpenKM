@@ -195,18 +195,13 @@
 
                             <!-- Modal Header -->
                             <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
+                                <form id="form-search-org" class="row" style="width: 100%;">
 
-                            <!-- Modal body -->
-                            <div class="modal-body">
-                                <form id="form-search-org">
-                                    <div class="row">
                                         <div class="col-md-5">
                                             <input type="text" class="form-control" placeholder="Tên đơn vị"
                                                    name="orgName">
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-md-4">
                                             <input type="text" class="form-control" placeholder="Mã đơn vị"
                                                    name="orgCode">
                                         </div>
@@ -215,9 +210,16 @@
                                                 Tìm kiếm
                                             </button>
                                         </div>
-                                    </div>
+                                        <div class="col-md-1 d-flex align-content-center align-items-center">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
+                                        </div>
 
                                 </form>
+                            </div>
+
+                            <!-- Modal body -->
+                            <div class="modal-body">
+
                                 <div class="row">
                                     <table class="table table-hover table-bordered" id="table-org-search">
                                         <thead>
@@ -432,7 +434,7 @@
 
             $('#userSearchSubmitBtn').click((e) => {
                 $.ajax({
-                    url: `/kms/services/rest/user/getAllUser`,
+                    url: `/kms/services/rest/user/getAllUser?notInOrg=1`,
                     type: 'POST',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
@@ -514,7 +516,7 @@
                         tdMail = document.createElement('td'),
                         tdCheckbox = document.createElement('td');
 
-                    if (!userCurrentOrg.includes(user[1])) {
+
 
                         tdName.innerText = user[0];
                         tdCode.innerText = user[1];
@@ -541,7 +543,7 @@
                         tr.appendChild(tdMail);
                         tr.appendChild(tdCheckbox);
                         $('#table-user-search tbody').append(tr);
-                    }
+
                 })
 
 
@@ -624,7 +626,7 @@
                 userChecked = [];
                 $('#table-user-search tbody').empty()
                 $.ajax({
-                    url: `/kms/services/rest/user/getAllUser`,
+                    url: `/kms/services/rest/user/getAllUser?notInOrg=1`,
                     type: 'POST',
                     processData: false,
                     contentType: 'application/x-www-form-urlencoded',
