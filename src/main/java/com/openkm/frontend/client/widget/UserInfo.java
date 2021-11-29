@@ -71,7 +71,7 @@ public class UserInfo extends Composite {
 	private boolean getPendingChatRoomUser = false;
 	private boolean logoutDone = true;
 	private HTML mustReadDocuments;
-	private Image imgMustReadDocuments;
+	private HTML imgMustReadDocuments;
 
 	/**
 	 * UserInfo
@@ -136,7 +136,7 @@ public class UserInfo extends Composite {
 
 		mustReadDocuments = new HTML("");
 		mustReadDocuments.setVisible(false);
-		imgMustReadDocuments = new Image(OKMBundleResources.INSTANCE.mustRead());
+		imgMustReadDocuments = new HTML("<span class=\"glyphicons glyphicons-ok-circle icon-white-renew wide-padding-footer\"></span>");
 		imgMustReadDocuments.setVisible(false);
 		imgMustReadDocuments.setTitle(Main.i18n("dashboard.user.shared.document"));
 
@@ -349,7 +349,7 @@ public class UserInfo extends Composite {
 	 * Sets the must Read documents
 	 */
 	public void setMustReadDocuments(int value) {
-		mustReadDocuments.setHTML("&nbsp;" + value + "&nbsp;");
+		mustReadDocuments.setHTML("<div class=\"white-text\">&nbsp;" + value + "&nbsp;</div>");
 	}
 
 	/**
