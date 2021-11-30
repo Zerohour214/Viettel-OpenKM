@@ -162,11 +162,9 @@ public class ActivityLogServlet extends BaseServlet {
 				filter.setAction(action);
 				filter.setItem(item);
 
-				if("Export".equals(action_)) {
+				if ("Export".equals(action_)) {
 					doExport(filter, response);
-				}
-
-				else {
+				} else {
 					sc.setAttribute("results", ActivityDAO.findByFilter(filter));
 
 					// Activity log
@@ -202,7 +200,7 @@ public class ActivityLogServlet extends BaseServlet {
 		}
 	}
 
-	public void doExport(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException {
+	public void doExport(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
 		List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
 
@@ -215,13 +213,13 @@ public class ActivityLogServlet extends BaseServlet {
 		Map<String, String> map = new HashMap<String, String>();
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
-		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1) ));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
 
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
 		int index1 = 1;
 		List<String> docNameList = new ArrayList<>();
-		for(ActivityLogExportBean elb : exportBeanList) {
+		for (ActivityLogExportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
@@ -247,11 +245,11 @@ public class ActivityLogServlet extends BaseServlet {
 			}
 			arrList.add(actionName);
 			TableRow dataRow = table.addRow();
-			for(int col=0; col < arrList.size(); ++col) {
+			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 			}
 			docNameList.add(elb.getDocumentName());
-			index1 ++;
+			index1++;
 
 		}
 
@@ -262,14 +260,13 @@ public class ActivityLogServlet extends BaseServlet {
 
 		index1 = 1;
 		Table table2 = docSpire.getSections().get(0).getTables().get(4);
-		for(ActivityLogExportBean elb : exportBeanList) {
+		for (ActivityLogExportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
 			arrList.add(elb.getFullName());
 			arrList.add(elb.getEmployeeCode());
 			arrList.add(elb.getDocumentName());
-
 
 
 			String actionName = "";
@@ -293,12 +290,12 @@ public class ActivityLogServlet extends BaseServlet {
 			arrList.add(actionName);
 			arrList.add(elb.getDateTime());
 			TableRow dataRow2 = table2.addRow();
-			for(int col=0; col < arrList.size(); ++col) {
+			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
 			}
 			docNameList.add(elb.getDocumentName());
-			index1 ++;
+			index1++;
 		}
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -306,39 +303,49 @@ public class ActivityLogServlet extends BaseServlet {
 		}
 
 
+
 		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
 		File tmpFile = Paths.get(res_.toURI()).toFile();
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
-
 		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
 
 
-		InputStream is = new FileInputStream(tmpFile);
-		ServletContext context = getServletContext();
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			 is = new FileInputStream(tmpFile);
+			 os = response.getOutputStream();
 
-		String mimeType = context.getMimeType(absolutePath);
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			ServletContext context = getServletContext();
+
+			String mimeType = context.getMimeType(absoluteTmpPath);
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+
+			response.setContentType(mimeType);
+			response.setContentLength((int) tmpFile.length());
+
+
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", tmpFile.getName());
+			response.setHeader(headerKey, headerValue);
+
+
+			int len = -1;
+			byte[] buffer = new byte[4096000];
+			while ((len = is.read(buffer, 0, buffer.length)) != -1) {
+				os.write(buffer, 0, len);
+			}
+
+		} catch (IOException ioe) {
+			throw new ServletException(ioe.getMessage());
+		} finally {
+			if (is != null)
+				is.close();
+			if (os != null)
+				os.close();
 		}
-
-		response.setContentType(mimeType);
-		response.setContentLength((int) file.length());
-
-
-		String headerKey = "Content-Disposition";
-		String headerValue = String.format("attachment; filename=\"%s\"", file.getName());
-		response.setHeader(headerKey, headerValue);
-		OutputStream os = response.getOutputStream();
-
-
-		int len;
-		byte[] buffer = new byte[40960];
-		while ((len = is.read(buffer, 0, buffer.length)) != -1) {
-			os.write(buffer, 0, len);
-		}
-
-		is.close();
-		os.close();
 
 	}
 }

@@ -47,8 +47,9 @@
               <th width="100px">
                 <c:url value="Report" var="urlCreate">
                   <c:param name="action" value="create" />
-                </c:url> 
+                </c:url>
                 <a href="${urlCreate}"><span class="glyphicons glyphicons-plus-sign" style="padding: 0 6px 0 4px; font-size: 15px; color: #27B45F" title="New report"></span></a>
+                  <a href="#"><span class="glyphicons glyphicons-notes-2" style="padding: 0 6px 0 4px; font-size: 15px; color: #27B45F" title="Báo cáo "></span></a>
               </th>
             </tr>
           </thead>
@@ -83,9 +84,9 @@
                   </c:choose></td>
                 <td align="center">
                   <a href="${urlEdit}"><span class="glyphicons glyphicons-pen" style="font-size: 15px; color: #27B45F;" title="Edit"></span></a>
-                  &nbsp; 
-                  <a href="${urlDelete}"><span class="glyphicons glyphicons-bin" style="font-size: 15px; color: red;" title="Delete"></span></a> 
-                  &nbsp; 
+                  &nbsp;
+                  <a href="${urlDelete}"><span class="glyphicons glyphicons-bin" style="font-size: 15px; color: red;" title="Delete"></span></a>
+                  &nbsp;
                   <c:choose>
                     <c:when test="${rp.fileMime == 'application/x-report'}">
                       <a href="${urlParams}"><span class="glyphicons glyphicons-list-alt" style="font-size: 15px; color: #27B45F;" title="Parameters"></span></a>
@@ -93,8 +94,8 @@
                     <c:otherwise>
                       <span class="glyphicons glyphicons-list-alt" style="font-size: 15px; color: #DBDBDB;" title="Parameters"></span>
                     </c:otherwise>
-                  </c:choose> 
-                  &nbsp; 
+                  </c:choose>
+                  &nbsp;
                   <a href="${urlGetParams}"><span class="glyphicons glyphicons-electricity" style="font-size: 15px; color: #27B45F;" title="Execute"></span></a>
                 </td>
               </tr>
