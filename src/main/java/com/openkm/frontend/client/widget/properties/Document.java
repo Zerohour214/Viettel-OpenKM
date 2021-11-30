@@ -77,7 +77,7 @@ public class Document extends Composite {
 
 	//for must read check
 	private HorizontalPanel hPanelMustReads;
-	private Image mustReadImage;
+	private HTML mustReadImage;
 	private HTML mustReadText;
 
 	/**
@@ -96,10 +96,10 @@ public class Document extends Composite {
 
 		//for must read check
 		hPanelMustReads = new HorizontalPanel();
-		mustReadText = new HTML("<b>" + Main.i18n("document.mustread") + "</b>");
+		mustReadText = new HTML("<br/><b>" + Main.i18n("document.mustread") + "</b>");
 		hPanelMustReads.add(mustReadText);
 		hPanelMustReads.add(new HTML("&nbsp;"));
-		mustReadImage = new Image(OKMBundleResources.INSTANCE.news());
+		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
 		mustReadImage.addStyleName("okm-Hyperlink");
 		mustReadImage.addClickHandler(new ClickHandler() {
 			@Override

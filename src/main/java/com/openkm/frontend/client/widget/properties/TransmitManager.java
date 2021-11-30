@@ -342,6 +342,7 @@ public class TransmitManager {
 						public void onResponseReceived(Request request,
 													   Response response) {
 							Window.alert("Đã chuyển văn bản đến các đơn vị!");
+							Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
 						}
 
 						@Override
