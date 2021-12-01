@@ -2445,10 +2445,10 @@ public class NodeBaseDAO {
 
 			session.beginTransaction();
 
-			for (Long l : orgCheckeds) {
-				if (getOrgDocById(docId, l) == null) {
+			for (Long orgId : orgCheckeds) {
+				if (getOrgDocById(docId, orgId) == null) {
 					OrgDocumentVTX orgDocumentVTX = new OrgDocumentVTX();
-					orgDocumentVTX.setOrgId(l);
+					orgDocumentVTX.setOrgId(orgId);
 					orgDocumentVTX.setDocId(docId);
 					session.save(orgDocumentVTX);
 					session.flush();

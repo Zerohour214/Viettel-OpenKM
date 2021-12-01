@@ -135,6 +135,11 @@
           <span class="glyphicons glyphicons-tree-conifer icon-admin-menu-renew"></span>
         </a>
       </li>
+        <li>
+            <a target="frame" href="transmit_report.jsp" title="Transmited Report">
+                <span class="glyphicons glyphicons-paperclip icon-admin-menu-renew"></span>
+            </a>
+        </li>
     </c:if>
     <c:if test="${isMultipleInstancesAdmin}">
       <li>

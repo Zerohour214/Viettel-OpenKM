@@ -7,6 +7,7 @@ import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Date;
 
 @Entity
 @Indexed
@@ -25,6 +26,9 @@ public class OrgDocumentVTX implements Serializable {
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
 	private Long orgId;
 
+	@Column(name="CREATED_AT", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Date created_at;
+
 	public String getDocId() {
 		return docId;
 	}
@@ -41,5 +45,11 @@ public class OrgDocumentVTX implements Serializable {
 		this.orgId = orgId;
 	}
 
+	public Date getCreated_at() {
+		return created_at;
+	}
 
+	public void setCreated_at(Date created_at) {
+		this.created_at = created_at;
+	}
 }
