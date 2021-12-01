@@ -442,6 +442,10 @@
     <servlet-name>ActivityLogServlet</servlet-name>
     <servlet-class>com.openkm.servlet.admin.ActivityLogServlet</servlet-class>
   </servlet>
+    <servlet>
+        <servlet-name>ReportExportServlet</servlet-name>
+        <servlet-class>com.openkm.servlet.admin.ReportExportServlet</servlet-class>
+    </servlet>
   <servlet>
     <servlet-name>LoggedUsersServlet</servlet-name>
     <servlet-class>com.openkm.servlet.admin.LoggedUsersServlet</servlet-class>
@@ -896,6 +900,10 @@
     <servlet-name>ActivityLogServlet</servlet-name>
     <url-pattern>/admin/ActivityLog</url-pattern>
   </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReportExportServlet</servlet-name>
+        <url-pattern>/admin/ReportExport</url-pattern>
+    </servlet-mapping>
   <servlet-mapping>
     <servlet-name>LoggedUsersServlet</servlet-name>
     <url-pattern>/admin/LoggedUsers</url-pattern>
