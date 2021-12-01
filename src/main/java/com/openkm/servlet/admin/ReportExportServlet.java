@@ -23,8 +23,10 @@ package com.openkm.servlet.admin;
 
 import com.openkm.api.OKMAuth;
 import com.openkm.bean.ActivityLogExportBean;
+import com.openkm.bean.THDVBReportBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ActivityDAO;
+import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.bean.ActivityFilter;
 import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.UserActivity;
@@ -109,7 +111,7 @@ public class ReportExportServlet extends BaseServlet {
 
 	public void doExportTHDVB(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
-		List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
+		List<THDVBReportBean> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
 
 
 		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
@@ -122,7 +124,7 @@ public class ReportExportServlet extends BaseServlet {
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
 
-		Table table = docSpire.getSections().get(0).getTables().get(2);
+		/*Table table = docSpire.getSections().get(0).getTables().get(2);
 
 		int index1 = 1;
 		List<String> docNameList = new ArrayList<>();
@@ -207,7 +209,7 @@ public class ReportExportServlet extends BaseServlet {
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
-		}
+		}*/
 
 
 
