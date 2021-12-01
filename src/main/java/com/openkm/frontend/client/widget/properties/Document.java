@@ -75,11 +75,6 @@ public class Document extends Composite {
 	private ScrollPanel scrollPanel;
 	private boolean remove = true;
 
-	//for must read check
-	private HorizontalPanel hPanelMustReads;
-	private HTML mustReadImage;
-	private HTML mustReadText;
-
 	/**
 	 * Document
 	 */
@@ -93,22 +88,6 @@ public class Document extends Composite {
 		vtTable = new FlexTable();
 		tableSubscribedUsers = new FlexTable();
 		scrollPanel = new ScrollPanel(table);
-
-		//for must read check
-		hPanelMustReads = new HorizontalPanel();
-		mustReadText = new HTML("<br/><b>" + Main.i18n("document.mustread") + "</b>");
-		hPanelMustReads.add(mustReadText);
-		hPanelMustReads.add(new HTML("&nbsp;"));
-		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
-		mustReadImage.addStyleName("okm-Hyperlink");
-		mustReadImage.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				executeReadDoc();
-			}
-		});
-		hPanelMustReads.add(mustReadImage);
-		hPanelMustReads.setCellVerticalAlignment(mustReadText, HasAlignment.ALIGN_MIDDLE);
 
 
 		tableProperties.setHTML(0, 0, "<b>" + Main.i18n("document.uuid") + "</b>");
@@ -199,14 +178,9 @@ public class Document extends Composite {
 		vPanel2.add(transmitManager.getPanelCategories());
 		vPanel2.add(transmitManager.getSubscribedCategoriesTable());
 
-		HTML space5 = new HTML("");
-		vPanel2.add(space5);
-		vPanel2.add(hPanelMustReads);
-
 		vPanel2.setCellHeight(space2, "10px");
 		vPanel2.setCellHeight(space3, "10px");
 		vPanel2.setCellHeight(space4, "10px");
-		vPanel2.setCellHeight(space5, "10px");
 
 		table.setWidget(0, 0, tableProperties);
 		table.setHTML(0, 1, "");
@@ -668,14 +642,5 @@ public class Document extends Composite {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void executeReadDoc() {
-		Main.get().confirmPopup.setConfirm(ConfirmPopup.CONFIRM_READ_DOC);
-		Main.get().confirmPopup.center();
-	}
-
-	public void setMustReadIconVisiable(boolean visible){
-		mustReadImage.setVisible(visible);
 	}
 }

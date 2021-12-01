@@ -31,6 +31,16 @@ public class UserReadDocTimer implements Serializable {
 	@CalendarBridge(resolution = Resolution.DAY)
 	protected Calendar created;
 
+	@Column(name = "START_CONFIRM")
+	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
+	@CalendarBridge(resolution = Resolution.DAY)
+	protected Calendar startConfirm;
+
+	@Column(name = "END_CONFIRM")
+	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
+	@CalendarBridge(resolution = Resolution.DAY)
+	protected Calendar endConfirm;
+
 	@Column(name = "READING", nullable = false)
 	@Type(type = "true_false")
 	protected boolean reading;
@@ -41,6 +51,9 @@ public class UserReadDocTimer implements Serializable {
 
 	@Column(name = "TOTAL_TIME", nullable = false)
 	protected long totalTime;
+
+	@Column(name = "COUNT_VIEW", nullable = false)
+	protected long countView;
 
 	public Calendar getCreated() {
 		return created;
@@ -88,5 +101,29 @@ public class UserReadDocTimer implements Serializable {
 
 	public void setConfirm(boolean confirm) {
 		this.confirm = confirm;
+	}
+
+	public long getCountView() {
+		return countView;
+	}
+
+	public void setCountView(long countView) {
+		this.countView = countView;
+	}
+
+	public Calendar getStartConfirm() {
+		return startConfirm;
+	}
+
+	public void setStartConfirm(Calendar startConfirm) {
+		this.startConfirm = startConfirm;
+	}
+
+	public Calendar getEndConfirm() {
+		return endConfirm;
+	}
+
+	public void setEndConfirm(Calendar endConfirm) {
+		this.endConfirm = endConfirm;
 	}
 }

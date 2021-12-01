@@ -426,13 +426,17 @@ public class UserDashboard extends Composite {
 	}
 	final AsyncCallback<Boolean> callbackIsUserReadDoc = new AsyncCallback<Boolean>() {
 		public void onSuccess(Boolean result) {
-			Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.setMustReadIconVisiable(!result);
+			Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.preview.setMustReadIconVisiable(!result);
 		}
 
 		public void onFailure(Throwable caught) {
 			Main.get().showError("isUserReadDoc", caught);
 		}
 	};
+
+	public void startReadDoc(String userid, String docId) {
+		dashboardService.startReadDoc(userid, docId, null);
+	}
 
 	public void endReadDoc(String userid, String docId) {
 		dashboardService.endReadDoc(userid, docId, null);
