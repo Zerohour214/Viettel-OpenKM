@@ -343,6 +343,7 @@ public class TransmitManager {
 													   Response response) {
 							Window.alert("Đã chuyển văn bản đến các đơn vị!");
 							Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
+							Main.get().mainPanel.dashboard.userDashboard.isUserReadDoc(Main.get().workspaceUserProperties.getUser().getId(), docId);
 						}
 
 						@Override

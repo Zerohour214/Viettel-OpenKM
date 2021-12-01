@@ -28,13 +28,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.openkm.frontend.client.Main;
 import com.openkm.frontend.client.bean.GWTDocument;
 import com.openkm.frontend.client.constants.service.RPCService;
 import com.openkm.frontend.client.extension.widget.preview.PreviewExtension;
 import com.openkm.frontend.client.util.Util;
+import com.openkm.frontend.client.widget.ConfirmPopup;
 
 /**
  * Notes
@@ -44,6 +44,7 @@ import com.openkm.frontend.client.util.Util;
 public class Preview extends Composite {
 	private static final int TURN_BACK_HEIGHT = 25;
 	private VerticalPanel vPanel;
+	private VerticalPanel vPanelOut;
 	private HTML pdf;
 	private HTML swf;
 	private HTML video;
@@ -62,6 +63,10 @@ public class Preview extends Composite {
 	private String pdfID = "jsPdfViewer";
 	public EmbeddedPreview embeddedPreview;
 	private String pdfContainer = "pdfembededcontainer";
+
+	private HorizontalPanel hPanelMustReads;
+	private HTML mustReadImage;
+	private HTML mustReadText;
 
 	/**
 	 * Preview
@@ -97,7 +102,27 @@ public class Preview extends Composite {
 		hReturnPanel.addStyleName("okm-Border-Left");
 		hReturnPanel.addStyleName("okm-Border-Right");
 		embeddedPreview = new EmbeddedPreview();
-		initWidget(vPanel);
+
+		//for must read check
+		hPanelMustReads = new HorizontalPanel();
+		mustReadText = new HTML("<br/><b>" + Main.i18n("document.mustread") + "</b>");
+		hPanelMustReads.add(mustReadText);
+		hPanelMustReads.add(new HTML("&nbsp;"));
+		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
+		mustReadImage.addStyleName("okm-Hyperlink");
+		mustReadImage.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				executeReadDoc();
+			}
+		});
+		hPanelMustReads.add(mustReadImage);
+		hPanelMustReads.setCellVerticalAlignment(mustReadText, HasAlignment.ALIGN_MIDDLE);
+		vPanelOut = new VerticalPanel();
+		vPanelOut.add(hPanelMustReads);
+		vPanelOut.setCellHorizontalAlignment(hPanelMustReads,HorizontalPanel.ALIGN_CENTER);
+		vPanelOut.add(vPanel);
+		initWidget(vPanelOut);
 	}
 
 	@Override
@@ -357,6 +382,7 @@ public class Preview extends Composite {
 	 */
 	public void previewDocument(boolean refreshing, GWTDocument doc) {
 		GWT.log("MIME: " + doc.getMimeType());
+		Main.get().mainPanel.dashboard.userDashboard.startReadDoc(Main.get().workspaceUserProperties.getUser().getId(), doc.getUuid());
 		if (doc.getMimeType().equals("video/x-flv") || doc.getMimeType().equals("video/mp4") || doc.getMimeType().equals("audio/mpeg")) {
 			if (!refreshing) {
 				showMediaFile(RPCService.DownloadServlet + "?uuid=" + URL.encodeQueryString(doc.getUuid()), doc.getMimeType(), doc.getUuid());
@@ -456,5 +482,15 @@ public class Preview extends Composite {
 		vPanel.setCellVerticalAlignment(embeddedPreview, HasAlignment.ALIGN_MIDDLE);
 
 		embeddedPreview.showEmbedded(url);
+	}
+
+	private void executeReadDoc() {
+		Main.get().confirmPopup.setConfirm(ConfirmPopup.CONFIRM_READ_DOC);
+		Main.get().confirmPopup.center();
+	}
+
+	public void setMustReadIconVisiable(boolean visible){
+		mustReadImage.setVisible(visible);
+		mustReadText.setVisible(visible);
 	}
 }
