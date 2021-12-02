@@ -50,6 +50,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Activity log servlet
@@ -114,7 +115,7 @@ public class ReportExportServlet extends BaseServlet {
 		List<THDVBReportBean> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
 
 
-		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
+		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 
@@ -123,10 +124,10 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-
+		int index1 = 1;
 		/*Table table = docSpire.getSections().get(0).getTables().get(2);
 
-		int index1 = 1;
+
 		List<String> docNameList = new ArrayList<>();
 		for (ActivityLogExportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
@@ -164,56 +165,43 @@ public class ReportExportServlet extends BaseServlet {
 
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
-		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));*/
 
 
 		index1 = 1;
 		Table table2 = docSpire.getSections().get(0).getTables().get(4);
-		for (ActivityLogExportBean elb : exportBeanList) {
+		for (THDVBReportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
-			arrList.add(elb.getFullName());
+			arrList.add(elb.getFullname());
 			arrList.add(elb.getEmployeeCode());
-			arrList.add(elb.getDocumentName());
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getViewNum());
+
+//			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
+			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
+			arrList.add(elb.getAuthor().split("@")[0]);
+			arrList.add(elb.getTimeUpload());
 
 
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
-			arrList.add(elb.getDateTime());
+
 			TableRow dataRow2 = table2.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 		}
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
-		}*/
+		}
 
 
 
-		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
+		URL res_ = getClass().getClassLoader().getResource("download/BC_SITUATION_DOCUMENT.doc");
 		File tmpFile = Paths.get(res_.toURI()).toFile();
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
 		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);

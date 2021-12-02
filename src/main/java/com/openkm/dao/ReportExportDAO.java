@@ -21,23 +21,21 @@ public class ReportExportDAO {
 	}
 
 	public static List<THDVBReportBean> exportTHDVBByFilter(ActivityFilter filter) throws DatabaseException {
-		String qs = "SELECT DISTINCT o.NAME orgName, u.USR_NAME fullname, u.USR_ID employeeCode, d.NBS_NAME docName, " +
-				"ud.TOTAL_TIME totalTimeView, u_.USR_EMAIL author, d.NBS_CREATED timeUpload, a.ACT_DATE " +
+		String qs = "SELECT DISTINCT o.NAME orgName, u.USR_NAME fullname, u.USR_ID employeeCode, d.NBS_NAME docName, ud.COUNT_VIEW viewNum, " +
+				"ud.TOTAL_TIME totalTimeView, u_.USR_EMAIL author, d.NBS_CREATED timeUpload " +
 				"FROM ORGANIZATION_VTX o\n" +
 				"JOIN USER_ORG_VTX uo ON o.ID = uo.ORG_ID\n" +
 				"JOIN OKM_USER u ON u.USR_ID = uo.USER_ID\n" +
 				"JOIN USER_READ_DOC_TIMER ud ON u.USR_ID = ud.USER_ID\n" +
 				"JOIN OKM_NODE_BASE d ON d.NBS_UUID = ud.DOC_ID\n" +
-				"JOIN OKM_USER u_ ON u_.USR_ID = d.NBS_AUTHOR\n" +
-				"JOIN OKM_ACTIVITY a ON a.ACT_ITEM = ud.DOC_ID AND a.ACT_USER = ud.USER_ID\n" +
-				"WHERE a.ACT_DATE between :begin and :end ";
+				"JOIN OKM_USER u_ ON u_.USR_ID = d.NBS_AUTHOR\n" ;
 
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q = session.createSQLQuery(qs);
-			q.setCalendar("begin", filter.getBegin());
-			q.setCalendar("end", filter.getEnd());
+			/*q.setCalendar("begin", filter.getBegin());
+			q.setCalendar("end", filter.getEnd());*/
 
 			q.setResultTransformer(Transformers.aliasToBean(THDVBReportBean.class));
 			q.addScalar("orgName");
@@ -47,6 +45,7 @@ public class ReportExportDAO {
 			q.addScalar("totalTimeView", Hibernate.LONG);
 			q.addScalar("author");
 			q.addScalar("timeUpload");
+			q.addScalar("viewNum", Hibernate.LONG);
 			List<THDVBReportBean> ret = q.list();
 			return ret;
 		} catch (HibernateException e) {
