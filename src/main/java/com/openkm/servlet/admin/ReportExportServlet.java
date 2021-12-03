@@ -21,18 +21,13 @@
 
 package com.openkm.servlet.admin;
 
-import com.openkm.api.OKMAuth;
-import com.openkm.bean.ActivityLogExportBean;
 import com.openkm.bean.THDVBReportBean;
 import com.openkm.core.DatabaseException;
-import com.openkm.dao.ActivityDAO;
 import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.bean.ActivityFilter;
-import com.openkm.principal.PrincipalAdapterException;
-import com.openkm.util.UserActivity;
+import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
-import com.spire.doc.FileFormat;
 import com.spire.doc.Table;
 import com.spire.doc.TableRow;
 import org.apache.commons.lang.time.DateUtils;
@@ -43,14 +38,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Activity log servlet
@@ -180,7 +176,9 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getViewNum());
 
 //			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
-			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
+			Double totalTimeView = elb.getTotalTimeView()/60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");;
+			arrList.add(df.format(totalTimeView));
 			arrList.add(elb.getAuthor().split("@")[0]);
 			arrList.add(elb.getTimeUpload());
 
@@ -199,50 +197,10 @@ public class ReportExportServlet extends BaseServlet {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
 		}
 
+		ServletContext context = getServletContext();
 
-
-		URL res_ = getClass().getClassLoader().getResource("download/BC_SITUATION_DOCUMENT.doc");
-		File tmpFile = Paths.get(res_.toURI()).toFile();
-		String absoluteTmpPath = tmpFile.getAbsolutePath();
-		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
-
-
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-			 is = new FileInputStream(tmpFile);
-			 os = response.getOutputStream();
-
-			ServletContext context = getServletContext();
-
-			String mimeType = context.getMimeType(absoluteTmpPath);
-			if (mimeType == null) {
-				mimeType = "application/octet-stream";
-			}
-
-			response.setContentType(mimeType);
-			response.setContentLength((int) tmpFile.length());
-
-
-			String headerKey = "Content-Disposition";
-			String headerValue = String.format("attachment; filename=\"%s\"", tmpFile.getName());
-			response.setHeader(headerKey, headerValue);
-
-
-			int len = -1;
-			byte[] buffer = new byte[4096000];
-			while ((len = is.read(buffer, 0, buffer.length)) != -1) {
-				os.write(buffer, 0, len);
-			}
-
-		} catch (IOException ioe) {
-			throw new ServletException(ioe.getMessage());
-		} finally {
-			if (is != null)
-				is.close();
-			if (os != null)
-				os.close();
-		}
+		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
+		downloadReportUtils.downloadReport(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
 
 	}
 }
