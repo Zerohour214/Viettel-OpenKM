@@ -15,13 +15,17 @@ import java.util.Calendar;
 @Table(name = "USER_READ_DOC_TIMER")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserReadDocTimer implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private long id;
+
 	@Column(name = "USER_ID")
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
 	private String userId;
 
-	@Id
 	@Column(name = "DOC_ID")
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
 	private String docId;
@@ -125,5 +129,13 @@ public class UserReadDocTimer implements Serializable {
 
 	public void setEndConfirm(Calendar endConfirm) {
 		this.endConfirm = endConfirm;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 }
