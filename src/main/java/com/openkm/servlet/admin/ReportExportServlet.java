@@ -21,16 +21,13 @@
 
 package com.openkm.servlet.admin;
 
-import com.openkm.api.OKMAuth;
-import com.openkm.bean.ActivityLogExportBean;
+import com.openkm.bean.THDVBReportBean;
 import com.openkm.core.DatabaseException;
-import com.openkm.dao.ActivityDAO;
+import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.bean.ActivityFilter;
-import com.openkm.principal.PrincipalAdapterException;
-import com.openkm.util.UserActivity;
+import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
-import com.spire.doc.FileFormat;
 import com.spire.doc.Table;
 import com.spire.doc.TableRow;
 import org.apache.commons.lang.time.DateUtils;
@@ -41,10 +38,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -109,10 +108,10 @@ public class ReportExportServlet extends BaseServlet {
 
 	public void doExportTHDVB(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
-		List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
+		List<THDVBReportBean> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
 
 
-		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
+		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 
@@ -121,10 +120,10 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-
-		Table table = docSpire.getSections().get(0).getTables().get(2);
-
 		int index1 = 1;
+		/*Table table = docSpire.getSections().get(0).getTables().get(2);
+
+
 		List<String> docNameList = new ArrayList<>();
 		for (ActivityLogExportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
@@ -162,46 +161,35 @@ public class ReportExportServlet extends BaseServlet {
 
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
-		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));*/
 
 
 		index1 = 1;
 		Table table2 = docSpire.getSections().get(0).getTables().get(4);
-		for (ActivityLogExportBean elb : exportBeanList) {
+		for (THDVBReportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
-			arrList.add(elb.getFullName());
+			arrList.add(elb.getFullname());
 			arrList.add(elb.getEmployeeCode());
-			arrList.add(elb.getDocumentName());
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getViewNum());
+
+//			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
+			Double totalTimeView = elb.getTotalTimeView()/60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");;
+			arrList.add(df.format(totalTimeView));
+			arrList.add(elb.getAuthor().split("@")[0]);
+			arrList.add(elb.getTimeUpload());
 
 
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
-			arrList.add(elb.getDateTime());
+
 			TableRow dataRow2 = table2.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 		}
 
@@ -209,50 +197,10 @@ public class ReportExportServlet extends BaseServlet {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
 		}
 
+		ServletContext context = getServletContext();
 
-
-		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
-		File tmpFile = Paths.get(res_.toURI()).toFile();
-		String absoluteTmpPath = tmpFile.getAbsolutePath();
-		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
-
-
-		InputStream is = null;
-		OutputStream os = null;
-		try {
-			 is = new FileInputStream(tmpFile);
-			 os = response.getOutputStream();
-
-			ServletContext context = getServletContext();
-
-			String mimeType = context.getMimeType(absoluteTmpPath);
-			if (mimeType == null) {
-				mimeType = "application/octet-stream";
-			}
-
-			response.setContentType(mimeType);
-			response.setContentLength((int) tmpFile.length());
-
-
-			String headerKey = "Content-Disposition";
-			String headerValue = String.format("attachment; filename=\"%s\"", tmpFile.getName());
-			response.setHeader(headerKey, headerValue);
-
-
-			int len = -1;
-			byte[] buffer = new byte[4096000];
-			while ((len = is.read(buffer, 0, buffer.length)) != -1) {
-				os.write(buffer, 0, len);
-			}
-
-		} catch (IOException ioe) {
-			throw new ServletException(ioe.getMessage());
-		} finally {
-			if (is != null)
-				is.close();
-			if (os != null)
-				os.close();
-		}
+		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
+		downloadReportUtils.downloadReport(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
 
 	}
 }
