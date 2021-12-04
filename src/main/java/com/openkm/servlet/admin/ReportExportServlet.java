@@ -21,6 +21,7 @@
 
 package com.openkm.servlet.admin;
 
+import com.openkm.bean.KQTTReportBean;
 import com.openkm.bean.THDVBReportBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ReportExportDAO;
@@ -94,6 +95,8 @@ public class ReportExportServlet extends BaseServlet {
 
 				if("THDVB".equals(action_))
 					doExportTHDVB(filter, response);
+				else if ("KQTT".equals(action_))
+					doExportKQTT(filter,response);
 
 
 			}
@@ -181,6 +184,103 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(df.format(totalTimeView));
 			arrList.add(elb.getAuthor().split("@")[0]);
 			arrList.add(elb.getTimeUpload());
+
+
+
+			TableRow dataRow2 = table2.addRow();
+			for (int col = 0; col < arrList.size(); ++col) {
+				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+
+			}
+
+			index1++;
+		}
+
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+		}
+
+		ServletContext context = getServletContext();
+
+		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
+		downloadReportUtils.downloadReport(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+
+	}
+
+	public void doExportKQTT(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
+
+		List<KQTTReportBean> exportBeanList = ReportExportDAO.exportKQTTByFilter(filter);
+
+
+		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.doc");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		Document docSpire = new Document(absolutePath);
+		Map<String, String> map = new HashMap<String, String>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		int index1 = 1;
+		/*Table table = docSpire.getSections().get(0).getTables().get(2);
+
+
+		List<String> docNameList = new ArrayList<>();
+		for (ActivityLogExportBean elb : exportBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getDocumentName());
+
+			String actionName = "";
+			switch (elb.getAction()) {
+				case "CREATE_DOCUMENT":
+					actionName = "Thêm mới";
+					break;
+				case "CHECKIN_DOCUMENT":
+					actionName = "Sửa";
+					break;
+				case "DELETE_DOCUMENT":
+					actionName = "Xóa (thùng rác)";
+					break;
+				case "PURGE_DOCUMENT":
+					actionName = "Xóa";
+					break;
+				case "MOVE_DOCUMENT":
+					actionName = "Phục hồi";
+					break;
+			}
+			arrList.add(actionName);
+			TableRow dataRow = table.addRow();
+			for (int col = 0; col < arrList.size(); ++col) {
+				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+			}
+			docNameList.add(elb.getDocumentName());
+			index1++;
+
+		}
+
+		TableRow dataRow = table.addRow();
+		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));*/
+
+
+		index1 = 1;
+		Table table2 = docSpire.getSections().get(0).getTables().get(4);
+		for (KQTTReportBean elb : exportBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getFullname());
+			arrList.add(elb.getEmployeeCode());
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getAssignDoc());
+			arrList.add(elb.getConfirmDate());
+			arrList.add(elb.getStartConfirm());
+			arrList.add(elb.getEndConfirm());
+			Double totalTimeView = elb.getTimerRead()/60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");;
+			arrList.add(df.format(totalTimeView));
 
 
 

@@ -864,24 +864,12 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 			q_checkRead.setParameter("docId", docId);
 			List<UserReadDocTimer> ret = q_checkRead.list();
 			Calendar current = Calendar.getInstance();
-			if (ret.size() == 0){
-				UserReadDocTimer userReadDocTimer = new UserReadDocTimer();
-				userReadDocTimer.setConfirm(true);
-				userReadDocTimer.setUserId(userId);
-				userReadDocTimer.setDocId(docId);
-				userReadDocTimer.setReading(false);
-				userReadDocTimer.setCreated(current);
-				userReadDocTimer.setStartConfirm(current);
-				userReadDocTimer.setEndConfirm(current);
-				userReadDocTimer.setTotalTime(0L);
-				userReadDocTimer.setCountView(0L);
-				session.save(userReadDocTimer);
-			} else {
-				UserReadDocTimer userReadDocTimer = ret.get(ret.size()-1);
-				userReadDocTimer.setConfirm(true);
-				userReadDocTimer.setEndConfirm(current);
-				session.update(userReadDocTimer);
-			}
+
+			UserReadDocTimer userReadDocTimer = ret.get(ret.size()-1);
+			userReadDocTimer.setConfirm(true);
+			userReadDocTimer.setConfirmDate(current);
+
+			session.update(userReadDocTimer);
 			HibernateUtil.commit(tx);
 		} catch (HibernateException e) {
 			HibernateUtil.rollback(tx);
@@ -952,37 +940,39 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 			q.setString("userId", userId);
 			q.setString("docId", docId);
 			List<UserReadDocTimer> ret = q.list();
-
+			Calendar current = Calendar.getInstance();
 			if (ret.size() == 0 ){
 				UserReadDocTimer userReadDocTimer = new UserReadDocTimer();
 				userReadDocTimer.setDocId(docId);
 				userReadDocTimer.setUserId(userId);
-				userReadDocTimer.setCreated(Calendar.getInstance());
+				userReadDocTimer.setCreated(current);
 				userReadDocTimer.setReading(true);
-				userReadDocTimer.setTotalTime(0L);
-				userReadDocTimer.setCountView(1L);
-				userReadDocTimer.setStartConfirm(Calendar.getInstance());
+				userReadDocTimer.setTotalTime(0);
+				userReadDocTimer.setTimeLastPreview(0);
+				userReadDocTimer.setCountView(1);
+				userReadDocTimer.setStartConfirm(current);
 				session.save(userReadDocTimer);
 				HibernateUtil.commit(tx);
 			}else if (!ret.get(ret.size()-1).isReading()){
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				if (dateFormat.format(ret.get(ret.size()-1).getCreated().getTime()).equalsIgnoreCase(dateFormat.format(Calendar.getInstance().getTime()))){
+				if (dateFormat.format(ret.get(ret.size()-1).getCreated().getTime()).equalsIgnoreCase(dateFormat.format(current.getTime()))){
 					UserReadDocTimer userReadDocTimer = ret.get(ret.size()-1);
 					userReadDocTimer.setReading(true);
-					userReadDocTimer.setCreated(Calendar.getInstance());
+					userReadDocTimer.setCreated(current);
 					userReadDocTimer.setCountView(userReadDocTimer.getCountView()+1);
 					if(!userReadDocTimer.isConfirm())
-						userReadDocTimer.setStartConfirm(Calendar.getInstance());
+						userReadDocTimer.setStartConfirm(current);
 					session.update(userReadDocTimer);
 				}else {
 					UserReadDocTimer userReadDocTimer = new UserReadDocTimer();
 					userReadDocTimer.setDocId(docId);
 					userReadDocTimer.setUserId(userId);
-					userReadDocTimer.setCreated(Calendar.getInstance());
+					userReadDocTimer.setCreated(current);
 					userReadDocTimer.setReading(true);
-					userReadDocTimer.setTotalTime(0L);
-					userReadDocTimer.setCountView(1L);
-					userReadDocTimer.setStartConfirm(Calendar.getInstance());
+					userReadDocTimer.setTotalTime(0);
+					userReadDocTimer.setTimeLastPreview(0);
+					userReadDocTimer.setCountView(1);
+					userReadDocTimer.setStartConfirm(current);
 					session.save(userReadDocTimer);
 				}
 				HibernateUtil.commit(tx);
@@ -1010,10 +1000,16 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 			List<UserReadDocTimer> ret = q.list();
 
 			if (ret.size() != 0 && ret.get(ret.size()-1).isReading()){
+				Calendar current = Calendar.getInstance();
 				UserReadDocTimer userReadDocTimer = ret.get(ret.size()-1);
 				userReadDocTimer.setReading(false);
-				userReadDocTimer.setTotalTime(userReadDocTimer.getTotalTime() + Calendar.getInstance().getTimeInMillis() - userReadDocTimer.getCreated().getTimeInMillis());
-				userReadDocTimer.setCreated(Calendar.getInstance());
+				userReadDocTimer.setTotalTime(userReadDocTimer.getTotalTime() + current.getTimeInMillis() - userReadDocTimer.getCreated().getTimeInMillis());
+				userReadDocTimer.setCreated(current);
+				if(userReadDocTimer.getStartConfirm().getTimeInMillis() > userReadDocTimer.getEndConfirm().getTimeInMillis()) {
+					userReadDocTimer.setEndConfirm(current);
+					userReadDocTimer.setTimeLastPreview(current.getTimeInMillis()-userReadDocTimer.getStartConfirm().getTimeInMillis());
+				}
+
 				session.update(userReadDocTimer);
 				HibernateUtil.commit(tx);
 			}

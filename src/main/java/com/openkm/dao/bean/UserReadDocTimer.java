@@ -35,6 +35,11 @@ public class UserReadDocTimer implements Serializable {
 	@CalendarBridge(resolution = Resolution.DAY)
 	protected Calendar created;
 
+	@Column(name = "CONFIRM_DATE")
+	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
+	@CalendarBridge(resolution = Resolution.DAY)
+	protected Calendar confirmDate;
+
 	@Column(name = "START_CONFIRM")
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
 	@CalendarBridge(resolution = Resolution.DAY)
@@ -55,6 +60,9 @@ public class UserReadDocTimer implements Serializable {
 
 	@Column(name = "TOTAL_TIME", nullable = false)
 	protected long totalTime;
+
+	@Column(name = "TIME_LAST_PREVIEW", nullable = false)
+	protected long timeLastPreview;
 
 	@Column(name = "COUNT_VIEW", nullable = false)
 	protected long countView;
@@ -137,5 +145,21 @@ public class UserReadDocTimer implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public Calendar getConfirmDate() {
+		return confirmDate;
+	}
+
+	public void setConfirmDate(Calendar confirmDate) {
+		this.confirmDate = confirmDate;
+	}
+
+	public long getTimeLastPreview() {
+		return timeLastPreview;
+	}
+
+	public void setTimeLastPreview(long timeLastPreview) {
+		this.timeLastPreview = timeLastPreview;
 	}
 }
