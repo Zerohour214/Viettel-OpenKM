@@ -15,12 +15,11 @@ import java.util.Calendar;
 @Table(name = "USER_READ_DOC_TIMER")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserReadDocTimer implements Serializable {
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private long id;
+	private Long id;
 
 	@Column(name = "USER_ID")
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)

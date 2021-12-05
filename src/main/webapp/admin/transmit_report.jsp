@@ -42,83 +42,66 @@
                 }
             });
 
-            $("#dbegin").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                defaultDate: "-1w",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dend").datepicker("option", "minDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });
+            function dbegin(element) {
+                element.datepicker({
+                    showOn: "button",
+                    buttonImage: "img/action/calendar_icon_green.png",
+                    buttonImageOnly: true,
+                    dateFormat: "yy-mm-dd",
+                    defaultDate: "-1w",
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 1,
+                    showWeek: false,
+                    firstDay: 1,
+                    onClose: function (selectedDate) {
+                        $("#dend").datepicker("option", "minDate", selectedDate);
+                        $('.ui-datepicker-trigger').css("vertical-align", "middle");
+                    }
+                });
+            }
 
-            $("#dend").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dbegin").datepicker("option", "maxDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });
-            $("#dbegin2").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                defaultDate: "-1w",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dend2").datepicker("option", "minDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });
+            function dend(element) {
+                element.datepicker({
+                    showOn: "button",
+                    buttonImage: "img/action/calendar_icon_green.png",
+                    buttonImageOnly: true,
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 1,
+                    showWeek: false,
+                    firstDay: 1,
+                    onClose: function (selectedDate) {
+                        $("#dbegin").datepicker("option", "maxDate", selectedDate);
+                        $('.ui-datepicker-trigger').css("vertical-align", "middle");
+                    }
+                });
+            }
 
-            $("#dend2").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dbegin2").datepicker("option", "maxDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });
+            dbegin($("#dbegin"));
+            dend($("#dend"));
+            dbegin($("#dbegin1"));
+            dend($("#dend1"));
+            dbegin($("#dbegin2"));
+            dend($("#dend2"));
+
 
             $('.ui-datepicker-trigger').css('vertical-align', 'middle');
             $('select#user').chosen({disable_search_threshold: 10});
             $('select#action').chosen({disable_search_threshold: 10});
 
-            $("#filter-input").click(() => {
-                $("#action-input").val("Filter")
+            $("#filter-input-THDVB").click(() => {
+                $("#action-input-THDVB").val("Filter")
             })
             $("#transmit-export-btn-KQTT").click(() => {
                 $("#action-input-KQTT").val("KQTT")
             })
             $("#transmit-export-btn-THDVB").click(() => {
                 $("#action-input-THDVB").val("THDVB")
+            })
+            $("#transmit-export-btn-CLVB").click(() => {
+                $("#action-input-CLVB").val("CLVB")
             })
 
         });
@@ -171,7 +154,7 @@
                                                     </c:choose>
                                                 </c:forEach>
                                             </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input"/>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-THDVB"/>
                                             <input type="hidden" name="action_" id="action-input-THDVB">
                                             <button type="submit" class="btn btn-success" id="transmit-export-btn-THDVB" style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;Export
@@ -229,8 +212,25 @@
                     <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
                 </div>
                 <div id="CLVB" class="tab-pane fade">
-                    <h3>Menu 3</h3>
-                    <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                    <div class="card">
+                        <div class="card-header"><h4>Báo cáo chất lượng văn bản</h4></div>
+                        <div class="card-body">
+                            <form action="ReportExport" style="width: 50vw">
+                                <b>From</b> <input type="text" name="dbegin" id="dbegin1"  size="15"
+                                                   readonly="readonly"/>
+                                <b>To</b> <input type="text" name="dend" id="dend1"  size="15"
+                                                 readonly="readonly"/>
+                                <label>
+                                    <b>Số phút</b>
+                                </label>
+                                <input type="number" name="minutes">
+                                <input type="hidden" name="action_" id="action-input-CLVB">
+                                <button type="submit" class="btn btn-success" id="transmit-export-btn-CLVB" style="padding: 0px 15px !important;">
+                                    <span class="fa fa-download"></span>&nbsp;Export
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

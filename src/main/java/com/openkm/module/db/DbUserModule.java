@@ -2,6 +2,7 @@ package com.openkm.module.db;
 
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.UserDAO;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.dao.bean.User;
 import com.openkm.module.UserModule;
 import org.slf4j.Logger;
@@ -20,6 +21,11 @@ public class DbUserModule implements UserModule, ApplicationContextAware {
 	@Override
 	public List<User> getAllUser(String search, int isNotInOrg) throws DatabaseException {
 		return UserDAO.getInstance().getAllUser(search, isNotInOrg);
+	}
+
+	@Override
+	public OrganizationVTX getOrgByUserId(String userId) throws DatabaseException {
+		return UserDAO.getInstance().getOrgByUserId(userId);
 	}
 
 	@Override

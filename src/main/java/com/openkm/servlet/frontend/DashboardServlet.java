@@ -1010,7 +1010,7 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 					userReadDocTimer.setLess1Min(userReadDocTimer.getLess1Min()+1);
 				}
 				userReadDocTimer.setCreated(current);
-				if(userReadDocTimer.getStartConfirm().getTimeInMillis() > userReadDocTimer.getEndConfirm().getTimeInMillis()) {
+				if(!userReadDocTimer.isConfirm() || userReadDocTimer.getEndConfirm() == null || userReadDocTimer.getStartConfirm().getTimeInMillis() > userReadDocTimer.getEndConfirm().getTimeInMillis()) {
 					userReadDocTimer.setEndConfirm(current);
 					userReadDocTimer.setTimeLastPreview(current.getTimeInMillis()-userReadDocTimer.getStartConfirm().getTimeInMillis());
 				}

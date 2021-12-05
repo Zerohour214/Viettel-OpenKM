@@ -84,8 +84,13 @@
                 $('#item').val("");
             });
 
-            $("#export-btn").click(() => {
+            $("#export-btn-doc").click(() => {
                 $("#action-input").val("Export")
+                $("#type-report-input").val("DOC");
+            })
+            $("#export-btn-xls").click(() => {
+                $("#action-input").val("Export")
+                $("#type-report-input").val("XLS");
             })
             $("#filter-input").click(() => {
                 $("#action-input").val("Filter")
@@ -159,8 +164,12 @@
                                    class="resetButton btn btn-danger" id="resetButton"/>
                             <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input"/>
                             <input type="hidden" name="action_" id="action-input">
-                            <button type="submit" class="btn btn-success" id="export-btn">
-                                <i class="fa fa-download"></i>&nbsp; Export
+                            <input type="hidden" name="type_report" id="type-report-input">
+                            <button type="submit" class="btn btn-primary" id="export-btn-doc" style="padding: 0px 15px !important;">
+                                <i class="fa fa-download"></i>&nbsp;Doc
+                            </button>
+                            <button type="submit" class="btn btn-success" id="export-btn-xls" style="padding: 0px 15px !important;">
+                                <i class="fa fa-download"></i>&nbsp;Xls
                             </button>
                         </form>
                     </td>

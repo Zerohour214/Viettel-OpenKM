@@ -12,6 +12,7 @@ public class ActivityLogExportBean {
 	String documentName;
 	String action;
 	Timestamp dateTime;
+	Long index;
 
 	public String getOrgCode() {
 		return orgCode;
@@ -67,5 +68,13 @@ public class ActivityLogExportBean {
 
 	public void setDateTime(Timestamp dateTime) {
 		this.dateTime = dateTime;
+	}
+
+	public Long getIndex() {
+		return index;
+	}
+
+	public void setIndex(Long index) {
+		this.index = index;
 	}
 }

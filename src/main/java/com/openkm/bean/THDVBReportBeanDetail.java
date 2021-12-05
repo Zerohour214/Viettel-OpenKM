@@ -2,7 +2,7 @@ package com.openkm.bean;
 
 import java.sql.Timestamp;
 
-public class THDVBReportBean {
+public class THDVBReportBeanDetail {
 	String orgName;
 	String fullname;
 	String employeeCode;

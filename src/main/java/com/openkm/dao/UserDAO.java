@@ -2,10 +2,10 @@ package com.openkm.dao;
 
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.Organization;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.dao.bean.User;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.*;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +27,11 @@ public class UserDAO {
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			String nativeQuery = "select u.USR_NAME as name, u.USR_ID as id, u.USR_EMAIL as email " +
+			String nativeQuery =
+					" select u.USR_NAME as name, u.USR_ID as id, u.USR_EMAIL as email " +
 					" from OKM_USER u " +
-
 					" where (u.USR_NAME like concat('%', :search, '%') or u.USR_ID like concat('%', :search, '%') or u.USR_EMAIL like concat('%', :search, '%') )" +
-					" and u.USR_ACTIVE = 'T' and u.USR_ID != 'okmAdmin' ";
+					" and u.USR_ACTIVE = 'T' ";
 
 			String userInOrgQuery = "SELECT uo.USER_ID FROM USER_ORG_VTX uo";
 			Query q = session.createSQLQuery(userInOrgQuery);
@@ -47,6 +47,34 @@ public class UserDAO {
 			List<User> ret = q.list();
 			log.debug("getAllUser: {}", ret);
 			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public OrganizationVTX getOrgByUserId(String userId) throws DatabaseException {
+		Session session = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String nativeQuery = "SELECT o.CODE code, o.NAME name, o.ORG_PARENT parent, o.PATH path FROM okm_user u\n" +
+					"JOIN user_org_vtx uo ON u.USR_ID  = uo.USER_ID\n" +
+					"JOIN organization_vtx o ON o.ID = uo.ORG_ID\n" +
+					"WHERE u.USR_ID = :userId ";
+			SQLQuery q = session.createSQLQuery(nativeQuery);
+			q.setResultTransformer(Transformers.aliasToBean(OrganizationVTX.class));
+			q.addScalar("code");
+			q.addScalar("name");
+			q.addScalar("parent", Hibernate.LONG);
+			q.addScalar("path");
+
+			q.setParameter("userId", userId);
+
+			OrganizationVTX result = (OrganizationVTX) q.uniqueResult();
+			return result;
+
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
