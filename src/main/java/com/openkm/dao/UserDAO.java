@@ -70,6 +70,7 @@ public class UserDAO {
 			q.addScalar("parent", Hibernate.LONG);
 			q.addScalar("path");
 
+
 			q.setParameter("userId", userId);
 
 			OrganizationVTX result = (OrganizationVTX) q.uniqueResult();

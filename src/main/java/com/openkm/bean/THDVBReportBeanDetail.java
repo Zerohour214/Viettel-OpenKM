@@ -11,6 +11,7 @@ public class THDVBReportBeanDetail {
 	Long totalTimeView;
 	String author;
 	Timestamp timeUpload;
+	Long index;
 
 	public String getOrgName() {
 		return orgName;
@@ -74,5 +75,13 @@ public class THDVBReportBeanDetail {
 
 	public void setTimeUpload(Timestamp timeUpload) {
 		this.timeUpload = timeUpload;
+	}
+
+	public Long getIndex() {
+		return index;
+	}
+
+	public void setIndex(Long index) {
+		this.index = index;
 	}
 }

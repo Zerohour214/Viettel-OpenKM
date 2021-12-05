@@ -8,6 +8,7 @@ public class THDVBReportBeanGeneral {
 	Long totalUser;
 	Long viewedUser;
 	String userId;
+	Long index;
 
 	public String getOrgName() {
 		return orgName;
@@ -47,5 +48,13 @@ public class THDVBReportBeanGeneral {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public Long getIndex() {
+		return index;
+	}
+
+	public void setIndex(Long index) {
+		this.index = index;
 	}
 }

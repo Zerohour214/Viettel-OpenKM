@@ -136,7 +136,7 @@
         </a>
       </li>
         <li>
-            <a target="frame" href="ReportExport" title="Transmited Report">
+            <a target="frame" href="transmit_report.jsp" title="Transmited Report">
                 <span class="glyphicons glyphicons-paperclip icon-admin-menu-renew"></span>
             </a>
         </li>

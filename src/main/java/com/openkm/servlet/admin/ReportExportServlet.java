@@ -39,7 +39,10 @@ import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
 import com.spire.doc.Table;
 import com.spire.doc.TableRow;
+import net.sf.jxls.transformer.XLSTransformer;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +50,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -79,7 +81,7 @@ public class ReportExportServlet extends BaseServlet {
 		String minutes = WebUtils.getString(request, "minutes");
 		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
-
+		String typeReport = WebUtils.getString(request, "type_report");
 		String userId = request.getRemoteUser();
 
 
@@ -105,32 +107,39 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setUser(user);
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
-				if(orgUser == null)
 
 				if ("KQTT".equals(action_))
 					doExportKQTT(filter, response, orgUser);
 
 				if ("THDVB".equals(action_)) {
-					doExportTHDVB(filter, response, orgUser);
+					List<THDVBReportBeanDetail> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
+					List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
+					if("DOC".equals(typeReport)) {
+						doExportTHDVBDOC(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
+					if("XLS".equals(typeReport)) {
+						doExportTHDVBXLS(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
+
+
 				}
 				if ("CLVB".equals(action_)) {
-
 					doExportCLVB(filter, Double.parseDouble(minutes));
-				}else {
+				}
+
+				if ("".equals(action_) || "Filter".equals(action_)) {
+					sc.setAttribute("dbeginFilter", dbegin);
+					sc.setAttribute("dendFilter", dend);
+					sc.setAttribute("userFilter", user);
+					sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
 					sc.setAttribute("results", ReportExportDAO.exportTHDVBByFilter(filter));
 				}
-			}else {
+
+			} else {
 				sc.setAttribute("results", null);
 			}
-			if ("".equals(action_) || "Filter".equals(action_)) {
-				sc.setAttribute("dbeginFilter", dbegin);
-				sc.setAttribute("dendFilter", dend);
-				sc.setAttribute("userFilter", user);
-				sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
+			sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 
-
-				sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
-			}
 		} catch (ParseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (DatabaseException e) {
@@ -142,10 +151,11 @@ public class ReportExportServlet extends BaseServlet {
 		}
 	}
 
-	public void doExportTHDVB(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org) throws IOException, URISyntaxException, DatabaseException, ServletException {
+	public void doExportTHDVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,
+								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<THDVBReportBeanDetail> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
 
-		List<THDVBReportBeanDetail> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
-		List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
+
 
 		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -211,7 +221,7 @@ public class ReportExportServlet extends BaseServlet {
 //			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
 			Double totalTimeView = elb.getTotalTimeView() / 60000.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-			;
+
 			arrList.add(df.format(totalTimeView));
 			arrList.add(elb.getAuthor().split("@")[0]);
 			arrList.add(elb.getTimeUpload());
@@ -235,6 +245,59 @@ public class ReportExportServlet extends BaseServlet {
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
 		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
 
+	}
+
+	public void doExportTHDVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
+								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<THDVBReportBeanDetail> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
+
+		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", orgUser.getName());
+		map.put("generalBeans", exportGeneralBeanList);
+		map.put("detailBeans", exportBeanList);
+		map.put("totalDoc", String.valueOf(
+				exportGeneralBeanList
+								.stream()
+								.map(object -> object.getDocName())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		);
+
+		map.put("totalViewedUser", String.valueOf(
+				String.valueOf(
+						exportGeneralBeanList
+								.stream()
+								.map(object -> object.getUserId())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		));
+
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		resultWorkbook.write(byteArrayOutputStream);
+
+
+		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
 	public void doExportCLVB(ActivityFilter filter, Double minute) {
@@ -283,7 +346,7 @@ public class ReportExportServlet extends BaseServlet {
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
 		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
-		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b)->a+b).get()));
+		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b) -> a + b).get()));
 
 
 		index1 = 1;

@@ -59,6 +59,9 @@ public class ReportExportDAO {
 			q.addScalar("timeUpload");
 			q.addScalar("viewNum", Hibernate.LONG);
 			List<THDVBReportBeanDetail> ret = q.list();
+			for(int i=1; i <= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+			}
 			return ret;
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
@@ -83,8 +86,12 @@ public class ReportExportDAO {
 				"JOIN USER_READ_DOC_TIMER ut ON uo_.USER_ID = ut.USER_ID\n" +
 				"JOIN ORGANIZATION_VTX o ON o.ID = uo_.ORG_ID\n" +
 				"JOIN OKM_NODE_BASE d ON d.NBS_UUID = ut.DOC_ID\n" +
-				"WHERE ut.LAST_PREVIEW BETWEEN :begin and :end\n" +
-				"GROUP BY o.ID, d.NBS_UUID\n" +
+				"WHERE ut.LAST_PREVIEW BETWEEN :begin and :end\n";
+
+		if (filter.getUser() != null && !filter.getUser().equals(""))
+			qs += "AND u.USR_ID=:user\n ";
+
+			qs +=	"GROUP BY o.ID, d.NBS_UUID\n" +
 				") t2\n" +
 				"\n" +
 				"ON t1.orgId = t2.orgId\n";
@@ -95,13 +102,18 @@ public class ReportExportDAO {
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
-
+			if (filter.getUser() != null && !filter.getUser().equals(""))
+				q.setString("user", filter.getUser());
 			q.setResultTransformer(Transformers.aliasToBean(THDVBReportBeanGeneral.class));
 			q.addScalar("orgName");
 			q.addScalar("docName");
 			q.addScalar("totalUser", Hibernate.LONG);
 			q.addScalar("viewedUser", Hibernate.LONG);
+			q.addScalar("userId");
 			List<THDVBReportBeanGeneral> ret = q.list();
+			for(int i=1; i <= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+			}
 			return ret;
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);

@@ -97,8 +97,13 @@
             $("#transmit-export-btn-KQTT").click(() => {
                 $("#action-input-KQTT").val("KQTT")
             })
-            $("#transmit-export-btn-THDVB").click(() => {
+            $("#export-btn-THDVB-DOC").click(() => {
                 $("#action-input-THDVB").val("THDVB")
+                $("#type-report-THDVB").val("DOC")
+            })
+            $("#export-btn-THDVB-XLS").click(() => {
+                $("#action-input-THDVB").val("THDVB")
+                $("#type-report-THDVB").val("XLS")
             })
             $("#transmit-export-btn-CLVB").click(() => {
                 $("#action-input-CLVB").val("CLVB")
@@ -123,10 +128,8 @@
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
                 <li><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
-                <li><a data-toggle="tab" href="#THCNTL">Báo cáo tình hình cập nhập tài liệu</a></li>
                 <li><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
             </ul>
-
             <div class="tab-content">
                 <div id="THDVB" class="tab-pane fade in active">
                     <div class="card">
@@ -137,9 +140,9 @@
                                     <td align="right" colspan="9">
                                         <form action="ReportExport" style="width: 50vw">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
-                                                               readonly="readonly"/>
+                                                               readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend"  size="15"
-                                                             readonly="readonly"/>
+                                                             readonly="readonly" value="${dendFilter}"/>
                                             <b>User</b>
                                             <select name="user" id="user" style="width: 125px" data-placeholder="&nbsp;">
                                                 <option value="">All</option>
@@ -155,9 +158,13 @@
                                                 </c:forEach>
                                             </select>
                                             <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-THDVB"/>
-                                            <input type="hidden" name="action_" id="action-input-THDVB">
-                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-THDVB" style="padding: 0px 15px !important;">
-                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            <input type="hidden" name="action_" id="action-input-THDVB" value="THDVB">
+                                            <input type="hidden" name="type_report" id="type-report-THDVB">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-THDVB-DOC" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;DOC
+                                            </button>
+                                            <button type="submit" class="btn btn-success" id="export-btn-THDVB-XLS" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
                                     </td>
@@ -181,7 +188,9 @@
                                         <td>${act.employeeCode}</td>
                                         <td>${act.docName}</td>
                                         <td>${act.viewNum}</td>
-                                        <td>${act.totalTimeView/60000}</td>
+                                        <td>
+                                            <fmt:formatNumber type="number" maxFractionDigits="1" value="${act.totalTimeView/60000}" />
+                                                </td>
                                         <td>${act.author}</td>
                                         <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}" pattern="MM/dd/yyyy HH:mm"/></td>
                                     </tr>
@@ -206,10 +215,6 @@
                             </form>
                         </div>
                     </div>
-                </div>
-                <div id="THCNTL" class="tab-pane fade">
-                    <h3>Menu 2</h3>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
                 </div>
                 <div id="CLVB" class="tab-pane fade">
                     <div class="card">
