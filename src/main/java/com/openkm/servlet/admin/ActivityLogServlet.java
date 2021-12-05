@@ -25,12 +25,18 @@ import com.openkm.api.OKMAuth;
 import com.openkm.bean.ActivityLogExportBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ActivityDAO;
+import com.openkm.dao.UserDAO;
 import com.openkm.dao.bean.ActivityFilter;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.principal.PrincipalAdapterException;
+import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.UserActivity;
 import com.openkm.util.WebUtils;
 import com.spire.doc.*;
+import net.sf.jxls.transformer.XLSTransformer;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +51,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Activity log servlet
@@ -137,7 +144,7 @@ public class ActivityLogServlet extends BaseServlet {
 		String action = WebUtils.getString(request, "action");
 		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
-
+		String typeReport = WebUtils.getString(request, "type_report");
 
 		try {
 			if (!dbegin.equals("") && !dend.equals("")) {
@@ -163,7 +170,16 @@ public class ActivityLogServlet extends BaseServlet {
 				filter.setItem(item);
 
 				if ("Export".equals(action_)) {
-					doExport(filter, response);
+					OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(request.getRemoteUser());
+					List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
+					List<ActivityLogExportBean> exportBeanGeneralList = ActivityDAO.exportByFilterGeneral(filter);
+					if ("DOC".equals(typeReport)) {
+						doExportDOC(filter, response, orgUser, exportBeanGeneralList, exportBeanList);
+					}
+					if ("XLS".equals(typeReport)) {
+						doExportXLS(filter, response, orgUser, exportBeanGeneralList, exportBeanList);
+					}
+
 				} else {
 					sc.setAttribute("results", ActivityDAO.findByFilter(filter));
 
@@ -200,10 +216,9 @@ public class ActivityLogServlet extends BaseServlet {
 		}
 	}
 
-	public void doExport(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
-
-		List<ActivityLogExportBean> exportBeanList = ActivityDAO.exportByFilter(filter);
-
+	public void doExportDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
+							List<ActivityLogExportBean> exportBeanGeneralList, List<ActivityLogExportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -214,48 +229,37 @@ public class ActivityLogServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", orgUser.getName());
 
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
 		int index1 = 1;
-		List<String> docNameList = new ArrayList<>();
-		for (ActivityLogExportBean elb : exportBeanList) {
+
+		for (ActivityLogExportBean elb : exportBeanGeneralList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
 			arrList.add(elb.getDocumentName());
-
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
+			arrList.add(elb.getAction());
 			TableRow dataRow = table.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 
 		}
 
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
-		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(
+				exportBeanGeneralList
+						.stream()
+						.map(object -> object.getDocumentName())
+						.collect(Collectors.toList())
+						.stream()
+						.distinct().count()
+		));
 
 
 		index1 = 1;
@@ -267,34 +271,14 @@ public class ActivityLogServlet extends BaseServlet {
 			arrList.add(elb.getFullName());
 			arrList.add(elb.getEmployeeCode());
 			arrList.add(elb.getDocumentName());
-
-
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
+			arrList.add(elb.getAction());
 			arrList.add(elb.getDateTime());
 			TableRow dataRow2 = table2.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 		}
 
@@ -303,14 +287,14 @@ public class ActivityLogServlet extends BaseServlet {
 		}
 
 
-
 		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
 		File tmpFile = Paths.get(res_.toURI()).toFile();
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
 		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
 
+		new DownloadReportUtils().downloadReportDOC(docSpire, response, getServletContext(), "download/BC_ACTIVITY_DOCUMENT.doc");
 
-		InputStream is = null;
+		/*InputStream is = null;
 		OutputStream os = null;
 		try {
 			 is = new FileInputStream(tmpFile);
@@ -345,7 +329,87 @@ public class ActivityLogServlet extends BaseServlet {
 				is.close();
 			if (os != null)
 				os.close();
+		}*/
+
+	}
+
+	public void doExportXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
+							List<ActivityLogExportBean> exportBeanGeneralList, List<ActivityLogExportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
+
+
+		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", orgUser.getName());
+		map.put("generalBeans", exportBeanGeneralList);
+		map.put("detailBeans", exportBeanList);
+		map.put("totalDoc", String.valueOf(
+				exportBeanGeneralList
+						.stream()
+						.map(object -> object.getDocumentName())
+						.collect(Collectors.toList())
+						.stream()
+						.distinct().count()
+				)
+		);
+
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
 		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		resultWorkbook.write(byteArrayOutputStream);
+
+
+		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
+		/*InputStream is = null;
+		OutputStream os = null;
+		try {
+			 is = new FileInputStream(tmpFile);
+			 os = response.getOutputStream();
+
+			ServletContext context = getServletContext();
+
+			String mimeType = context.getMimeType(absoluteTmpPath);
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+
+			response.setContentType(mimeType);
+			response.setContentLength((int) tmpFile.length());
+
+
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", tmpFile.getName());
+			response.setHeader(headerKey, headerValue);
+
+
+			int len = -1;
+			byte[] buffer = new byte[4096000];
+			while ((len = is.read(buffer, 0, buffer.length)) != -1) {
+				os.write(buffer, 0, len);
+			}
+
+		} catch (IOException ioe) {
+			throw new ServletException(ioe.getMessage());
+		} finally {
+			if (is != null)
+				is.close();
+			if (os != null)
+				os.close();
+		}*/
 
 	}
 }

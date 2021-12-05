@@ -21,10 +21,14 @@
 
 package com.openkm.servlet.admin;
 
-import com.openkm.bean.THDVBReportBean;
+import com.google.zxing.common.detector.MathUtils;
+import com.openkm.bean.THDVBReportBeanDetail;
+import com.openkm.bean.THDVBReportBeanGeneral;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ReportExportDAO;
+import com.openkm.dao.UserDAO;
 import com.openkm.dao.bean.ActivityFilter;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
@@ -59,14 +63,19 @@ public class ReportExportServlet extends BaseServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException,
 			ServletException {
 		log.debug("doGet({}, {})", request, response);
+
 		ServletContext sc = getServletContext();
 		request.setCharacterEncoding("UTF-8");
 		String dbegin = WebUtils.getString(request, "dbegin");
 		String dend = WebUtils.getString(request, "dend");
 		String user = WebUtils.getString(request, "user");
 		String action = WebUtils.getString(request, "action");
+		String minutes = WebUtils.getString(request, "minutes");
 		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
+
+		String userId = request.getRemoteUser();
+
 
 
 		try {
@@ -92,9 +101,14 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setAction(action);
 				filter.setItem(item);
 
-				if("THDVB".equals(action_))
-					doExportTHDVB(filter, response);
+				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
+				if("THDVB".equals(action_)) {
+					doExportTHDVB(filter, response, orgUser);
+				}
+				if("CLVB".equals(action_)) {
+					doExportCLVB(filter, Double.parseDouble(minutes));
+				}
 
 			}
 		} catch (ParseException e) {
@@ -106,10 +120,10 @@ public class ReportExportServlet extends BaseServlet {
 		}
 	}
 
-	public void doExportTHDVB(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
+	public void doExportTHDVB(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
-		List<THDVBReportBean> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
-
+		List<THDVBReportBeanDetail> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
+		List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
 
 		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -120,53 +134,40 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", org.getName());
 		int index1 = 1;
-		/*Table table = docSpire.getSections().get(0).getTables().get(2);
-
+		Table table = docSpire.getSections().get(0).getTables().get(2);
 
 		List<String> docNameList = new ArrayList<>();
-		for (ActivityLogExportBean elb : exportBeanList) {
+		List<Long> viewNumList = new ArrayList<>();
+
+		for (THDVBReportBeanGeneral elb : exportGeneralBeanList) {
+			docNameList.add(elb.getDocName());
+			viewNumList.add(elb.getViewedUser());
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
-			arrList.add(elb.getDocumentName());
-
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getTotalUser());
+			arrList.add(elb.getViewedUser());
 			TableRow dataRow = table.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 
 		}
 
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
-		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));*/
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b)->a+b).get()));
 
 
 		index1 = 1;
 		Table table2 = docSpire.getSections().get(0).getTables().get(4);
-		for (THDVBReportBean elb : exportBeanList) {
+		for (THDVBReportBeanDetail elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
@@ -197,10 +198,15 @@ public class ReportExportServlet extends BaseServlet {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
 		}
 
-		ServletContext context = getServletContext();
 
+
+		ServletContext context = getServletContext();
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
-		downloadReportUtils.downloadReport(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+
+	}
+
+	public void doExportCLVB(ActivityFilter filter, Double minute) {
 
 	}
 }

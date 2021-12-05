@@ -172,7 +172,6 @@ public class ActivityDAO {
 	}
 
 	public static List<ActivityLogExportBean> exportByFilter(ActivityFilter filter) throws DatabaseException {
-//		String qs = "from Activity a where a.date between :begin and :end ";
 
 		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT', 'MOVE_DOCUMENT' )";
 
@@ -224,6 +223,110 @@ public class ActivityDAO {
 
 			List<ActivityLogExportBean> ret = q.list();
 
+			for(int i=1; i<= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+				String actionName = "";
+				switch (ret.get(i-1).getAction()) {
+					case "CREATE_DOCUMENT":
+						actionName = "Thêm mới";
+						break;
+					case "CHECKIN_DOCUMENT":
+						actionName = "Sửa";
+						break;
+					case "DELETE_DOCUMENT":
+						actionName = "Xóa (thùng rác)";
+						break;
+					case "PURGE_DOCUMENT":
+						actionName = "Xóa";
+						break;
+					case "MOVE_DOCUMENT":
+						actionName = "Phục hồi";
+						break;
+				}
+				ret.get(i-1).setAction(actionName);
+			}
+
+			log.debug("findByFilter: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public static List<ActivityLogExportBean> exportByFilterGeneral(ActivityFilter filter) throws DatabaseException {
+
+		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT', 'MOVE_DOCUMENT' )";
+
+		String qs = "SELECT o.CODE as orgCode, o.NAME as orgName,\n" +
+				"onb.NBS_NAME as documentName, oa.ACT_ACTION as action, oa.ACT_DATE as dateTime " +
+				"FROM OKM_ACTIVITY oa\n" +
+				"JOIN OKM_USER ou ON oa.ACT_USER = ou.USR_ID\n" +
+				"JOIN USER_ORG_VTX uov ON uov.USER_ID = ou.USR_ID\n" +
+				"JOIN ORGANIZATION_VTX o ON o.ID = uov.ORG_ID\n" +
+				"JOIN OKM_NODE_DOCUMENT okd ON okd.NBS_UUID = oa.ACT_ITEM\n" +
+				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = okd.NBS_UUID\n " +
+				"WHERE oa.ACT_DATE between :begin and :end " +
+				"AND oa.ACT_ACTION IN " + actionReports + "\n";
+
+
+		if (filter.getUser() != null && !filter.getUser().equals(""))
+			qs += "and ou.USR_ID=:user ";
+		if (filter.getAction() != null && !filter.getAction().equals(""))
+			qs += "and oa.ACT_ACTION=:action ";
+		if (filter.getItem() != null && !filter.getItem().equals("")) {
+			qs += "and oa.ACT_ITEM=:item ";
+		}
+
+		qs += "GROUP BY orgCode, documentName, action\n";
+		qs += "order by oa.ACT_DATE, o.CODE";
+		Session session = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			SQLQuery q =  session.createSQLQuery(qs);
+			q.setCalendar("begin", filter.getBegin());
+			q.setCalendar("end", filter.getEnd());
+
+			if (filter.getUser() != null && !filter.getUser().equals(""))
+				q.setString("user", filter.getUser());
+			if (filter.getAction() != null && !filter.getAction().equals(""))
+				q.setString("action", filter.getAction());
+			if (filter.getItem() != null && !filter.getItem().equals(""))
+				q.setString("item", filter.getItem());
+
+			q.setResultTransformer(Transformers.aliasToBean(ActivityLogExportBean.class));
+			q.addScalar("orgCode");
+			q.addScalar("orgName");
+
+			q.addScalar("action");
+			q.addScalar("documentName");
+
+			List<ActivityLogExportBean> ret = q.list();
+
+			for(int i=1; i<= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+				String actionName = "";
+				switch (ret.get(i-1).getAction()) {
+					case "CREATE_DOCUMENT":
+						actionName = "Thêm mới";
+						break;
+					case "CHECKIN_DOCUMENT":
+						actionName = "Sửa";
+						break;
+					case "DELETE_DOCUMENT":
+						actionName = "Xóa (thùng rác)";
+						break;
+					case "PURGE_DOCUMENT":
+						actionName = "Xóa";
+						break;
+					case "MOVE_DOCUMENT":
+						actionName = "Phục hồi";
+						break;
+				}
+				ret.get(i-1).setAction(actionName);
+			}
 
 			log.debug("findByFilter: {}", ret);
 			return ret;

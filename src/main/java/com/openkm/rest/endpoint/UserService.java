@@ -2,6 +2,7 @@ package com.openkm.rest.endpoint;
 
 import com.google.gson.Gson;
 import com.openkm.core.DatabaseException;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.module.ModuleManager;
 import com.openkm.module.OrgVTXModule;
 import com.openkm.module.UserModule;
@@ -26,5 +27,16 @@ public class UserService {
 
 		String json = new Gson().toJson(um.getAllUser(userSearch, isNotInOrg));
 		return json;
+	}
+
+	@GET
+	@Path("/getOrgByUserId")
+	public OrganizationVTX getOrgByUserId(@QueryParam("userId") String userId) throws DatabaseException {
+		UserModule um = ModuleManager.getUserModule();
+		if(userId == null) userId = "";
+
+
+		OrganizationVTX organizationVTX = um.getOrgByUserId(userId);
+		return organizationVTX;
 	}
 }

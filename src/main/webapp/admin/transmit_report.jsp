@@ -30,7 +30,49 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $("#dbegin").datepicker({
+            function dbegin(element) {
+                element.datepicker({
+                    showOn: "button",
+                    buttonImage: "img/action/calendar_icon_green.png",
+                    buttonImageOnly: true,
+                    dateFormat: "yy-mm-dd",
+                    defaultDate: "-1w",
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 1,
+                    showWeek: false,
+                    firstDay: 1,
+                    onClose: function (selectedDate) {
+                        $("#dend").datepicker("option", "minDate", selectedDate);
+                        $('.ui-datepicker-trigger').css("vertical-align", "middle");
+                    }
+                });
+            }
+
+            function dend(element) {
+                element.datepicker({
+                    showOn: "button",
+                    buttonImage: "img/action/calendar_icon_green.png",
+                    buttonImageOnly: true,
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true,
+                    numberOfMonths: 1,
+                    showWeek: false,
+                    firstDay: 1,
+                    onClose: function (selectedDate) {
+                        $("#dbegin").datepicker("option", "maxDate", selectedDate);
+                        $('.ui-datepicker-trigger').css("vertical-align", "middle");
+                    }
+                });
+            }
+
+            dbegin($("#dbegin"));
+            dend($("#dend"));
+            dbegin($("#dbegin1"));
+            dend($("#dend1"));
+
+            /*$("#dbegin").datepicker({
                 showOn: "button",
                 buttonImage: "img/action/calendar_icon_green.png",
                 buttonImageOnly: true,
@@ -61,7 +103,7 @@
                     $("#dbegin").datepicker("option", "maxDate", selectedDate);
                     $('.ui-datepicker-trigger').css("vertical-align", "middle");
                 }
-            });
+            });*/
 
             $('.ui-datepicker-trigger').css('vertical-align', 'middle');
             $('select#user').chosen({disable_search_threshold: 10});
@@ -93,7 +135,27 @@
                         <b>To</b> <input type="text" name="dend" id="dend"  size="15"
                                          readonly="readonly"/>
                         <input type="hidden" name="action_" value="THDVB">
-                        <button type="submit" class="btn btn-success" id="transmit-export-btn" style="padding: 0px 15px !important;">
+                        <button type="submit" class="btn btn-success" style="padding: 0px 15px !important;">
+                            <span class="fa fa-download"></span>&nbsp;Export
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h4>Báo cáo chất lượng văn bản</h4></div>
+                <div class="card-body">
+                    <form action="ReportExport" style="width: 50vw">
+                        <b>From</b> <input type="text" name="dbegin" id="dbegin1"  size="15"
+                                           readonly="readonly"/>
+                        <b>To</b> <input type="text" name="dend" id="dend1"  size="15"
+                                         readonly="readonly"/>
+                        <label>
+                            <b>Số phút</b>
+                        </label>
+                        <input type="number" name="minutes">
+                        <input type="hidden" name="action_" value="CLVB">
+                        <button type="submit" class="btn btn-success" style="padding: 0px 15px !important;">
                             <span class="fa fa-download"></span>&nbsp;Export
                         </button>
                     </form>
