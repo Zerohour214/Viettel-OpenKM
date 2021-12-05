@@ -7,6 +7,7 @@ public class THDVBReportBeanGeneral {
 	String docName;
 	Long totalUser;
 	Long viewedUser;
+	String userId;
 
 	public String getOrgName() {
 		return orgName;
@@ -38,5 +39,13 @@ public class THDVBReportBeanGeneral {
 
 	public void setViewedUser(Long viewedUser) {
 		this.viewedUser = viewedUser;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }

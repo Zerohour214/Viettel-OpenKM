@@ -63,7 +63,7 @@ public class ReportExportDAO {
 	}
 
 	public static List<THDVBReportBeanGeneral> exportTHDVBGeneralByFilter(ActivityFilter filter) throws DatabaseException {
-		String qs = "SELECT t2.orgName, t2.docName, t1.totalUser, t2.viewedUser FROM \n" +
+		String qs = "SELECT t2.orgName, t2.docName, t1.totalUser, t2.viewedUser, t2.userId FROM \n" +
 				"(\n" +
 				"SELECT uo.ORG_ID orgId, COUNT(*) totalUser\n" +
 				"FROM USER_ORG_VTX uo\n" +
@@ -71,7 +71,7 @@ public class ReportExportDAO {
 				") t1\n" +
 				"JOIN \n" +
 				"(\n" +
-				"SELECT o.ID orgId, o.NAME orgName, d.NBS_NAME docName, COUNT(DISTINCT u.USR_ID) viewedUser\n" +
+				"SELECT o.ID orgId, o.NAME orgName, d.NBS_NAME docName, u.USR_ID userId, COUNT(DISTINCT u.USR_ID) viewedUser\n" +
 				"FROM USER_ORG_VTX uo_\n" +
 				"JOIN OKM_USER u ON uo_.USER_ID = u.USR_ID\n" +
 				"JOIN USER_READ_DOC_TIMER ut ON uo_.USER_ID = ut.USER_ID\n" +

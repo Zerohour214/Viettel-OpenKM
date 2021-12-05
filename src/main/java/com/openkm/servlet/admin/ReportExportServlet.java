@@ -55,6 +55,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Activity log servlet
@@ -79,7 +80,6 @@ public class ReportExportServlet extends BaseServlet {
 		String action_ = WebUtils.getString(request, "action_");
 
 		String userId = request.getRemoteUser();
-
 
 
 		try {
@@ -107,16 +107,15 @@ public class ReportExportServlet extends BaseServlet {
 
 
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
+				if(orgUser == null)
 
+				if ("KQTT".equals(action_))
+					doExportKQTT(filter, response);
 
-				 if ("KQTT".equals(action_))
-					doExportKQTT(filter,response);
-
-
-				if("THDVB".equals(action_)) {
+				if ("THDVB".equals(action_)) {
 					doExportTHDVB(filter, response, orgUser);
 				}
-				if("CLVB".equals(action_)) {
+				if ("CLVB".equals(action_)) {
 					doExportCLVB(filter, Double.parseDouble(minutes));
 				}
 
@@ -172,7 +171,16 @@ public class ReportExportServlet extends BaseServlet {
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
 		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
-		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b)->a+b).get()));
+		dataRow.getCells().get(4).addParagraph().appendText(
+				String.valueOf(
+						exportGeneralBeanList
+								.stream()
+								.map(object -> object.getUserId())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		);
 
 
 		index1 = 1;
@@ -187,12 +195,12 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getViewNum());
 
 //			arrList.add(TimeUnit.MILLISECONDS.toMinutes(elb.getTotalTimeView()));
-			Double totalTimeView = elb.getTotalTimeView()/60000.0;
-			DecimalFormat df = new DecimalFormat("#.#");;
+			Double totalTimeView = elb.getTotalTimeView() / 60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");
+			;
 			arrList.add(df.format(totalTimeView));
 			arrList.add(elb.getAuthor().split("@")[0]);
 			arrList.add(elb.getTimeUpload());
-
 
 
 			TableRow dataRow2 = table2.addRow();
@@ -207,7 +215,6 @@ public class ReportExportServlet extends BaseServlet {
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
 		}
-
 
 
 		ServletContext context = getServletContext();
@@ -291,10 +298,10 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getConfirmDate());
 			arrList.add(elb.getStartConfirm());
 			arrList.add(elb.getEndConfirm());
-			Double totalTimeView = elb.getTimerRead()/60000.0;
-			DecimalFormat df = new DecimalFormat("#.#");;
+			Double totalTimeView = elb.getTimerRead() / 60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");
+			;
 			arrList.add(df.format(totalTimeView));
-
 
 
 			TableRow dataRow2 = table2.addRow();
