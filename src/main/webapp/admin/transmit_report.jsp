@@ -71,39 +71,9 @@
             dend($("#dend"));
             dbegin($("#dbegin1"));
             dend($("#dend1"));
+            dbegin($("#dbegin2"));
+            dend($("#dend2"));
 
-            /*$("#dbegin").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                defaultDate: "-1w",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dend").datepicker("option", "minDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });
-
-            $("#dend").datepicker({
-                showOn: "button",
-                buttonImage: "img/action/calendar_icon_green.png",
-                buttonImageOnly: true,
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true,
-                numberOfMonths: 1,
-                showWeek: false,
-                firstDay: 1,
-                onClose: function (selectedDate) {
-                    $("#dbegin").datepicker("option", "maxDate", selectedDate);
-                    $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                }
-            });*/
 
             $('.ui-datepicker-trigger').css('vertical-align', 'middle');
             $('select#user').chosen({disable_search_threshold: 10});
@@ -156,6 +126,22 @@
                         <input type="number" name="minutes">
                         <input type="hidden" name="action_" value="CLVB">
                         <button type="submit" class="btn btn-success" style="padding: 0px 15px !important;">
+                            <span class="fa fa-download"></span>&nbsp;Export
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h4>Báo cáo kết quả truyền thông</h4></div>
+                <div class="card-body">
+                    <form action="ReportExport" style="width: 50vw">
+                        <b>From</b> <input type="text" name="dbegin" id="dbegin2"  size="15"
+                                           readonly="readonly"/>
+                        <b>To</b> <input type="text" name="dend" id="dend2"  size="15"
+                                         readonly="readonly"/>
+                        <input type="hidden" name="action_" value="KQTT">
+                        <button type="submit" class="btn btn-success" id="transmit-export-btn2" style="padding: 0px 15px !important;">
                             <span class="fa fa-download"></span>&nbsp;Export
                         </button>
                     </form>
