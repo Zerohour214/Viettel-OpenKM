@@ -951,6 +951,7 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 				userReadDocTimer.setTimeLastPreview(0);
 				userReadDocTimer.setCountView(1);
 				userReadDocTimer.setStartConfirm(current);
+				userReadDocTimer.setLess1Min(0);
 				session.save(userReadDocTimer);
 				HibernateUtil.commit(tx);
 			}else if (!ret.get(ret.size()-1).isReading()){
@@ -972,6 +973,7 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 					userReadDocTimer.setTotalTime(0);
 					userReadDocTimer.setTimeLastPreview(0);
 					userReadDocTimer.setCountView(1);
+					userReadDocTimer.setLess1Min(0);
 					userReadDocTimer.setStartConfirm(current);
 					session.save(userReadDocTimer);
 				}
@@ -1004,6 +1006,9 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 				UserReadDocTimer userReadDocTimer = ret.get(ret.size()-1);
 				userReadDocTimer.setReading(false);
 				userReadDocTimer.setTotalTime(userReadDocTimer.getTotalTime() + current.getTimeInMillis() - userReadDocTimer.getCreated().getTimeInMillis());
+				if ((current.getTimeInMillis() - userReadDocTimer.getCreated().getTimeInMillis())/60000 < 1){
+					userReadDocTimer.setLess1Min(userReadDocTimer.getLess1Min()+1);
+				}
 				userReadDocTimer.setCreated(current);
 				if(userReadDocTimer.getStartConfirm().getTimeInMillis() > userReadDocTimer.getEndConfirm().getTimeInMillis()) {
 					userReadDocTimer.setEndConfirm(current);

@@ -21,11 +21,14 @@
 
 package com.openkm.servlet.admin;
 
+import com.openkm.api.OKMAuth;
 import com.openkm.bean.KQTTReportBean;
 import com.openkm.bean.THDVBReportBean;
 import com.openkm.core.DatabaseException;
+import com.openkm.dao.ActivityDAO;
 import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.bean.ActivityFilter;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
@@ -65,8 +68,6 @@ public class ReportExportServlet extends BaseServlet {
 		String dbegin = WebUtils.getString(request, "dbegin");
 		String dend = WebUtils.getString(request, "dend");
 		String user = WebUtils.getString(request, "user");
-		String action = WebUtils.getString(request, "action");
-		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
 
 
@@ -90,21 +91,33 @@ public class ReportExportServlet extends BaseServlet {
 				end.set(Calendar.MILLISECOND, 0);
 				filter.setEnd(end);
 				filter.setUser(user);
-				filter.setAction(action);
-				filter.setItem(item);
 
-				if("THDVB".equals(action_))
+				if ("THDVB".equals(action_))
 					doExportTHDVB(filter, response);
 				else if ("KQTT".equals(action_))
-					doExportKQTT(filter,response);
+					doExportKQTT(filter, response);
+				else {
+					sc.setAttribute("results", ReportExportDAO.exportTHDVBByFilter(filter));
+				}
+			}else {
+				sc.setAttribute("results", null);
+			}
+			if ("".equals(action_)) {
+				sc.setAttribute("dbeginFilter", dbegin);
+				sc.setAttribute("dendFilter", dend);
+				sc.setAttribute("userFilter", user);
+				sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
 
 
+				sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 			}
 		} catch (ParseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (DatabaseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (PrincipalAdapterException e) {
 			e.printStackTrace();
 		}
 	}

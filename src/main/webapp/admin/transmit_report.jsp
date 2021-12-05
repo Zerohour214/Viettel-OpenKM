@@ -2,6 +2,8 @@
 <%@ page import="com.openkm.servlet.admin.BaseServlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.openkm.com/tags/utils" prefix="u" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html>
@@ -15,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="../renew/css/layout-admin.css"/>
     <link rel="stylesheet" type="text/css" href="../renew/fonts/glyphicons/glyphicons.css"/>
     <link rel="stylesheet" href="../css/font-awesome/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.css"/>
     <style type="text/css">
         .ui-datepicker-trigger {
             padding-left: 4px;
@@ -27,8 +30,17 @@
     <script type="text/javascript" src="../js/jquery-ui-1.10.3/jquery-ui-1.10.3.js"></script>
     <script type="text/javascript" src="../js/jquery.dataTables-1.10.10.min.js"></script>
     <script type="text/javascript" src="../js/chosen.jquery.js"></script>
+    <script type="text/javascript" src="../js/bootstrap/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $('#results').dataTable({
+                "bStateSave": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
+                "fnDrawCallback": function (oSettings) {
+                    dataTableAddRows(this, oSettings);
+                }
+            });
 
             $("#dbegin").datepicker({
                 showOn: "button",
@@ -99,6 +111,16 @@
             $('select#user').chosen({disable_search_threshold: 10});
             $('select#action').chosen({disable_search_threshold: 10});
 
+            $("#filter-input").click(() => {
+                $("#action-input").val("Filter")
+            })
+            $("#transmit-export-btn-KQTT").click(() => {
+                $("#action-input-KQTT").val("KQTT")
+            })
+            $("#transmit-export-btn-THDVB").click(() => {
+                $("#action-input-THDVB").val("THDVB")
+            })
+
         });
     </script>
     <title>Activity Log</title>
@@ -110,44 +132,108 @@
     <c:when test="${isAdmin}">
         <ul id="breadcrumb">
             <li class="path">
-                <a href="ActivityLog">Activity log</a>
+                <a href="ActivityLog">Báo cáo</a>
             </li>
         </ul>
         <br/>
         <div style="width:95%; margin-left:auto; margin-right:auto;">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
+                <li><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
+                <li><a data-toggle="tab" href="#THCNTL">Báo cáo tình hình cập nhập tài liệu</a></li>
+                <li><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
+            </ul>
 
-            <div class="card">
-                <div class="card-header"><h4>Báo cáo tình hình đọc văn bản</h4></div>
-                <div class="card-body">
-                    <form action="ReportExport" style="width: 50vw">
-                        <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
-                                           readonly="readonly"/>
-                        <b>To</b> <input type="text" name="dend" id="dend"  size="15"
-                                         readonly="readonly"/>
-                        <input type="hidden" name="action_" value="THDVB">
-                        <button type="submit" class="btn btn-success" id="transmit-export-btn" style="padding: 0px 15px !important;">
-                            <span class="fa fa-download"></span>&nbsp;Export
-                        </button>
-                    </form>
+            <div class="tab-content">
+                <div id="THDVB" class="tab-pane fade in active">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="results" class="results">
+                                <thead>
+                                <tr class="header">
+                                    <td align="right" colspan="9">
+                                        <form action="ReportExport" style="width: 50vw">
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
+                                                               readonly="readonly"/>
+                                            <b>To</b> <input type="text" name="dend" id="dend"  size="15"
+                                                             readonly="readonly"/>
+                                            <b>User</b>
+                                            <select name="user" id="user" style="width: 125px" data-placeholder="&nbsp;">
+                                                <option value="">All</option>
+                                                <c:forEach var="user" items="${users}" varStatus="row">
+                                                    <c:choose>
+                                                        <c:when test="${user == userFilter}">
+                                                            <option value="${user}" selected="selected">${user}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option value="${user}">${user}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input"/>
+                                            <input type="hidden" name="action_" id="action-input-THDVB">
+                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-THDVB" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Đơn vị</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Tên văn bản đã xem</th>
+                                    <th>Số lần xem</th>
+                                    <th>Tổng thời gian xem (phút)</th>
+                                    <th>Người upload văn bản</th>
+                                    <th>Thời điểm upload</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach var="act" items="${results}" varStatus="row">
+                                    <tr class="${row.index % 2 == 0 ? 'even' : 'odd'}">
+                                        <td>${act.orgName}</td>
+                                        <td>${act.fullname}</td>
+                                        <td>${act.employeeCode}</td>
+                                        <td>${act.docName}</td>
+                                        <td>${act.viewNum}</td>
+                                        <td>${act.totalTimeView/60000}</td>
+                                        <td>${act.author}</td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="KQTT" class="tab-pane fade">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="ReportExport" style="width: 50vw">
+                                <b>From</b> <input type="text" name="dbegin" id="dbegin2"  size="15"
+                                                   readonly="readonly"/>
+                                <b>To</b> <input type="text" name="dend" id="dend2"  size="15"
+                                                 readonly="readonly"/>
+                                <input type="hidden" name="action_" id="action-input-KQTT">
+                                <button type="submit" class="btn btn-success" id="transmit-export-btn-KQTT" style="padding: 0px 15px !important;">
+                                    <span class="fa fa-download"></span>&nbsp;Export
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="THCNTL" class="tab-pane fade">
+                    <h3>Menu 2</h3>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                </div>
+                <div id="CLVB" class="tab-pane fade">
+                    <h3>Menu 3</h3>
+                    <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-header"><h4>Báo cáo kết quả truyền thông</h4></div>
-                <div class="card-body">
-                    <form action="ReportExport" style="width: 50vw">
-                        <b>From</b> <input type="text" name="dbegin" id="dbegin2"  size="15"
-                                           readonly="readonly"/>
-                        <b>To</b> <input type="text" name="dend" id="dend2"  size="15"
-                                         readonly="readonly"/>
-                        <input type="hidden" name="action_" value="KQTT">
-                        <button type="submit" class="btn btn-success" id="transmit-export-btn2" style="padding: 0px 15px !important;">
-                            <span class="fa fa-download"></span>&nbsp;Export
-                        </button>
-                    </form>
-                </div>
-            </div>
-
+        </div>
 
         </div>
     </c:when>
