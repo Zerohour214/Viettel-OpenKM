@@ -66,6 +66,9 @@ public class UserReadDocTimer implements Serializable {
 	@Column(name = "COUNT_VIEW", nullable = false)
 	protected long countView;
 
+	@Column(name = "LESS_1MIN", nullable = false)
+	protected long less1Min;
+
 	public Calendar getCreated() {
 		return created;
 	}
@@ -160,5 +163,13 @@ public class UserReadDocTimer implements Serializable {
 
 	public void setTimeLastPreview(long timeLastPreview) {
 		this.timeLastPreview = timeLastPreview;
+	}
+
+	public long getLess1Min() {
+		return less1Min;
+	}
+
+	public void setLess1Min(long less1Min) {
+		this.less1Min = less1Min;
 	}
 }

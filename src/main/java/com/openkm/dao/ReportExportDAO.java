@@ -34,14 +34,20 @@ public class ReportExportDAO {
 				"JOIN USER_READ_DOC_TIMER ud ON u.USR_ID = ud.USER_ID\n" +
 				"JOIN OKM_NODE_BASE d ON d.NBS_UUID = ud.DOC_ID\n" +
 				"JOIN OKM_USER u_ ON u_.USR_ID = d.NBS_AUTHOR\n" +
-				"WHERE ud.LAST_PREVIEW between :begin and :end ORDER BY o.ID";
+				"WHERE ud.LAST_PREVIEW between :begin AND :end ";
+		if (filter.getUser() != null && !filter.getUser().equals(""))
+			qs += "AND u.USR_ID=:user ";
 
+
+		qs += "ORDER BY o.ID ";
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
+			if (filter.getUser() != null && !filter.getUser().equals(""))
+				q.setString("user", filter.getUser());
 
 			q.setResultTransformer(Transformers.aliasToBean(THDVBReportBeanDetail.class));
 			q.addScalar("orgName");

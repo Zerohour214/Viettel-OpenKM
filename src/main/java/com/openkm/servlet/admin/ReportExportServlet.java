@@ -22,7 +22,7 @@
 package com.openkm.servlet.admin;
 
 
-import com.google.zxing.common.detector.MathUtils;
+import com.openkm.api.OKMAuth;
 import com.openkm.bean.THDVBReportBeanDetail;
 import com.openkm.bean.THDVBReportBeanGeneral;
 
@@ -32,6 +32,7 @@ import com.openkm.core.DatabaseException;
 import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.UserDAO;
 import com.openkm.dao.bean.ActivityFilter;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
@@ -102,29 +103,41 @@ public class ReportExportServlet extends BaseServlet {
 				end.set(Calendar.MILLISECOND, 0);
 				filter.setEnd(end);
 				filter.setUser(user);
-				filter.setAction(action);
-				filter.setItem(item);
-
-
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
+
 				if(orgUser == null)
 
 				if ("KQTT".equals(action_))
-					doExportKQTT(filter, response);
+					doExportKQTT(filter, response, orgUser);
 
 				if ("THDVB".equals(action_)) {
 					doExportTHDVB(filter, response, orgUser);
 				}
 				if ("CLVB".equals(action_)) {
-					doExportCLVB(filter, Double.parseDouble(minutes));
-				}
 
+					doExportCLVB(filter, Double.parseDouble(minutes));
+				}else {
+					sc.setAttribute("results", ReportExportDAO.exportTHDVBByFilter(filter));
+				}
+			}else {
+				sc.setAttribute("results", null);
+			}
+			if ("".equals(action_) || "Filter".equals(action_)) {
+				sc.setAttribute("dbeginFilter", dbegin);
+				sc.setAttribute("dendFilter", dend);
+				sc.setAttribute("userFilter", user);
+				sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
+
+
+				sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 			}
 		} catch (ParseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (DatabaseException e) {
 			sendErrorRedirect(request, response, e);
 		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (PrincipalAdapterException e) {
 			e.printStackTrace();
 		}
 	}
@@ -143,7 +156,8 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		map.put("orgName", org.getName());
+		if (org != null)
+			map.put("orgName", org.getName());
 		int index1 = 1;
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
@@ -227,12 +241,12 @@ public class ReportExportServlet extends BaseServlet {
 
 	}
 
-	public void doExportKQTT(ActivityFilter filter, HttpServletResponse response) throws IOException, URISyntaxException, DatabaseException, ServletException {
+	public void doExportKQTT(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
 		List<KQTTReportBean> exportBeanList = ReportExportDAO.exportKQTTByFilter(filter);
+		List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
 
-
-		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.doc");
+		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 
@@ -241,48 +255,35 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", org.getName());
 		int index1 = 1;
-		/*Table table = docSpire.getSections().get(0).getTables().get(2);
-
+		Table table = docSpire.getSections().get(0).getTables().get(2);
 
 		List<String> docNameList = new ArrayList<>();
-		for (ActivityLogExportBean elb : exportBeanList) {
+		List<Long> viewNumList = new ArrayList<>();
+
+		for (THDVBReportBeanGeneral elb : exportGeneralBeanList) {
+			docNameList.add(elb.getDocName());
+			viewNumList.add(elb.getViewedUser());
 			List arrList = new ArrayList();
 			arrList.add(index1);
 			arrList.add(elb.getOrgName());
-			arrList.add(elb.getDocumentName());
-
-			String actionName = "";
-			switch (elb.getAction()) {
-				case "CREATE_DOCUMENT":
-					actionName = "Thêm mới";
-					break;
-				case "CHECKIN_DOCUMENT":
-					actionName = "Sửa";
-					break;
-				case "DELETE_DOCUMENT":
-					actionName = "Xóa (thùng rác)";
-					break;
-				case "PURGE_DOCUMENT":
-					actionName = "Xóa";
-					break;
-				case "MOVE_DOCUMENT":
-					actionName = "Phục hồi";
-					break;
-			}
-			arrList.add(actionName);
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getTotalUser());
+			arrList.add(elb.getViewedUser());
 			TableRow dataRow = table.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
 				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 			}
-			docNameList.add(elb.getDocumentName());
+
 			index1++;
 
 		}
 
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
-		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));*/
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
+		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b)->a+b).get()));
 
 
 		index1 = 1;
