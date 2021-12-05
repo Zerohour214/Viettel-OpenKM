@@ -23,6 +23,7 @@
             padding-left: 4px;
             padding-right: 14px;
         }
+
     </style>
 
     <script type="text/javascript" src="../js/utils.js"></script>
@@ -42,6 +43,22 @@
                 }
             });
 
+            $('#results-KQTT').dataTable({
+                "bStateSave": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
+                "fnDrawCallback": function (oSettings) {
+                    dataTableAddRows(this, oSettings);
+                }
+            });
+            $('#results-CLVB').dataTable({
+                "bStateSave": true,
+                "iDisplayLength": 15,
+                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
+                "fnDrawCallback": function (oSettings) {
+                    dataTableAddRows(this, oSettings);
+                }
+            });
             function dbegin(element) {
                 element.datepicker({
                     showOn: "button",
@@ -55,7 +72,7 @@
                     showWeek: false,
                     firstDay: 1,
                     onClose: function (selectedDate) {
-                        $("#dend").datepicker("option", "minDate", selectedDate);
+                        element.datepicker("option", "minDate", selectedDate);
                         $('.ui-datepicker-trigger').css("vertical-align", "middle");
                     }
                 });
@@ -73,7 +90,7 @@
                     showWeek: false,
                     firstDay: 1,
                     onClose: function (selectedDate) {
-                        $("#dbegin").datepicker("option", "maxDate", selectedDate);
+                        element.datepicker("option", "maxDate", selectedDate);
                         $('.ui-datepicker-trigger').css("vertical-align", "middle");
                     }
                 });
@@ -81,19 +98,37 @@
 
             dbegin($("#dbegin"));
             dend($("#dend"));
-            dbegin($("#dbegin1"));
-            dend($("#dend1"));
-            dbegin($("#dbegin2"));
-            dend($("#dend2"));
 
+            dbegin($("#dbegin-KQTT"));
+            dend($("#dend-KQTT"));
+
+            dbegin($("#dbegin-CLVB"));
+            dend($("#dend-CLVB"));
 
             $('.ui-datepicker-trigger').css('vertical-align', 'middle');
+
             $('select#user').chosen({disable_search_threshold: 10});
-            $('select#action').chosen({disable_search_threshold: 10});
+
+
+            $('select#user-KQTT').chosen({disable_search_threshold: 10});
+
+
+            $('select#user-CLVB').chosen({disable_search_threshold: 10});
+
 
             $("#filter-input-THDVB").click(() => {
-                $("#action-input-THDVB").val("Filter")
+                $("#action-input-THDVB").val("Filter-THDVB")
             })
+
+            $("#filter-input-KQTT").click(() => {
+                $("#action-input-KQTT").val("Filter-KQTT")
+            })
+
+            $("#filter-input-CLVB").click(() => {
+                $("#action-input-CLVB").val("Filter-CLVB")
+            })
+
+
             $("#transmit-export-btn-KQTT").click(() => {
                 $("#action-input-KQTT").val("KQTT")
             })
@@ -125,13 +160,16 @@
         </ul>
         <br/>
         <div style="width:95%; margin-left:auto; margin-right:auto;">
+
             <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
-                <li><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
-                <li><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
+
+                <li  class="${tab=='THDVB' ? 'active' : ''}"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
+                <li  class="${tab=='KQTT' ? 'active' : ''}"><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
+                <li  class="${tab=='CLVB' ? 'active' : ''}"><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
+
             </ul>
             <div class="tab-content">
-                <div id="THDVB" class="tab-pane fade in active">
+                <div id="THDVB" class="${tab=='THDVB' ? 'tab-pane fade in active' : 'tab-pane fade'}">
                     <div class="card">
                         <div class="card-body">
                             <table id="results" class="results">
@@ -144,7 +182,7 @@
                                             <b>To</b> <input type="text" name="dend" id="dend"  size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
                                             <b>User</b>
-                                            <select name="user" id="user" style="width: 125px" data-placeholder="&nbsp;">
+                                            <select name="user" id="user" style="width: 125px;" data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -200,40 +238,125 @@
                         </div>
                     </div>
                 </div>
-                <div id="KQTT" class="tab-pane fade">
+                <div id="KQTT" class="${tab=='KQTT' ? 'tab-pane fade in active' : 'tab-pane fade'}">
                     <div class="card">
                         <div class="card-body">
-                            <form action="ReportExport" style="width: 50vw">
-                                <b>From</b> <input type="text" name="dbegin" id="dbegin2"  size="15"
-                                                   readonly="readonly"/>
-                                <b>To</b> <input type="text" name="dend" id="dend2"  size="15"
-                                                 readonly="readonly"/>
-                                <input type="hidden" name="action_" id="action-input-KQTT">
-                                <button type="submit" class="btn btn-success" id="transmit-export-btn-KQTT" style="padding: 0px 15px !important;">
-                                    <span class="fa fa-download"></span>&nbsp;Export
-                                </button>
-                            </form>
+                            <table id="results-KQTT" class="results">
+                                <thead>
+                                <tr class="header">
+                                    <td align="right" colspan="9">
+                                        <form action="ReportExport" style="width: 50vw">
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT"  size="15"
+                                                               readonly="readonly" value="${dbeginFilter}"/>
+                                            <b>To</b> <input type="text" name="dend" id="dend-KQTT"  size="15"
+                                                             readonly="readonly" value="${dendFilter}"/>
+                                            <b>User</b>
+                                            <select name="user" id="user-KQTT" style="width: 125px;" data-placeholder="&nbsp;">
+                                                <option value="">All</option>
+                                                <c:forEach var="user" items="${users}" varStatus="row">
+                                                    <c:choose>
+                                                        <c:when test="${user == userFilter}">
+                                                            <option value="${user}" selected="selected">${user}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option value="${user}">${user}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-KQTT"/>
+                                            <input type="hidden" name="action_" id="action-input-KQTT">
+                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-KQTT" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Đơn vị</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Tên văn bản</th>
+                                    <th>Ngày nhận văn bản</th>
+                                    <th>Thời điểm xác nhận đọc</th>
+                                    <th>Thời điểm đọc</th>
+                                    <th>Thời điểm kết thúc</th>
+                                    <th>Thời gian đọc (phút)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach var="act" items="${resultsKQTT}" varStatus="row">
+                                    <tr class="${row.index % 2 == 0 ? 'even' : 'odd'}">
+                                        <td>${act.orgName}</td>
+                                        <td>${act.fullname}</td>
+                                        <td>${act.employeeCode}</td>
+                                        <td>${act.docName}</td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.assignDoc}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.confirmDate}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.startConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.endConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td>${act.timeRead/60000}</td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div id="CLVB" class="tab-pane fade">
+
+                <div id="CLVB" class="${tab=='CLVB' ? 'tab-pane fade in active' : 'tab-pane fade'}">
+
                     <div class="card">
-                        <div class="card-header"><h4>Báo cáo chất lượng văn bản</h4></div>
                         <div class="card-body">
-                            <form action="ReportExport" style="width: 50vw">
-                                <b>From</b> <input type="text" name="dbegin" id="dbegin1"  size="15"
-                                                   readonly="readonly"/>
-                                <b>To</b> <input type="text" name="dend" id="dend1"  size="15"
-                                                 readonly="readonly"/>
-                                <label>
-                                    <b>Số phút</b>
-                                </label>
-                                <input type="number" name="minutes">
-                                <input type="hidden" name="action_" id="action-input-CLVB">
-                                <button type="submit" class="btn btn-success" id="transmit-export-btn-CLVB" style="padding: 0px 15px !important;">
-                                    <span class="fa fa-download"></span>&nbsp;Export
-                                </button>
-                            </form>
+                            <table id="results-CLVB" class="results">
+                                <thead>
+                                <tr class="header">
+                                    <td align="right" colspan="9">
+                                        <form action="ReportExport" style="width: 50vw">
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB"  size="15"
+                                                               readonly="readonly" value="${dbeginFilter}"/>
+                                            <b>To</b> <input type="text" name="dend" id="dend-CLVB"  size="15"
+                                                             readonly="readonly" value="${dendFilter}"/>
+                                            <b>User</b>
+                                            <select name="user" id="user-CLVB" style="width: 125px;" data-placeholder="&nbsp;">
+                                                <option value="">All</option>
+                                                <c:forEach var="user" items="${users}" varStatus="row">
+                                                    <c:choose>
+                                                        <c:when test="${user == userFilter}">
+                                                            <option value="${user}" selected="selected">${user}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option value="${user}">${user}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-CLVB"/>
+                                            <input type="hidden" name="action_" id="action-input-CLVB">
+                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-CLVB" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Tên tài liệu</th>
+                                    <th>Lượt user truy cập</th>
+                                    <th>Tổng số lượt xem</th>
+                                    <th>Số lượt xem < 1 phút</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach var="act" items="${resultsCLVB}" varStatus="row">
+                                    <tr class="${row.index % 2 == 0 ? 'even' : 'odd'}">
+                                        <td>${act.docName}</td>
+                                        <td>${act.totalAccess}</td>
+                                        <td>${act.totalView}</td>
+                                        <td>${act.totalLessOneMin}</td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

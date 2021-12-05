@@ -78,11 +78,11 @@ public class KQTTReportBean {
 		this.endConfirm = endConfirm;
 	}
 
-	public Long getTimerRead() {
+	public Long getTimeRead() {
 		return timeRead;
 	}
 
-	public void setTimerRead(Long timeRead) {
+	public void setTimeRead(Long timeRead) {
 		this.timeRead = timeRead;
 	}
 }

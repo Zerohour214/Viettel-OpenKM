@@ -107,7 +107,6 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setUser(user);
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
-
 				if ("KQTT".equals(action_))
 					doExportKQTT(filter, response, orgUser);
 
@@ -120,24 +119,43 @@ public class ReportExportServlet extends BaseServlet {
 					if("XLS".equals(typeReport)) {
 						doExportTHDVBXLS(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
 					}
-
-
 				}
 				if ("CLVB".equals(action_)) {
 					doExportCLVB(filter, Double.parseDouble(minutes));
-				}
 
-				if ("".equals(action_) || "Filter".equals(action_)) {
-					sc.setAttribute("dbeginFilter", dbegin);
-					sc.setAttribute("dendFilter", dend);
-					sc.setAttribute("userFilter", user);
-					sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
+				}
+				else if("".equals(action_) || "Filter-THDVB".equals(action_)){
+
 					sc.setAttribute("results", ReportExportDAO.exportTHDVBByFilter(filter));
+					sc.setAttribute("resultsKQTT", null);
+					sc.setAttribute("resultsCLVB", null);
+				}else if ("Filter-KQTT".equals(action_)){
+					sc.setAttribute("resultsKQTT", ReportExportDAO.exportKQTTByFilter(filter));
+					sc.setAttribute("results", null);
+					sc.setAttribute("resultsCLVB", null);
+				}else if ("Filter-CLVB".equals(action_)){
+					sc.setAttribute("resultsCLVB", ReportExportDAO.exportCLVBByFilter(filter));
+					sc.setAttribute("results", null);
+					sc.setAttribute("resultsKQTT", null);
 				}
 
 			} else {
 				sc.setAttribute("results", null);
+				sc.setAttribute("resultsKQTT", null);
+				sc.setAttribute("resultsCLVB", null);
 			}
+
+			if ("".equals(action_) || "Filter-THDVB".equals(action_)) {
+				sc.setAttribute("tab", "THDVB");
+			} else if ("Filter-KQTT".equals(action_)){
+				sc.setAttribute("tab", "KQTT");
+			}else if ("Filter-CLVB".equals(action_)){
+				sc.setAttribute("tab", "CLVB");
+			}
+			sc.setAttribute("dbeginFilter", dbegin);
+			sc.setAttribute("dendFilter", dend);
+			sc.setAttribute("userFilter", user);
+			sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
 			sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 
 		} catch (ParseException e) {
@@ -309,7 +327,7 @@ public class ReportExportServlet extends BaseServlet {
 		List<KQTTReportBean> exportBeanList = ReportExportDAO.exportKQTTByFilter(filter);
 		List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
 
-		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
+		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.doc");
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 
@@ -318,7 +336,8 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		map.put("orgName", org.getName());
+		if (org != null)
+			map.put("orgName", org.getName());
 		int index1 = 1;
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
@@ -362,9 +381,9 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getConfirmDate());
 			arrList.add(elb.getStartConfirm());
 			arrList.add(elb.getEndConfirm());
-			Double totalTimeView = elb.getTimerRead() / 60000.0;
-			DecimalFormat df = new DecimalFormat("#.#");
-			;
+
+			Double totalTimeView = elb.getTimeRead()/60000.0;
+			DecimalFormat df = new DecimalFormat("#.#");;
 			arrList.add(df.format(totalTimeView));
 
 

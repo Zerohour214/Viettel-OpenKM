@@ -1,11 +1,7 @@
 package com.openkm.dao;
 
 
-import com.openkm.bean.THDVBReportBeanDetail;
-import com.openkm.bean.THDVBReportBeanGeneral;
-
-import com.openkm.bean.ActivityLogExportBean;
-import com.openkm.bean.KQTTReportBean;
+import com.openkm.bean.*;
 
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.ActivityFilter;
@@ -158,6 +154,40 @@ public class ReportExportDAO {
 			q.addScalar("timeRead", Hibernate.LONG);
 
 			List<KQTTReportBean> ret = q.list();
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+
+	}
+
+	public static List<CLVBReportBean> exportCLVBByFilter(ActivityFilter filter) throws DatabaseException {
+		String qs = "SELECT d.NBS_UUID docId, d.NBS_NAME docName, \n" +
+				"COUNT(DISTINCT u.USER_ID) totalAccess, \n" +
+				"SUM(u.COUNT_VIEW) totalView, \n" +
+				"SUM(u.LESS_1MIN) totalLessOneMin\n" +
+				"FROM user_read_doc_timer u\n" +
+				"JOIN okm_node_base d ON u.DOC_ID = d.NBS_UUID\n" +
+				"WHERE u.LAST_PREVIEW BETWEEN :begin AND :end\n" +
+				"GROUP BY u.DOC_ID\n";
+
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			SQLQuery q = session.createSQLQuery(qs);
+			q.setCalendar("begin", filter.getBegin());
+			q.setCalendar("end", filter.getEnd());
+
+			q.setResultTransformer(Transformers.aliasToBean(CLVBReportBean.class));
+			q.addScalar("docId");
+			q.addScalar("docName");
+			q.addScalar("totalAccess", Hibernate.LONG);
+			q.addScalar("totalView", Hibernate.LONG);
+			q.addScalar("totalLessOneMin", Hibernate.LONG);
+
+			List<CLVBReportBean> ret = q.list();
 			return ret;
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
