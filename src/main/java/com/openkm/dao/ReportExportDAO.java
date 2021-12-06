@@ -124,15 +124,15 @@ public class ReportExportDAO {
 				"ud.CONFIRM_DATE confirmDate, ud.START_CONFIRM startConfirm, ud.END_CONFIRM endConfirm, ud.TIME_LAST_PREVIEW timeRead\n" +
 				" FROM (SELECT ov.NAME orgName, ou.USR_NAME fullname, ou.USR_ID employeeCode, onb.NBS_NAME docName,\n" +
 				"od.CREATED_AT assignDoc, onb.NBS_UUID docId\n" +
-				"FROM org_doc od JOIN user_org_vtx uov ON od.ORG_ID = uov.ORG_ID\n" +
+				"FROM ORG_DOC od JOIN USER_ORG_VTX uov ON od.ORG_ID = uov.ORG_ID\n" +
 				"JOIN OKM_USER ou ON ou.USR_ID = uov.USER_ID\n" +
 				"JOIN ORGANIZATION_VTX ov ON ov.ID = od.ORG_ID\n" +
 				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = od.DOC_ID) a\n" +
 				"LEFT JOIN (\n" +
 				"SELECT x.LAST_PREVIEW,x.CONFIRM_DATE,x.START_CONFIRM, x.END_CONFIRM ,x.TIME_LAST_PREVIEW, x.USER_ID,x.DOC_ID FROM (\n" +
-				"SELECT * FROM user_read_doc_timer urdt WHERE urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID,urdt.USER_ID\n" +
+				"SELECT * FROM USER_READ_DOC_TIMER urdt WHERE urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID,urdt.USER_ID\n" +
 				"UNION\n" +
-				"SELECT urdt.* FROM user_read_doc_timer urdt LEFT JOIN user_read_doc_timer urdt2 ON (urdt.USER_ID = urdt2.USER_ID AND urdt.DOC_ID = urdt2.DOC_ID AND urdt.ID < urdt2.ID) \n" +
+				"SELECT urdt.* FROM USER_READ_DOC_TIMER urdt LEFT JOIN USER_READ_DOC_TIMER urdt2 ON (urdt.USER_ID = urdt2.USER_ID AND urdt.DOC_ID = urdt2.DOC_ID AND urdt.ID < urdt2.ID) \n" +
 				"WHERE urdt2.ID IS NULL) AS x WHERE x.LAST_PREVIEW BETWEEN :begin and :end GROUP BY x.DOC_ID,x.USER_ID) as ud ON ud.USER_ID = a.employeeCode AND ud.DOC_ID = a.docId;" ;
 
 		Session session = null;
@@ -168,8 +168,8 @@ public class ReportExportDAO {
 				"COUNT(DISTINCT u.USER_ID) totalAccess, \n" +
 				"SUM(u.COUNT_VIEW) totalView, \n" +
 				"SUM(u.LESS_1MIN) totalLessOneMin\n" +
-				"FROM user_read_doc_timer u\n" +
-				"JOIN okm_node_base d ON u.DOC_ID = d.NBS_UUID\n" +
+				"FROM USER_READ_DOC_TIMER u\n" +
+				"JOIN OKM_NODE_BASE d ON u.DOC_ID = d.NBS_UUID\n" +
 				"WHERE u.LAST_PREVIEW BETWEEN :begin AND :end\n" +
 				"GROUP BY u.DOC_ID\n";
 

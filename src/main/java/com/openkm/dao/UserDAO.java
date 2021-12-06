@@ -59,9 +59,9 @@ public class UserDAO {
 
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			String nativeQuery = "SELECT o.CODE code, o.NAME name, o.ORG_PARENT parent, o.PATH path FROM okm_user u\n" +
-					"JOIN user_org_vtx uo ON u.USR_ID  = uo.USER_ID\n" +
-					"JOIN organization_vtx o ON o.ID = uo.ORG_ID\n" +
+			String nativeQuery = "SELECT o.CODE code, o.NAME name, o.ORG_PARENT parent, o.PATH path FROM OKM_USER u\n" +
+					"JOIN USER_ORG_VTX uo ON u.USR_ID  = uo.USER_ID\n" +
+					"JOIN ORGANIZATION_VTX o ON o.ID = uo.ORG_ID\n" +
 					"WHERE u.USR_ID = :userId ";
 			SQLQuery q = session.createSQLQuery(nativeQuery);
 			q.setResultTransformer(Transformers.aliasToBean(OrganizationVTX.class));

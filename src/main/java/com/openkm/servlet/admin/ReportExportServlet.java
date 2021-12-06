@@ -23,6 +23,7 @@ package com.openkm.servlet.admin;
 
 
 import com.openkm.api.OKMAuth;
+import com.openkm.bean.CLVBReportBean;
 import com.openkm.bean.THDVBReportBeanDetail;
 import com.openkm.bean.THDVBReportBeanGeneral;
 
@@ -121,7 +122,14 @@ public class ReportExportServlet extends BaseServlet {
 					}
 				}
 				if ("CLVB".equals(action_)) {
-					doExportCLVB(filter, Double.parseDouble(minutes));
+					List<CLVBReportBean> exportBeanList = ReportExportDAO.exportCLVBByFilter(filter);
+
+					if("DOC".equals(typeReport)) {
+						doExportCLVBDOC(filter, response, orgUser, exportBeanList);
+					}
+					if("XLS".equals(typeReport)) {
+						doExportCLVBXLS(filter, response, orgUser, exportBeanList);
+					}
 
 				}
 				else if("".equals(action_) || "Filter-THDVB".equals(action_)){
@@ -318,7 +326,63 @@ public class ReportExportServlet extends BaseServlet {
 		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
-	public void doExportCLVB(ActivityFilter filter, Double minute) {
+	public void doExportCLVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, ServletException, IOException {
+		URL res = getClass().getClassLoader().getResource("template/BC_QUALITY_DOCUMENT.doc");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		Document docSpire = new Document(absolutePath);
+		Map<String, String> map = new HashMap<String, String>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		if (orgUser != null)
+			map.put("orgName", orgUser.getName());
+		int index1 = 1;
+		Table table = docSpire.getSections().get(0).getTables().get(2);
+
+
+		List<Long> viewNumList = new ArrayList<>();
+
+		for (CLVBReportBean elb : exportBeanList) {
+
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getDocName());
+			arrList.add(elb.getTotalAccess());
+			arrList.add(elb.getTotalView());
+			arrList.add(elb.getTotalLessOneMin());
+			TableRow dataRow = table.addRow();
+			for (int col = 0; col < arrList.size(); ++col) {
+				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+			}
+
+			index1++;
+		}
+
+		TableRow dataRow = table.addRow();
+		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(
+				String.valueOf(
+						exportBeanList
+								.stream()
+								.map(object -> object.getTotalAccess())
+								.collect(Collectors.toList())
+								.stream().reduce((a,b)->a+b).get()
+				)
+		));
+
+
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+		}
+
+		ServletContext context = getServletContext();
+		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
+		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+	}
+
+	public void doExportCLVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) {
 
 	}
 

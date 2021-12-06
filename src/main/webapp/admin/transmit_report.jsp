@@ -140,8 +140,13 @@
                 $("#action-input-THDVB").val("THDVB")
                 $("#type-report-THDVB").val("XLS")
             })
-            $("#transmit-export-btn-CLVB").click(() => {
+            $("#export-btn-CLVB-DOC").click(() => {
                 $("#action-input-CLVB").val("CLVB")
+                $("#type-report-CLVB").val("DOC")
+            })
+            $("#export-btn-CLVB-XLS").click(() => {
+                $("#action-input-CLVB").val("CLVB")
+                $("#type-report-CLVB").val("XLS")
             })
 
         });
@@ -333,8 +338,12 @@
                                             </select>
                                             <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-CLVB"/>
                                             <input type="hidden" name="action_" id="action-input-CLVB">
-                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-CLVB" style="padding: 0px 15px !important;">
-                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            <input type="hidden" name="type_report" id="type-report-CLVB">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-CLVB-DOC" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;DOC
+                                            </button>
+                                            <button type="submit" class="btn btn-success" id="export-btn-CLVB-XLS" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
                                     </td>
