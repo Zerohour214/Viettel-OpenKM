@@ -61,6 +61,10 @@
                                 </div>
                             </form>
                         </div>
+
+                        <div>
+                            <a id="btn-download-file-org" href="/kms/services/rest/organization/downloadTemplateImportOrg">Download template</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,22 +201,22 @@
                             <div class="modal-header">
                                 <form id="form-search-org" class="row" style="width: 100%;">
 
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" placeholder="Tên đơn vị"
-                                                   name="orgName">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" placeholder="Mã đơn vị"
-                                                   name="orgCode">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-success" id="orgSearchSubmitBtn">
-                                                Tìm kiếm
-                                            </button>
-                                        </div>
-                                        <div class="col-md-1 d-flex align-content-center align-items-center">
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
-                                        </div>
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" placeholder="Tên đơn vị"
+                                               name="orgName">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" placeholder="Mã đơn vị"
+                                               name="orgCode">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success" id="orgSearchSubmitBtn">
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-content-center align-items-center">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
 
                                 </form>
                             </div>
@@ -463,7 +467,7 @@
             })
 
             $('#approve-delete-org').click((e) => {
-                if(!orgChoosed) alert("Bạn cần chọn 1 đơn vị!")
+                if (!orgChoosed) alert("Bạn cần chọn 1 đơn vị!")
                 $.ajax({
                     url: `/kms/services/rest/organization/deleteOrg?` + $.param({"orgId": orgChoosed}),
                     type: 'DELETE',
@@ -517,32 +521,31 @@
                         tdCheckbox = document.createElement('td');
 
 
+                    tdName.innerText = user[0];
+                    tdCode.innerText = user[1];
+                    tdCode.setAttribute('id', user[1].toString());
+                    tdMail.innerText = user[2];
 
-                        tdName.innerText = user[0];
-                        tdCode.innerText = user[1];
-                        tdCode.setAttribute('id', user[1].toString());
-                        tdMail.innerText = user[2];
-
-                        let inputCheckbox = document.createElement('input');
-                        inputCheckbox.setAttribute('type', 'checkbox');
-                        inputCheckbox.onchange = (e) => {
-                            if (inputCheckbox.checked) {
-                                userChecked.push({
-                                    userId: user[1],
-                                    orgId: orgChoosed
-                                });
-                            } else {
-                                userChecked = userChecked.filter(u => u.userId !== user[1])
-                            }
-
+                    let inputCheckbox = document.createElement('input');
+                    inputCheckbox.setAttribute('type', 'checkbox');
+                    inputCheckbox.onchange = (e) => {
+                        if (inputCheckbox.checked) {
+                            userChecked.push({
+                                userId: user[1],
+                                orgId: orgChoosed
+                            });
+                        } else {
+                            userChecked = userChecked.filter(u => u.userId !== user[1])
                         }
-                        tdCheckbox.appendChild(inputCheckbox)
 
-                        tr.appendChild(tdCode);
-                        tr.appendChild(tdName);
-                        tr.appendChild(tdMail);
-                        tr.appendChild(tdCheckbox);
-                        $('#table-user-search tbody').append(tr);
+                    }
+                    tdCheckbox.appendChild(inputCheckbox)
+
+                    tr.appendChild(tdCode);
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdMail);
+                    tr.appendChild(tdCheckbox);
+                    $('#table-user-search tbody').append(tr);
 
                 })
 
@@ -597,29 +600,29 @@
 
             })
 
-        $('#import-org-submit').click(e => {
-            let files = document.getElementById('input-file-org').files;
-            let formData = new FormData();
-            if (files.length > 0) {
-                formData.append("file", files[0]);
+            $('#import-org-submit').click(e => {
+                let files = document.getElementById('input-file-org').files;
+                let formData = new FormData();
+                if (files.length > 0) {
+                    formData.append("file", files[0]);
 
-                $.ajax({
-                    url: '/kms/services/rest/organization/importOrg',
-                    type: 'POST',
-                    enctype: 'multipart/form-data',
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success: () => {
-                        getAllOrgRoot();
-                    }
-                })
-            } else {
-                alert("Bạn chưa chọn file!")
-            }
+                    $.ajax({
+                        url: '/kms/services/rest/organization/importOrg',
+                        type: 'POST',
+                        enctype: 'multipart/form-data',
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formData,
+                        success: () => {
+                            getAllOrgRoot();
+                        }
+                    })
+                } else {
+                    alert("Bạn chưa chọn file!")
+                }
 
-        })
+            })
 
 
             $('#addUserModal').on('show.bs.modal', function (e) {
@@ -637,6 +640,8 @@
                     }
                 })
             })
+
+
 
         }
     )

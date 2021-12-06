@@ -192,8 +192,14 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		if (org != null)
+		if (org != null) {
 			map.put("orgName", org.getName());
+			map.put("orgCode", org.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
+
 		int index1 = 1;
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
@@ -287,7 +293,13 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		map.put("orgName", orgUser.getName());
+		if (orgUser != null) {
+			map.put("orgName", orgUser.getName());
+			map.put("orgCode", orgUser.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
 		map.put("generalBeans", exportGeneralBeanList);
 		map.put("detailBeans", exportBeanList);
 		map.put("totalDoc", String.valueOf(
@@ -336,13 +348,17 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		if (orgUser != null)
+		if (orgUser != null) {
 			map.put("orgName", orgUser.getName());
+			map.put("orgCode", orgUser.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
+
 		int index1 = 1;
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
-
-		List<Long> viewNumList = new ArrayList<>();
 
 		for (CLVBReportBean elb : exportBeanList) {
 
@@ -382,8 +398,47 @@ public class ReportExportServlet extends BaseServlet {
 		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
 	}
 
-	public void doExportCLVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) {
+	public void doExportCLVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, IOException {
+		URL res = getClass().getClassLoader().getResource("template/BC_QUALITY_DOCUMENT.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
 
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		if (orgUser != null) {
+			map.put("orgName", orgUser.getName());
+			map.put("orgCode", orgUser.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
+		map.put("beans", exportBeanList);
+		map.put("sumTotalAccess", String.valueOf(
+						exportBeanList
+								.stream()
+								.map(object -> object.getTotalAccess())
+								.collect(Collectors.toList())
+								.stream().reduce((a,b)->a+b).get()
+				)
+		);
+
+
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		resultWorkbook.write(byteArrayOutputStream);
+
+		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_QUALITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
 	public void doExportKQTT(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org) throws IOException, URISyntaxException, DatabaseException, ServletException {

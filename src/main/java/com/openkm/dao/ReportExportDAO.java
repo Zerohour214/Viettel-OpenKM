@@ -188,6 +188,11 @@ public class ReportExportDAO {
 			q.addScalar("totalLessOneMin", Hibernate.LONG);
 
 			List<CLVBReportBean> ret = q.list();
+
+			for(int i=1; i <= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+			}
+
 			return ret;
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);

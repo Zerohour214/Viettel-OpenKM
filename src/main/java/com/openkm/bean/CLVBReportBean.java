@@ -6,6 +6,7 @@ public class CLVBReportBean {
 	Long totalAccess;
 	Long totalView;
 	Long totalLessOneMin;
+	Long index;
 
 	public String getDocId() {
 		return docId;
@@ -45,5 +46,13 @@ public class CLVBReportBean {
 
 	public void setTotalLessOneMin(Long totalLessOneMin) {
 		this.totalLessOneMin = totalLessOneMin;
+	}
+
+	public void setIndex(Long index) {
+		this.index = index;
+	}
+
+	public Long getIndex() {
+		return index;
 	}
 }

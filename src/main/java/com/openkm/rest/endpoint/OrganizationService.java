@@ -12,11 +12,15 @@ import io.swagger.annotations.Api;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.ws.rs.core.Response;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -202,4 +206,17 @@ public class OrganizationService extends BaseServlet {
 		om.importOrg(is);
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Path("/downloadTemplateImportOrg")
+	public Response downloadTemplateImportOrg() throws DatabaseException, IOException, URISyntaxException {
+		URL res = getClass().getClassLoader().getResource("template/IMPORT_ORG.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		return Response
+				.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+				.header("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()))
+				.build();
+	}
 }
