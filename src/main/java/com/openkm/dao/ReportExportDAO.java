@@ -163,15 +163,17 @@ public class ReportExportDAO {
 				"SELECT * FROM USER_READ_DOC_TIMER urdt WHERE urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID,urdt.USER_ID\n" +
 				"UNION\n" +
 				"SELECT urdt.* FROM USER_READ_DOC_TIMER urdt LEFT JOIN USER_READ_DOC_TIMER urdt2 ON (urdt.USER_ID = urdt2.USER_ID AND urdt.DOC_ID = urdt2.DOC_ID AND urdt.ID < urdt2.ID) \n" +
-				"WHERE urdt2.ID IS NULL) AS x WHERE x.LAST_PREVIEW BETWEEN :begin and :end GROUP BY x.DOC_ID,x.USER_ID) as ud ON ud.USER_ID = a.employeeCode AND ud.DOC_ID = a.docId;" ;
-
+				"WHERE urdt2.ID IS NULL) AS x WHERE x.LAST_PREVIEW BETWEEN :begin and :end GROUP BY x.DOC_ID,x.USER_ID) as ud ON ud.USER_ID = a.employeeCode AND ud.DOC_ID = a.docId " ;
+		if (filter.getGroup() != null && !filter.getGroup().equals(""))
+			qs += "WHERE orgName=:group\n ";
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
-
+			if (filter.getGroup() != null && !filter.getGroup().equals(""))
+				q.setString("group", filter.getGroup());
 			q.setResultTransformer(Transformers.aliasToBean(KQTTReportBean.class));
 			q.addScalar("orgName");
 			q.addScalar("fullname");

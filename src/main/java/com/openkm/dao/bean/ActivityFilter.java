@@ -33,6 +33,7 @@ public class ActivityFilter implements Serializable {
 	private String user;
 	private String action;
 	private String item;
+	private String group;
 
 	private String orgIdTHDVB;
 	private String docIdTHDVB;
@@ -81,6 +82,7 @@ public class ActivityFilter implements Serializable {
 		this.item = item;
 	}
 
+
 	public String getOrgIdTHDVB() {
 		return orgIdTHDVB;
 	}
@@ -127,6 +129,14 @@ public class ActivityFilter implements Serializable {
 
 	public void setDocIdCLVB(String docIdCLVB) {
 		this.docIdCLVB = docIdCLVB;
+	}
+
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	public String toString() {
