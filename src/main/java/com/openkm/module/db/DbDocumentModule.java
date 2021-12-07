@@ -1577,7 +1577,7 @@ public class DbDocumentModule implements DocumentModule {
 	}
 
 	@Override
-	public List<Document> search(String docCode, String docName) {
+	public List<Document> search(String docCode, String docName) throws DatabaseException {
 		return NodeBaseDAO.getInstance().search(docCode, docName);
 	}
 

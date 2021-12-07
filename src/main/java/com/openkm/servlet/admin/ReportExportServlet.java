@@ -85,6 +85,8 @@ public class ReportExportServlet extends BaseServlet {
 		String typeReport = WebUtils.getString(request, "type_report");
 		String userId = request.getRemoteUser();
 
+		String group = WebUtils.getString(request,"orgNameKQTT");
+
 
 		try {
 			if (!dbegin.equals("") && !dend.equals("")) {
@@ -106,6 +108,7 @@ public class ReportExportServlet extends BaseServlet {
 				end.set(Calendar.MILLISECOND, 0);
 				filter.setEnd(end);
 				filter.setUser(user);
+				filter.setGroup(group);
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
 				if ("KQTT".equals(action_)) {
@@ -516,8 +519,14 @@ public class ReportExportServlet extends BaseServlet {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 		map.put("fromDate", format1.format(filter.getBegin().getTime()));
 		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
-		if (org != null)
+		if (org != null) {
 			map.put("orgName", org.getName());
+			map.put("orgCode", org.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
+
 		int index1 = 1;
 		Table table = docSpire.getSections().get(0).getTables().get(2);
 
@@ -545,7 +554,16 @@ public class ReportExportServlet extends BaseServlet {
 		TableRow dataRow = table.addRow();
 		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
 		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(docNameList.stream().distinct().count()));
-		dataRow.getCells().get(4).addParagraph().appendText(String.valueOf(viewNumList.stream().reduce((a, b) -> a + b).get()));
+		dataRow.getCells().get(4).addParagraph().appendText(
+				String.valueOf(
+						exportGeneralBeanList
+								.stream()
+								.map(object -> object.getUserId())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		);
 
 
 		index1 = 1;
@@ -580,10 +598,10 @@ public class ReportExportServlet extends BaseServlet {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
 		}
 
-		ServletContext context = getServletContext();
 
+		ServletContext context = getServletContext();
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
-		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_RESULT_TRANSMIT.doc");
 
 	}
 }

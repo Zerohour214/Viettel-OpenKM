@@ -31,6 +31,7 @@ public class ActivityFilter implements Serializable {
 	private String user;
 	private String action;
 	private String item;
+	private String group;
 
 	public Calendar getBegin() {
 		return begin;
@@ -70,6 +71,14 @@ public class ActivityFilter implements Serializable {
 
 	public void setItem(String item) {
 		this.item = item;
+	}
+
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	public String toString() {

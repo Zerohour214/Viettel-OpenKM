@@ -373,7 +373,7 @@ public class OKMDocument implements DocumentModule {
 	}
 
 	@Override
-	public List<Document> search(String docCode, String docName) {
+	public List<Document> search(String docCode, String docName) throws DatabaseException {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.search(docCode, docName);
 	}
