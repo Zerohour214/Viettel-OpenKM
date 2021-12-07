@@ -155,6 +155,81 @@
                 $("#type-report-CLVB").val("XLS")
             })
 
+
+
+            $('#orgSearchSubmitBtn').click((e) => {
+                e.preventDefault();
+                $('#table-org-search tbody').empty()
+                $.ajax({
+                    url: '/kms/services/rest/organization/search',
+                    type: 'POST',
+                    processData: false,
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: $("#form-search-org").serialize(),
+                    success: (response) => {
+                        loadOrgSearchParent(response)
+                    }
+                });
+            })
+
+            function loadOrgSearchParent(jsonData) {
+                jsonData.forEach(org => {
+                    let tr = document.createElement('tr');
+                    let tdName = document.createElement('td'), tdCode = document.createElement('td'),
+                        tdChoose = document.createElement('td');
+                    tdName.innerText = org.name;
+                    tdCode.innerText = org.code;
+
+                    let iconChoose = document.createElement('span');
+                    iconChoose.setAttribute('class', "fa fa-check-circle")
+                    iconChoose.setAttribute('data-target', org.id)
+
+                    iconChoose.onclick = function () {
+                        $('.modal-backdrop').css('display', 'none');
+                        $('#myModal').css('display', 'none');
+
+                        switch (orgInputTab) {
+                            case "orgNameTHDVB":
+                                $('#orgIdTHDVB').val(org.id)
+                                $('#orgNameTHDVB').val(org.name);
+                                break;
+                            case "orgNameKQTT":
+                                $('#orgIdKQTT').val(org.id)
+                                $('#orgNameKQTT').val(org.name);
+                                break;
+                            case "orgNameCLVB":
+                                $('#orgIdCLVB').val(org.id)
+                                $('#orgNameCLVB').val(org.name);
+                                break;
+                        }
+
+                    };
+
+                    tdChoose.append(iconChoose)
+
+                    tr.appendChild(tdCode);
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdChoose);
+                    $('#table-org-search tbody').append(tr);
+                })
+
+            }
+            var orgInputTab;
+            $(".org-input").click((e) => {
+                let id = e.target.id;
+                switch (id) {
+                    case "orgNameTHDVB":
+                        orgInputTab = id;
+                        break;
+                    case "orgNameKQTT":
+                        orgInputTab = id;
+                        break;
+                    case "orgNameCLVB":
+                        orgInputTab = id;
+                        break;
+                }
+            })
+
         });
     </script>
     <title>Activity Log</title>
@@ -188,6 +263,11 @@
                                 <tr class="header">
                                     <td align="right" colspan="9">
                                         <form action="ReportExport" style="width: 50vw">
+                                            <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
+                                                   type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
+                                            <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB" size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal" class="org-input"/>
+                                            <input type="hidden" name="orgIdTHDVB">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend"  size="15"
@@ -248,7 +328,9 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
+
                 <div id="KQTT" class="${tab=='KQTT' ? 'tab-pane fade in active' : 'tab-pane fade'}">
                     <div class="card">
                         <div class="card-body">
@@ -257,10 +339,14 @@
                                 <tr class="header">
                                     <td align="right" colspan="9">
                                         <form action="ReportExport" style="width: 50vw">
+                                            <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT" size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal" class="org-input"/>
+                                            <input type="hidden" name="orgIdKQTT">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend-KQTT"  size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
+
                                             <b>User</b>
                                             <select name="user" id="user-KQTT" style="width: 125px;" data-placeholder="&nbsp;">
                                                 <option value="">All</option>
@@ -328,6 +414,9 @@
                                 <tr class="header">
                                     <td align="right" colspan="9">
                                         <form action="ReportExport" style="width: 50vw">
+                                            <b>Đơn vị</b> <input type="text" name="orgNameCLVB" id="orgNameCLVB" size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"/>
+                                            <input type="hidden" name="orgIdCLVB">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend-CLVB"  size="15"
@@ -376,6 +465,53 @@
                                 </c:forEach>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <form id="form-search-org" class="row" style="width: 100%;">
+
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" placeholder="Tên đơn vị"
+                                               name="orgName">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" placeholder="Mã đơn vị"
+                                               name="orgCode">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success" id="orgSearchSubmitBtn">
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                                </form>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="modal-body">
+
+                                <div class="row">
+                                    <table class="table table-hover table-bordered" id="table-org-search">
+                                        <thead>
+                                        <tr>
+                                            <th>Mã đơn vị</th>
+                                            <th>Tên đơn vị</th>
+                                            <th>Chọn</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

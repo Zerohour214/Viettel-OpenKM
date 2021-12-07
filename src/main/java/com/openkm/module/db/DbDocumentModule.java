@@ -1576,6 +1576,11 @@ public class DbDocumentModule implements DocumentModule {
 		return NodeBaseDAO.getInstance().getOrgsByDocId(docId);
 	}
 
+	@Override
+	public List<Document> search(String docCode, String docName) {
+		return NodeBaseDAO.getInstance().search(docCode, docName);
+	}
+
 
 	/*
 	 * ========================

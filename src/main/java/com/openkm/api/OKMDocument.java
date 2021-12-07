@@ -371,4 +371,10 @@ public class OKMDocument implements DocumentModule {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.getOrgsByDocId(docId);
 	}
+
+	@Override
+	public List<Document> search(String docCode, String docName) {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.search(docCode, docName);
+	}
 }

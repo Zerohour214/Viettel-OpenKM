@@ -449,4 +449,6 @@ public interface DocumentModule {
 	public void transmit(String docId, String orgs) throws DatabaseException;
 
 	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException;
+
+    public List<Document> search(String docCode, String docName);
 }

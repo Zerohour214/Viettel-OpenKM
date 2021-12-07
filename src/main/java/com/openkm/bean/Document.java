@@ -78,6 +78,7 @@ public class Document extends Node {
 	private String publishCom;
 	private Integer publisedYear;
 	private Integer pageNumber;
+	private String id;
 
 	public Document() {
 	}
@@ -301,6 +302,14 @@ public class Document extends Node {
 				setDocAuthor(vtProperties.get("docAuthor").toString());
 			}
 		}
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override

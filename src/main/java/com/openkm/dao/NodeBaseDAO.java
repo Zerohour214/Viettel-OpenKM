@@ -36,10 +36,12 @@ import com.openkm.util.SystemProfiling;
 import org.hibernate.*;
 import org.hibernate.engine.query.sql.NativeSQLQueryCollectionReturn;
 import org.hibernate.engine.query.sql.NativeSQLQueryReturn;
+import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.Doc;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -2497,4 +2499,35 @@ public class NodeBaseDAO {
 			HibernateUtil.close(session);
 		}
 	}
+
+    public List<Document> search(String docCode, String docName) throws DatabaseException {
+		String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode FROM OKM_NODE_BASE nb \n" +
+				"JOIN OKM_NODE_DOCUMENT d\n" +
+				"ON nb.NBS_UUID = d.NBS_UUID\n" +
+				"WHERE nb.NBS_NAME LIKE CONCAT('%', :docName, '%') AND d.NDC_DOC_CODE LIKE CONCAT('%', :docCode, '%')";
+
+		Session session = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			SQLQuery q =  session.createSQLQuery(qs);
+			q.setString("docName", docName);
+			q.setString("docCode", docCode);
+
+			q.setResultTransformer(Transformers.aliasToBean(Document.class));
+			q.addScalar("docName");
+			q.addScalar("docCode");
+			q.addScalar("id");
+
+
+			List<Document> ret = q.list();
+
+			log.debug("findByFilter: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+    }
 }
