@@ -21,6 +21,8 @@
 
 package com.openkm.dao.bean;
 
+import com.openkm.util.WebUtils;
+
 import java.io.Serializable;
 import java.util.Calendar;
 
@@ -31,6 +33,13 @@ public class ActivityFilter implements Serializable {
 	private String user;
 	private String action;
 	private String item;
+
+	private String orgIdTHDVB;
+	private String docIdTHDVB;
+	private String orgIdKQTT;
+	private String docIdKQTT;
+	private String orgIdCLVB;
+	private String docIdCLVB;
 
 	public Calendar getBegin() {
 		return begin;
@@ -70,6 +79,54 @@ public class ActivityFilter implements Serializable {
 
 	public void setItem(String item) {
 		this.item = item;
+	}
+
+	public String getOrgIdTHDVB() {
+		return orgIdTHDVB;
+	}
+
+	public void setOrgIdTHDVB(String orgIdTHDVB) {
+		this.orgIdTHDVB = orgIdTHDVB;
+	}
+
+	public String getDocIdTHDVB() {
+		return docIdTHDVB;
+	}
+
+	public void setDocIdTHDVB(String docIdTHDVB) {
+		this.docIdTHDVB = docIdTHDVB;
+	}
+
+	public String getOrgIdKQTT() {
+		return orgIdKQTT;
+	}
+
+	public void setOrgIdKQTT(String orgIdKQTT) {
+		this.orgIdKQTT = orgIdKQTT;
+	}
+
+	public String getDocIdKQTT() {
+		return docIdKQTT;
+	}
+
+	public void setDocIdKQTT(String docIdKQTT) {
+		this.docIdKQTT = docIdKQTT;
+	}
+
+	public String getOrgIdCLVB() {
+		return orgIdCLVB;
+	}
+
+	public void setOrgIdCLVB(String orgIdCLVB) {
+		this.orgIdCLVB = orgIdCLVB;
+	}
+
+	public String getDocIdCLVB() {
+		return docIdCLVB;
+	}
+
+	public void setDocIdCLVB(String docIdCLVB) {
+		this.docIdCLVB = docIdCLVB;
 	}
 
 	public String toString() {

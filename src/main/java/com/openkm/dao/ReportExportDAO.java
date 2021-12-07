@@ -34,7 +34,13 @@ public class ReportExportDAO {
 		if (filter.getUser() != null && !filter.getUser().equals(""))
 			qs += "AND u.USR_ID=:user ";
 
+		if(filter.getOrgIdTHDVB() != null && !filter.getOrgIdTHDVB().trim().equals("")) {
+			qs += "AND o.ID = :orgId\n";
+		}
 
+		if(filter.getDocIdTHDVB() != null && !filter.getDocIdTHDVB().trim().equals("")) {
+			qs += "AND d.NBS_UUID = :docId\n";
+		}
 		qs += "ORDER BY o.ID ";
 		Session session = null;
 		try {
@@ -42,6 +48,13 @@ public class ReportExportDAO {
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
+
+			if(filter.getOrgIdTHDVB() != null && !filter.getOrgIdTHDVB().trim().equals("")) {
+				q.setString("orgId", filter.getOrgIdTHDVB());
+			}
+			if(filter.getDocIdTHDVB() != null && !filter.getDocIdTHDVB().trim().equals("")) {
+				q.setString("docId", filter.getDocIdTHDVB());
+			}
 			if (filter.getUser() != null && !filter.getUser().equals(""))
 				q.setString("user", filter.getUser());
 
@@ -84,6 +97,14 @@ public class ReportExportDAO {
 				"JOIN OKM_NODE_BASE d ON d.NBS_UUID = ut.DOC_ID\n" +
 				"WHERE ut.LAST_PREVIEW BETWEEN :begin and :end\n";
 
+		if(filter.getOrgIdTHDVB() != null && !filter.getOrgIdTHDVB().trim().equals("")) {
+			qs += "AND o.ID = :orgId\n";
+		}
+
+		if(filter.getDocIdTHDVB() != null && !filter.getDocIdTHDVB().trim().equals("")) {
+			qs += "AND d.NBS_UUID = :docId\n";
+		}
+
 		if (filter.getUser() != null && !filter.getUser().equals(""))
 			qs += "AND u.USR_ID=:user\n ";
 
@@ -92,12 +113,21 @@ public class ReportExportDAO {
 				"\n" +
 				"ON t1.orgId = t2.orgId\n";
 
+
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
+
+			if(filter.getOrgIdTHDVB() != null && !filter.getOrgIdTHDVB().trim().equals("")) {
+				q.setString("orgId", filter.getOrgIdTHDVB());
+			}
+			if(filter.getDocIdTHDVB() != null && !filter.getDocIdTHDVB().trim().equals("")) {
+				q.setString("docId", filter.getDocIdTHDVB());
+			}
+
 			if (filter.getUser() != null && !filter.getUser().equals(""))
 				q.setString("user", filter.getUser());
 			q.setResultTransformer(Transformers.aliasToBean(THDVBReportBeanGeneral.class));
@@ -170,8 +200,13 @@ public class ReportExportDAO {
 				"SUM(u.LESS_1MIN) totalLessOneMin\n" +
 				"FROM USER_READ_DOC_TIMER u\n" +
 				"JOIN OKM_NODE_BASE d ON u.DOC_ID = d.NBS_UUID\n" +
-				"WHERE u.LAST_PREVIEW BETWEEN :begin AND :end\n" +
-				"GROUP BY u.DOC_ID\n";
+				"WHERE u.LAST_PREVIEW BETWEEN :begin AND :end\n";
+
+
+		if(filter.getDocIdCLVB() != null && !filter.getDocIdCLVB().trim().equals("")) {
+			qs += "AND d.NBS_UUID = :docId\n";
+		}
+		qs += "GROUP BY u.DOC_ID\n";
 
 		Session session = null;
 		try {
@@ -179,7 +214,9 @@ public class ReportExportDAO {
 			SQLQuery q = session.createSQLQuery(qs);
 			q.setCalendar("begin", filter.getBegin());
 			q.setCalendar("end", filter.getEnd());
-
+			if(filter.getDocIdCLVB() != null && !filter.getDocIdCLVB().trim().equals("")) {
+				q.setString("docId", filter.getDocIdCLVB());
+			}
 			q.setResultTransformer(Transformers.aliasToBean(CLVBReportBean.class));
 			q.addScalar("docId");
 			q.addScalar("docName");

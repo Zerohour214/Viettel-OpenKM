@@ -167,10 +167,12 @@
                     contentType: 'application/x-www-form-urlencoded',
                     data: $("#form-search-org").serialize(),
                     success: (response) => {
+                        console.log(response)
                         loadOrgSearchParent(response)
                     }
                 });
             })
+
 
             function loadOrgSearchParent(jsonData) {
                 jsonData.forEach(org => {
@@ -185,8 +187,8 @@
                     iconChoose.setAttribute('data-target', org.id)
 
                     iconChoose.onclick = function () {
-                        $('.modal-backdrop').css('display', 'none');
-                        $('#myModal').css('display', 'none');
+                        // $('.modal-backdrop').css('display', 'none');
+                        $('#myModal').modal("hide");
 
                         switch (orgInputTab) {
                             case "orgNameTHDVB":
@@ -197,10 +199,7 @@
                                 $('#orgIdKQTT').val(org.id)
                                 $('#orgNameKQTT').val(org.name);
                                 break;
-                            case "orgNameCLVB":
-                                $('#orgIdCLVB').val(org.id)
-                                $('#orgNameCLVB').val(org.name);
-                                break;
+
                         }
 
                     };
@@ -224,9 +223,84 @@
                     case "orgNameKQTT":
                         orgInputTab = id;
                         break;
-                    case "orgNameCLVB":
-                        orgInputTab = id;
+
+                }
+            })
+
+            var docInputTab;
+
+            $('#docSearchSubmitBtn').click((e) => {
+                e.preventDefault();
+                $('#table-doc-search tbody').empty()
+                $.ajax({
+                    url: '/kms/services/rest/document/search',
+                    type: 'POST',
+                    processData: false,
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: $("#form-search-doc").serialize(),
+                    success: (response) => {
+                        loadDocSearch(response)
+                    }
+                });
+            })
+
+            function loadDocSearch(jsonData) {
+                console.log(jsonData)
+                jsonData.forEach(doc => {
+                    let tr = document.createElement('tr');
+                    let tdName = document.createElement('td'), tdCode = document.createElement('td'),
+                        tdChoose = document.createElement('td');
+                    tdName.innerText = doc.docName;
+                    tdCode.innerText = doc.docCode;
+
+                    let iconChoose = document.createElement('span');
+                    iconChoose.setAttribute('class', "fa fa-check-circle")
+                    iconChoose.setAttribute('data-target', doc.id)
+
+                    iconChoose.onclick = function () {
+
+                        switch (docInputTab) {
+                            case "docNameTHDVB":
+                                $('#docIdTHDVB').val(doc.id)
+                                $('#docNameTHDVB').val(doc.docName);
+                                break;
+                            case "docNameKQTT":
+                                $('#docIdKQTT').val(doc.id)
+                                $('#docNameKQTT').val(doc.docName);
+                                break;
+                            case "docNameCLVB":
+                                $('#docIdCLVB').val(doc.id)
+                                $('#docNameCLVB').val(doc.docName);
+                                break;
+
+                        }
+                        $('#docSearchModal').modal("hide");
+
+                    };
+
+                    tdChoose.append(iconChoose)
+
+                    tr.appendChild(tdCode);
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdChoose);
+                    $('#table-doc-search tbody').append(tr);
+                })
+
+            }
+
+            $(".doc-input").click((e) => {
+                let id = e.target.id;
+                switch (id) {
+                    case "docNameTHDVB":
+                        docInputTab = id;
                         break;
+                    case "docNameKQTT":
+                        docInputTab = id;
+                        break;
+                    case "docNameCLVB":
+                        docInputTab = id;
+                        break;
+
                 }
             })
 
@@ -261,13 +335,16 @@
                             <table id="results" class="results">
                                 <thead>
                                 <tr class="header">
-                                    <td align="right" colspan="9">
-                                        <form action="ReportExport" style="width: 50vw">
+                                    <td align="left" colspan="9">
+                                        <form action="ReportExport" style="width: 100vw">
                                             <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
                                                    type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
                                             <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal" class="org-input"/>
-                                            <input type="hidden" name="orgIdTHDVB">
+                                                                 data-toggle="modal" data-target="#myModal" class="org-input" value="${orgNameTHDVB}"/>
+                                            <input type="hidden" name="orgIdTHDVB" id="orgIdTHDVB" value="${orgIdTHDVB}">
+                                            <b>Tài liệu</b> <input type="text" name="docNameTHDVB" id="docNameTHDVB" size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameTHDVB}"/>
+                                            <input type="hidden" name="docIdTHDVB" id="docIdTHDVB" value="${docIdTHDVB}">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend"  size="15"
@@ -341,7 +418,10 @@
                                         <form action="ReportExport" style="width: 50vw">
                                             <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT" size="20" autocomplete="off"
                                                                  data-toggle="modal" data-target="#myModal" class="org-input"/>
-                                            <input type="hidden" name="orgIdKQTT">
+                                            <input type="hidden" name="orgIdKQTT" id="orgIdKQTT">
+                                            <b>Tài liệu</b> <input type="text" name="docNameKQTT" id="docNameKQTT" size="30" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#docSearchModal" class="doc-input"/>
+                                            <input type="hidden" name="docIdKQTT" id="docIdKQTT">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend-KQTT"  size="15"
@@ -412,11 +492,11 @@
                             <table id="results-CLVB" class="results">
                                 <thead>
                                 <tr class="header">
-                                    <td align="right" colspan="9">
-                                        <form action="ReportExport" style="width: 50vw">
-                                            <b>Đơn vị</b> <input type="text" name="orgNameCLVB" id="orgNameCLVB" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal"/>
-                                            <input type="hidden" name="orgIdCLVB">
+                                    <td align="left" colspan="9">
+                                        <form action="ReportExport" style="width: 100vw">
+                                            <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB" size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameCLVB}"/>
+                                            <input type="hidden" name="docIdCLVB" id="docIdCLVB" value="${docIdCLVB}">
                                             <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB"  size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
                                             <b>To</b> <input type="text" name="dend" id="dend-CLVB"  size="15"
@@ -504,6 +584,51 @@
                                         <tr>
                                             <th>Mã đơn vị</th>
                                             <th>Tên đơn vị</th>
+                                            <th>Chọn</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="docSearchModal">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <form id="form-search-doc" class="row" style="width: 100%;">
+
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" placeholder="Mã tài liệu"
+                                               name="docCode">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" placeholder="Tên tài liệu"
+                                               name="docName">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-success" id="docSearchSubmitBtn">
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </form>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <div class="row">
+                                    <table class="table table-hover table-bordered" id="table-doc-search">
+                                        <thead>
+                                        <tr>
+                                            <th>Mã tài liệu</th>
+                                            <th>Tên tài liệu</th>
                                             <th>Chọn</th>
                                         </tr>
                                         </thead>

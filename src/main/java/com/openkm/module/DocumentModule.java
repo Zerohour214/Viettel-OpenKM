@@ -450,5 +450,5 @@ public interface DocumentModule {
 
 	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException;
 
-    public List<Document> search(String docCode, String docName);
+    public List<Document> search(String docCode, String docName) throws DatabaseException;
 }

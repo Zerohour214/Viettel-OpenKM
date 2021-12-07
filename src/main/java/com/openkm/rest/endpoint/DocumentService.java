@@ -57,8 +57,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Api(description = "document-service", value = "document-service")
 @Path("/document")
 public class DocumentService {
@@ -695,11 +695,11 @@ public class DocumentService {
 				.build();
 	}
 
-	@GET
+	@POST
 	@Path("/search")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public String getAllDoc(@QueryParam("docName") String docName,
-							@QueryParam("docCode") String docCode) throws DatabaseException {
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String getAllDoc(@FormParam("docName") String docName,
+							@FormParam("docCode") String docCode) throws DatabaseException {
 
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		if(docCode == null) docCode = "";

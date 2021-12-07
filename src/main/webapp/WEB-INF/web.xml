@@ -42,6 +42,7 @@
     <filter-class>com.openkm.servlet.frontend.UploadThrottleFilter</filter-class>
   </filter>
 
+
   <!--  SSO FILTER -->
     <!--<filter>
     <filter>

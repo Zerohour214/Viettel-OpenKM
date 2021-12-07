@@ -54,6 +54,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -69,6 +71,7 @@ public class ReportExportServlet extends BaseServlet {
 	private static Logger log = LoggerFactory.getLogger(ReportExportServlet.class);
 
 
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException,
 			ServletException {
 		log.debug("doGet({}, {})", request, response);
@@ -79,11 +82,19 @@ public class ReportExportServlet extends BaseServlet {
 		String dend = WebUtils.getString(request, "dend");
 		String user = WebUtils.getString(request, "user");
 		String action = WebUtils.getString(request, "action");
-		String minutes = WebUtils.getString(request, "minutes");
+
 		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
 		String typeReport = WebUtils.getString(request, "type_report");
 		String userId = request.getRemoteUser();
+
+		String orgIdTHDVB = WebUtils.getString(request, "orgIdTHDVB");
+		String docIdTHDVB = WebUtils.getString(request, "docIdTHDVB");
+		String orgNameTHDVB = WebUtils.getString(request, "orgNameTHDVB");
+		String docNameTHDVB = WebUtils.getString(request, "docNameTHDVB");
+
+		String docIdCLVB = WebUtils.getString(request, "docIdCLVB");
+		String docNameCLVB = WebUtils.getString(request, "docNameCLVB");
 
 
 		try {
@@ -106,6 +117,9 @@ public class ReportExportServlet extends BaseServlet {
 				end.set(Calendar.MILLISECOND, 0);
 				filter.setEnd(end);
 				filter.setUser(user);
+				filter.setDocIdTHDVB(docIdTHDVB);
+				filter.setOrgIdTHDVB(orgIdTHDVB);
+				filter.setDocIdCLVB(docIdCLVB);
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
 				if ("KQTT".equals(action_)) {
@@ -162,10 +176,16 @@ public class ReportExportServlet extends BaseServlet {
 
 			if ("".equals(action_) || "Filter-THDVB".equals(action_)) {
 				sc.setAttribute("tab", "THDVB");
+				sc.setAttribute("orgIdTHDVB", orgIdTHDVB);
+				sc.setAttribute("docIdTHDVB", docIdTHDVB);
+				sc.setAttribute("orgNameTHDVB", orgNameTHDVB);
+				sc.setAttribute("docNameTHDVB", docNameTHDVB);
 			} else if ("Filter-KQTT".equals(action_)){
 				sc.setAttribute("tab", "KQTT");
 			}else if ("Filter-CLVB".equals(action_)){
 				sc.setAttribute("tab", "CLVB");
+				sc.setAttribute("docIdCLVB", docIdCLVB);
+				sc.setAttribute("docNameCLVB", docNameCLVB);
 			}
 			sc.setAttribute("dbeginFilter", dbegin);
 			sc.setAttribute("dendFilter", dend);
