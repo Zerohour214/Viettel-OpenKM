@@ -108,9 +108,16 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setUser(user);
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
 
-				if ("KQTT".equals(action_))
-					doExportKQTT(filter, response, orgUser);
-
+				if ("KQTT".equals(action_)) {
+					List<KQTTReportBean> exportBeanList = ReportExportDAO.exportKQTTByFilter(filter);
+					List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
+					if ("DOC".equals(typeReport)) {
+						doExportKQTTDOC(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
+					if ("XLS".equals(typeReport)) {
+						doExportKQTTXLS(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
+				}
 				if ("THDVB".equals(action_)) {
 					List<THDVBReportBeanDetail> exportBeanList = ReportExportDAO.exportTHDVBByFilter(filter);
 					List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
@@ -337,7 +344,64 @@ public class ReportExportServlet extends BaseServlet {
 
 		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
+	public void doExportKQTTXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
+								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<KQTTReportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
 
+		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		if (orgUser != null) {
+			map.put("orgName", orgUser.getName());
+			map.put("orgCode", orgUser.getCode());
+		} else {
+			map.put("orgName", "...");
+			map.put("orgCode", "...");
+		}
+		map.put("generalBeans", exportGeneralBeanList);
+		map.put("detailBeans", exportBeanList);
+		map.put("totalDoc", String.valueOf(
+				exportGeneralBeanList
+						.stream()
+						.map(object -> object.getDocName())
+						.collect(Collectors.toList())
+						.stream()
+						.distinct().count()
+				)
+		);
+
+		map.put("totalViewedUser", String.valueOf(
+				String.valueOf(
+						exportGeneralBeanList
+								.stream()
+								.map(object -> object.getUserId())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		));
+
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		resultWorkbook.write(byteArrayOutputStream);
+
+
+		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_RESULT_TRANSMIT.xlsx", response, byteArrayOutputStream);
+	}
 	public void doExportCLVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, ServletException, IOException {
 		URL res = getClass().getClassLoader().getResource("template/BC_QUALITY_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -441,10 +505,7 @@ public class ReportExportServlet extends BaseServlet {
 		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_QUALITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
-	public void doExportKQTT(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org) throws IOException, URISyntaxException, DatabaseException, ServletException {
-
-		List<KQTTReportBean> exportBeanList = ReportExportDAO.exportKQTTByFilter(filter);
-		List<THDVBReportBeanGeneral> exportGeneralBeanList = ReportExportDAO.exportTHDVBGeneralByFilter(filter);
+	public void doExportKQTTDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,List<THDVBReportBeanGeneral> exportGeneralBeanList,List<KQTTReportBean> exportBeanList) throws IOException, URISyntaxException, DatabaseException, ServletException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.doc");
 		File file = Paths.get(res.toURI()).toFile();

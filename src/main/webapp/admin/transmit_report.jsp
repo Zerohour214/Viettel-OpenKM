@@ -129,9 +129,15 @@
             })
 
 
-            $("#transmit-export-btn-KQTT").click(() => {
+            $("#export-btn-KQTT-DOC").click(() => {
                 $("#action-input-KQTT").val("KQTT")
+                $("#type-report-KQTT").val("DOC")
             })
+            $("#export-btn-KQTT-XLS").click(() => {
+                $("#action-input-KQTT").val("KQTT")
+                $("#type-report-KQTT").val("XLS")
+            })
+
             $("#export-btn-THDVB-DOC").click(() => {
                 $("#action-input-THDVB").val("THDVB")
                 $("#type-report-THDVB").val("DOC")
@@ -271,8 +277,12 @@
                                             </select>
                                             <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-KQTT"/>
                                             <input type="hidden" name="action_" id="action-input-KQTT">
-                                            <button type="submit" class="btn btn-success" id="transmit-export-btn-KQTT" style="padding: 0px 15px !important;">
-                                                <span class="fa fa-download"></span>&nbsp;Export
+                                            <input type="hidden" name="type_report" id="type-report-KQTT">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-KQTT-DOC" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;DOC
+                                            </button>
+                                            <button type="submit" class="btn btn-success" id="export-btn-KQTT-XLS" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
                                     </td>
