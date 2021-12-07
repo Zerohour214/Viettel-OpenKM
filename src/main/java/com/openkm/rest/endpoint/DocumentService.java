@@ -32,6 +32,7 @@ import com.openkm.core.*;
 import com.openkm.frontend.client.Main;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
+import com.openkm.module.OrgVTXModule;
 import com.openkm.rest.GenericException;
 import com.openkm.rest.util.DocumentList;
 import com.openkm.rest.util.VersionList;
@@ -693,4 +694,19 @@ public class DocumentService {
 		return Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
 				.build();
 	}
+
+	@GET
+	@Path("/search")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getAllDoc(@QueryParam("docName") String docName,
+							@QueryParam("docCode") String docCode) throws DatabaseException {
+
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		if(docCode == null) docCode = "";
+		if(docName == null) docName = "";
+		String json = new Gson().toJson(dm.search(docCode, docName));
+		return json;
+	}
+
+
 }
