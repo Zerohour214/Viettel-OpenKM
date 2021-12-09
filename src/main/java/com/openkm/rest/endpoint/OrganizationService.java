@@ -209,8 +209,11 @@ public class OrganizationService extends BaseServlet {
 	@GET
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Path("/downloadTemplateImportOrg")
-	public Response downloadTemplateImportOrg() throws DatabaseException, IOException, URISyntaxException {
-		URL res = getClass().getClassLoader().getResource("template/IMPORT_ORG.xlsx");
+	public Response downloadTemplateImportOrg(@QueryParam("type") String type) throws DatabaseException, IOException, URISyntaxException {
+
+		String resourceName = "ORG".equals(type) ? "template/IMPORT_ORG.xls" : "template/IMPORT_USER_ORG.xls";
+
+		URL res = getClass().getClassLoader().getResource(resourceName);
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 

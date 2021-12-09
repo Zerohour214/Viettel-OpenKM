@@ -63,8 +63,8 @@
                         </div>
 
                         <div>
-                            <a id="btn-download-file-org"
-                               href="/kms/services/rest/organization/downloadTemplateImportOrg">Download template</a>
+                            <a
+                               href="/kms/services/rest/organization/downloadTemplateImportOrg?type=ORG">Download template</a>
                         </div>
                     </div>
                 </div>
@@ -156,6 +156,11 @@
                                     </button>
                                 </div>
                             </form>
+                        </div>
+
+                        <div>
+                            <a
+                               href="/kms/services/rest/organization/downloadTemplateImportOrg?type=USER_ORG">Download template</a>
                         </div>
                     </div>
                 </div>
