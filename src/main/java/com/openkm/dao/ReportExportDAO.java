@@ -157,8 +157,14 @@ public class ReportExportDAO {
 				"FROM ORG_DOC od JOIN USER_ORG_VTX uov ON od.ORG_ID = uov.ORG_ID\n" +
 				"JOIN OKM_USER ou ON ou.USR_ID = uov.USER_ID\n" +
 				"JOIN ORGANIZATION_VTX ov ON ov.ID = od.ORG_ID\n" +
-				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = od.DOC_ID) a\n" +
-				"LEFT JOIN (\n" +
+				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = od.DOC_ID ";
+		if (filter.getDocIdKQTT() != null && !filter.getDocIdKQTT().equals("") && (filter.getUser() == null || filter.getUser().equals("")))
+			qs += "WHERE od.DOC_ID=:doc\n ";
+		if (filter.getUser() != null && !filter.getUser().equals("") && (filter.getDocIdKQTT() == null || filter.getDocIdKQTT().equals("")))
+			qs += "WHERE ou.USR_ID=:user\n ";
+		if (filter.getUser() != null && !filter.getUser().equals("") && filter.getDocIdKQTT() != null && !filter.getDocIdKQTT().equals(""))
+			qs += "WHERE ou.USR_ID=:user AND od.DOC_ID=:doc\n ";
+		qs +=   ") a LEFT JOIN (\n" +
 				"SELECT x.LAST_PREVIEW,x.CONFIRM_DATE,x.START_CONFIRM, x.END_CONFIRM ,x.TIME_LAST_PREVIEW, x.USER_ID,x.DOC_ID FROM (\n" +
 				"SELECT * FROM USER_READ_DOC_TIMER urdt WHERE urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID,urdt.USER_ID\n" +
 				"UNION\n" +
@@ -174,6 +180,10 @@ public class ReportExportDAO {
 			q.setCalendar("end", filter.getEnd());
 			if (filter.getGroup() != null && !filter.getGroup().equals(""))
 				q.setString("group", filter.getGroup());
+			if (filter.getUser() != null && !filter.getUser().equals(""))
+				q.setString("user", filter.getUser());
+			if (filter.getDocIdKQTT() != null && !filter.getDocIdKQTT().equals(""))
+				q.setString("doc", filter.getDocIdKQTT());
 			q.setResultTransformer(Transformers.aliasToBean(KQTTReportBean.class));
 			q.addScalar("orgName");
 			q.addScalar("fullname");
