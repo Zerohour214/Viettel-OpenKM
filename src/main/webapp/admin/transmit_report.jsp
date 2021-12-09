@@ -34,31 +34,23 @@
     <script type="text/javascript" src="../js/bootstrap/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#results').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });
+            function setDataTable(element) {
+                element.dataTable({
+                    "bStateSave": true,
+                    "iDisplayLength": 15,
+                    "lengthMenu": [[10, 15, 20], [10, 15, 20]],
+                    "fnDrawCallback": function (oSettings) {
+                        dataTableAddRows(this, oSettings);
+                    }
+                });
+            }
 
-            $('#results-KQTT').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });
-            $('#results-CLVB').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });
+            setDataTable($('#results'))
+            setDataTable($('#results-KQTT'))
+            setDataTable($('#results-CLVB'))
+            setDataTable($('#results-THCNVB'))
+
+
             function dbegin(element) {
                 element.datepicker({
                     showOn: "button",
@@ -105,6 +97,10 @@
             dbegin($("#dbegin-CLVB"));
             dend($("#dend-CLVB"));
 
+            dbegin($("#dbegin-THCNVB"));
+            dend($("#dend-THCNVB"));
+
+
             $('.ui-datepicker-trigger').css('vertical-align', 'middle');
 
             $('select#user').chosen({disable_search_threshold: 10});
@@ -114,6 +110,8 @@
 
 
             $('select#user-CLVB').chosen({disable_search_threshold: 10});
+
+            $('select#user-THCNVB').chosen({disable_search_threshold: 10});
 
 
             $("#filter-input-THDVB").click(() => {
@@ -127,6 +125,9 @@
             $("#filter-input-CLVB").click(() => {
                 $("#action-input-CLVB").val("Filter-CLVB")
             })
+            $("#filter-input-THCNVB").click(() => {
+                $("#action-input-THCNVB").val("Filter-THCNVB")
+            })
 
 
             $("#export-btn-KQTT-DOC").click(() => {
@@ -137,7 +138,6 @@
                 $("#action-input-KQTT").val("KQTT")
                 $("#type-report-KQTT").val("XLS")
             })
-
             $("#export-btn-THDVB-DOC").click(() => {
                 $("#action-input-THDVB").val("THDVB")
                 $("#type-report-THDVB").val("DOC")
@@ -154,7 +154,14 @@
                 $("#action-input-CLVB").val("CLVB")
                 $("#type-report-CLVB").val("XLS")
             })
-
+            $("#export-btn-THCNVB-DOC").click(() => {
+                $("#action-input-THCNVB").val("THCNVB")
+                $("#type-report-THCNVB").val("DOC")
+            })
+            $("#export-btn-THCNVB-XLS").click(() => {
+                $("#action-input-THCNVB").val("THCNVB")
+                $("#type-report-THCNVB").val("XLS")
+            })
 
 
             $('#orgSearchSubmitBtn').click((e) => {
@@ -199,6 +206,10 @@
                                 $('#orgIdKQTT').val(org.id)
                                 $('#orgNameKQTT').val(org.name);
                                 break;
+                            case "orgNameTHCNVB":
+                                $('#orgIdTHCNVB').val(org.id)
+                                $('#orgNameTHCNVB').val(org.name);
+                                break;
 
                         }
 
@@ -213,6 +224,7 @@
                 })
 
             }
+
             var orgInputTab;
             $(".org-input").click((e) => {
                 let id = e.target.id;
@@ -221,6 +233,9 @@
                         orgInputTab = id;
                         break;
                     case "orgNameKQTT":
+                        orgInputTab = id;
+                        break;
+                    case "orgNameTHCNVB":
                         orgInputTab = id;
                         break;
 
@@ -272,6 +287,10 @@
                                 $('#docIdCLVB').val(doc.id)
                                 $('#docNameCLVB').val(doc.docName);
                                 break;
+                            case "docNameTHCNVB":
+                                $('#docIdTHCNVB').val(doc.id)
+                                $('#docNameTHCNVB').val(doc.docName);
+                                break;
 
                         }
                         $('#docSearchModal').modal("hide");
@@ -300,6 +319,9 @@
                     case "docNameCLVB":
                         docInputTab = id;
                         break;
+                    case "docNameTHCNVB":
+                        docInputTab = id;
+                        break;
 
                 }
             })
@@ -323,11 +345,17 @@
 
             <ul class="nav nav-tabs">
 
-                <li  class="${tab=='THDVB' ? 'active' : ''}"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
-                <li  class="${tab=='KQTT' ? 'active' : ''}"><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
-                <li  class="${tab=='CLVB' ? 'active' : ''}"><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
+                <li class="${tab=='THDVB' ? 'active' : ''}"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn
+                    bản</a></li>
+                <li class="${tab=='KQTT' ? 'active' : ''}"><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền
+                    thông</a></li>
+                <li class="${tab=='CLVB' ? 'active' : ''}"><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn
+                    bản</a></li>
+                <li class="${tab=='THCNVB' ? 'active' : ''}"><a data-toggle="tab" href="#THCNVB">Báo cáo tình hình cập
+                    nhật văn bản</a></li>
 
             </ul>
+            <br/>
             <div class="tab-content">
                 <div id="THDVB" class="${tab=='THDVB' ? 'tab-pane fade in active' : 'tab-pane fade'}">
                     <div class="card">
@@ -337,20 +365,27 @@
                                 <tr class="header">
                                     <td align="left" colspan="9">
                                         <form action="ReportExport" style="width: 100vw">
-                                            <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
-                                                   type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
-                                            <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal" class="org-input" value="${orgNameTHDVB}"/>
-                                            <input type="hidden" name="orgIdTHDVB" id="orgIdTHDVB" value="${orgIdTHDVB}">
-                                            <b>Tài liệu</b> <input type="text" name="docNameTHDVB" id="docNameTHDVB" size="30" autocomplete="off"
-                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameTHDVB}"/>
-                                            <input type="hidden" name="docIdTHDVB" id="docIdTHDVB" value="${docIdTHDVB}">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
+                                                <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
+                                                       type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
+                                            <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB"
+                                                                 size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"
+                                                                 class="org-input" value="${orgNameTHDVB}"/>
+                                            <input type="hidden" name="orgIdTHDVB" id="orgIdTHDVB"
+                                                   value="${orgIdTHDVB}">
+                                            <b>Tài liệu</b> <input type="text" name="docNameTHDVB" id="docNameTHDVB"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input" value="${docNameTHDVB}"/>
+                                            <input type="hidden" name="docIdTHDVB" id="docIdTHDVB"
+                                                   value="${docIdTHDVB}">
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
                                             <b>User</b>
-                                            <select name="user" id="user" style="width: 125px;" data-placeholder="&nbsp;">
+                                            <select name="user" id="user" style="width: 125px;"
+                                                    data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -363,13 +398,16 @@
                                                     </c:choose>
                                                 </c:forEach>
                                             </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-THDVB"/>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-THDVB"/>
                                             <input type="hidden" name="action_" id="action-input-THDVB" value="THDVB">
                                             <input type="hidden" name="type_report" id="type-report-THDVB">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-THDVB-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-THDVB-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-THDVB-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-THDVB-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
@@ -395,10 +433,12 @@
                                         <td>${act.docName}</td>
                                         <td>${act.viewNum}</td>
                                         <td>
-                                            <fmt:formatNumber type="number" maxFractionDigits="1" value="${act.totalTimeView/60000}" />
-                                                </td>
+                                            <fmt:formatNumber type="number" maxFractionDigits="1"
+                                                              value="${act.totalTimeView/60000}"/>
+                                        </td>
                                         <td>${act.author}</td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
@@ -416,19 +456,24 @@
                                 <tr class="header">
                                     <td align="right" colspan="9">
                                         <form action="ReportExport" style="width: 50vw">
-                                            <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal" class="org-input"/>
+                                            <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT"
+                                                                 size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"
+                                                                 class="org-input"/>
                                             <input type="hidden" name="orgIdKQTT" id="orgIdKQTT">
-                                            <b>Tài liệu</b> <input type="text" name="docNameKQTT" id="docNameKQTT" size="30" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#docSearchModal" class="doc-input"/>
+                                            <b>Tài liệu</b> <input type="text" name="docNameKQTT" id="docNameKQTT"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input"/>
                                             <input type="hidden" name="docIdKQTT" id="docIdKQTT">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT"  size="15"
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend-KQTT"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend-KQTT" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
 
                                             <b>User</b>
-                                            <select name="user" id="user-KQTT" style="width: 125px;" data-placeholder="&nbsp;">
+                                            <select name="user" id="user-KQTT" style="width: 125px;"
+                                                    data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -441,13 +486,16 @@
                                                     </c:choose>
                                                 </c:forEach>
                                             </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-KQTT"/>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-KQTT"/>
                                             <input type="hidden" name="action_" id="action-input-KQTT">
                                             <input type="hidden" name="type_report" id="type-report-KQTT">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-KQTT-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-KQTT-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-KQTT-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-KQTT-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
@@ -472,10 +520,14 @@
                                         <td>${act.fullname}</td>
                                         <td>${act.employeeCode}</td>
                                         <td>${act.docName}</td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.assignDoc}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.confirmDate}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.startConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.endConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.assignDoc}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.confirmDate}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.startConfirm}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.endConfirm}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
                                         <td>${act.timeRead/60000}</td>
                                     </tr>
                                 </c:forEach>
@@ -486,7 +538,6 @@
                 </div>
 
                 <div id="CLVB" class="${tab=='CLVB' ? 'tab-pane fade in active' : 'tab-pane fade'}">
-
                     <div class="card">
                         <div class="card-body">
                             <table id="results-CLVB" class="results">
@@ -494,15 +545,18 @@
                                 <tr class="header">
                                     <td align="left" colspan="9">
                                         <form action="ReportExport" style="width: 100vw">
-                                            <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB" size="30" autocomplete="off"
-                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameCLVB}"/>
+                                            <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input" value="${docNameCLVB}"/>
                                             <input type="hidden" name="docIdCLVB" id="docIdCLVB" value="${docIdCLVB}">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB"  size="15"
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend-CLVB"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend-CLVB" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
                                             <b>User</b>
-                                            <select name="user" id="user-CLVB" style="width: 125px;" data-placeholder="&nbsp;">
+                                            <select name="user" id="user-CLVB" style="width: 125px;"
+                                                    data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -515,13 +569,16 @@
                                                     </c:choose>
                                                 </c:forEach>
                                             </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-CLVB"/>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-CLVB"/>
                                             <input type="hidden" name="action_" id="action-input-CLVB">
                                             <input type="hidden" name="type_report" id="type-report-CLVB">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-CLVB-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-CLVB-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-CLVB-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-CLVB-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
@@ -547,6 +604,91 @@
                             </table>
                         </div>
                     </div>
+                </div>
+
+                <div id="THCNVB" class="${tab=='THCNVB' ? 'tab-pane fade in active' : 'tab-pane fade'}">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="results-THCNVB" class="results">
+                                <thead>
+                                <tr class="header">
+                                    <td align="left" colspan="9">
+                                        <form action="ReportExport" style="width: 100vw">
+                                                <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
+                                                       type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
+                                            <b>Đơn vị</b> <input type="text" name="orgNameTHCNVB" id="orgNameTHCNVB"
+                                                                 size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"
+                                                                 class="org-input" value="${orgNameTHCNVB}"/>
+                                            <input type="hidden" name="orgIdTHCNVB" id="orgIdTHCNVB"
+                                                   value="${orgIdTHCNVB}">
+                                            <b>Tài liệu</b> <input type="text" name="docNameTHCNVB" id="docNameTHCNVB"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input" value="${docNameTHCNVB}"/>
+                                            <input type="hidden" name="docIdTHCNVB" id="docIdTHCNVB"
+                                                   value="${docIdTHCNVB}">
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-THCNVB" size="15"
+                                                               readonly="readonly" value="${dbeginFilter}"/>
+                                            <b>To</b> <input type="text" name="dend" id="dend-THCNVB" size="15"
+                                                             readonly="readonly" value="${dendFilter}"/>
+                                            <b>User</b>
+                                            <select name="user" id="user-THCNVB" style="width: 125px;"
+                                                    data-placeholder="&nbsp;">
+                                                <option value="">All</option>
+                                                <c:forEach var="user" items="${users}" varStatus="row">
+                                                    <c:choose>
+                                                        <c:when test="${user == userFilter}">
+                                                            <option value="${user}" selected="selected">${user}</option>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <option value="${user}">${user}</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-THCNVB"/>
+                                            <input type="hidden" name="action_" id="action-input-THCNVB" value="THCNVB">
+                                            <input type="hidden" name="type_report" id="type-report-THCNVB">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-THCNVB-DOC"
+                                                    style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;DOC
+                                            </button>
+                                            <button type="submit" class="btn btn-success" id="export-btn-THCNVB-XLS"
+                                                    style="padding: 0px 15px !important;">
+                                                <span class="fa fa-download"></span>&nbsp;XLS
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Đơn vị</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Tên văn bản</th>
+                                    <th>Hành động</th>
+                                    <th>Thời điểm tác động</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach var="act" items="${resultsTHCNVB}" varStatus="row">
+                                    <tr class="${row.index % 2 == 0 ? 'even' : 'odd'}">
+                                        <td>${act.orgName}</td>
+                                        <td>${act.fullName}</td>
+                                        <td>${act.employeeCode}</td>
+                                        <td>${act.documentName}</td>
+                                        <td>${act.action}</td>
+
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.dateTime}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="modal fade" id="myModal">

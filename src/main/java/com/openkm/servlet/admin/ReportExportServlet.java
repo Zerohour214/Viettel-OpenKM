@@ -23,21 +23,17 @@ package com.openkm.servlet.admin;
 
 
 import com.openkm.api.OKMAuth;
-import com.openkm.bean.CLVBReportBean;
-import com.openkm.bean.THDVBReportBeanDetail;
-import com.openkm.bean.THDVBReportBeanGeneral;
-
-import com.openkm.bean.KQTTReportBean;
-
+import com.openkm.bean.*;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.ReportExportDAO;
 import com.openkm.dao.UserDAO;
 import com.openkm.dao.bean.ActivityFilter;
-import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.dao.bean.OrganizationVTX;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
 import com.spire.doc.Document;
+import com.spire.doc.FileFormat;
 import com.spire.doc.Table;
 import com.spire.doc.TableRow;
 import net.sf.jxls.transformer.XLSTransformer;
@@ -54,8 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -94,6 +88,16 @@ public class ReportExportServlet extends BaseServlet {
 		String orgNameTHDVB = WebUtils.getString(request, "orgNameTHDVB");
 		String docNameTHDVB = WebUtils.getString(request, "docNameTHDVB");
 
+		String orgIdKQTT = WebUtils.getString(request, "orgIdKQTT");
+		String docIdKQTT = WebUtils.getString(request, "docIdKQTT");
+		String orgNameKQTT = WebUtils.getString(request, "orgNameKQTT");
+		String docNameKQTT = WebUtils.getString(request, "docNameKQTT");
+
+		String orgIdTHCNVB = WebUtils.getString(request, "orgIdTHCNVB");
+		String docIdTHCNVB = WebUtils.getString(request, "docIdTHCNVB");
+		String orgNameTHCNVB = WebUtils.getString(request, "orgNameTHCNVB");
+		String docNameTHCNVB = WebUtils.getString(request, "docNameTHCNVB");
+
 		String docIdCLVB = WebUtils.getString(request, "docIdCLVB");
 		String docNameCLVB = WebUtils.getString(request, "docNameCLVB");
 
@@ -125,6 +129,8 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setDocIdTHDVB(docIdTHDVB);
 				filter.setOrgIdTHDVB(orgIdTHDVB);
 				filter.setDocIdCLVB(docIdCLVB);
+				filter.setOrgIdTHCNVB(orgIdTHCNVB);
+				filter.setDocIdTHCNVB(docIdTHCNVB);
 
 				filter.setGroup(group);
 
@@ -159,27 +165,44 @@ public class ReportExportServlet extends BaseServlet {
 					if("XLS".equals(typeReport)) {
 						doExportCLVBXLS(filter, response, orgUser, exportBeanList);
 					}
-
+				}
+				if ("THCNVB".equals(action_)) {
+					List<ActivityLogExportBean> exportBeanList = ReportExportDAO.exportByFilter(filter);
+					List<ActivityLogExportBean> exportGeneralBeanList = ReportExportDAO.exportByFilterGeneral(filter);
+					if("DOC".equals(typeReport)) {
+						doExportTHCNVBDOC(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
+					if("XLS".equals(typeReport)) {
+						doExportTHCNVBXLS(filter, response, orgUser, exportGeneralBeanList, exportBeanList);
+					}
 				}
 				else if("".equals(action_) || "Filter-THDVB".equals(action_)){
-
 					sc.setAttribute("results", ReportExportDAO.exportTHDVBByFilter(filter));
 					sc.setAttribute("resultsKQTT", null);
 					sc.setAttribute("resultsCLVB", null);
+					sc.setAttribute("resultsTHCNVB", null);
 				}else if ("Filter-KQTT".equals(action_)){
 					sc.setAttribute("resultsKQTT", ReportExportDAO.exportKQTTByFilter(filter));
 					sc.setAttribute("results", null);
 					sc.setAttribute("resultsCLVB", null);
+					sc.setAttribute("resultsTHCNVB", null);
 				}else if ("Filter-CLVB".equals(action_)){
 					sc.setAttribute("resultsCLVB", ReportExportDAO.exportCLVBByFilter(filter));
 					sc.setAttribute("results", null);
 					sc.setAttribute("resultsKQTT", null);
+					sc.setAttribute("resultsTHCNVB", null);
+				}else if ("Filter-THCNVB".equals(action_)){
+					sc.setAttribute("resultsTHCNVB", ReportExportDAO.exportByFilter(filter));
+					sc.setAttribute("results", null);
+					sc.setAttribute("resultsKQTT", null);
+					sc.setAttribute("resultsCLVB", null);
 				}
 
 			} else {
 				sc.setAttribute("results", null);
 				sc.setAttribute("resultsKQTT", null);
 				sc.setAttribute("resultsCLVB", null);
+				sc.setAttribute("resultsTHCNVB", null);
 			}
 
 			if ("".equals(action_) || "Filter-THDVB".equals(action_)) {
@@ -190,10 +213,20 @@ public class ReportExportServlet extends BaseServlet {
 				sc.setAttribute("docNameTHDVB", docNameTHDVB);
 			} else if ("Filter-KQTT".equals(action_)){
 				sc.setAttribute("tab", "KQTT");
+				sc.setAttribute("orgIdKQTT", orgIdKQTT);
+				sc.setAttribute("docIdKQTT", docIdKQTT);
+				sc.setAttribute("orgNameKQTT", orgNameKQTT);
+				sc.setAttribute("docNameKQTT", docNameKQTT);
 			}else if ("Filter-CLVB".equals(action_)){
 				sc.setAttribute("tab", "CLVB");
 				sc.setAttribute("docIdCLVB", docIdCLVB);
 				sc.setAttribute("docNameCLVB", docNameCLVB);
+			} else if ("Filter-THCNVB".equals(action_)) {
+				sc.setAttribute("tab", "THCNVB");
+				sc.setAttribute("orgIdTHCNVB", orgIdTHCNVB);
+				sc.setAttribute("docIdTHCNVB", docIdTHCNVB);
+				sc.setAttribute("orgNameTHCNVB", orgNameTHCNVB);
+				sc.setAttribute("docNameTHCNVB", docNameTHCNVB);
 			}
 			sc.setAttribute("dbeginFilter", dbegin);
 			sc.setAttribute("dendFilter", dend);
@@ -372,6 +405,7 @@ public class ReportExportServlet extends BaseServlet {
 
 		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
+
 	public void doExportKQTTXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
 								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<KQTTReportBean> exportBeanList)
 			throws IOException, URISyntaxException, DatabaseException, ServletException {
@@ -628,5 +662,130 @@ public class ReportExportServlet extends BaseServlet {
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
 		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_RESULT_TRANSMIT.doc");
 
+	}
+
+	public void doExportTHCNVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,
+								 List<ActivityLogExportBean> exportGeneralBeanList, List<ActivityLogExportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
+
+
+		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		Document docSpire = new Document(absolutePath);
+		Map<String, String> map = new HashMap<String, String>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", org.getName());
+		map.put("orgCode", org.getCode());
+
+		Table table = docSpire.getSections().get(0).getTables().get(2);
+
+		int index1 = 1;
+
+		for (ActivityLogExportBean elb : exportGeneralBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getDocumentName());
+			arrList.add(elb.getAction());
+			TableRow dataRow = table.addRow();
+			for (int col = 0; col < arrList.size(); ++col) {
+				dataRow.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+			}
+
+			index1++;
+
+		}
+
+		TableRow dataRow = table.addRow();
+		dataRow.getCells().get(0).addParagraph().appendText("TỔNG");
+		dataRow.getCells().get(2).addParagraph().appendText(String.valueOf(
+				exportGeneralBeanList
+						.stream()
+						.map(object -> object.getDocumentName())
+						.collect(Collectors.toList())
+						.stream()
+						.distinct().count()
+		));
+
+
+		index1 = 1;
+		Table table2 = docSpire.getSections().get(0).getTables().get(4);
+		for (ActivityLogExportBean elb : exportBeanList) {
+			List arrList = new ArrayList();
+			arrList.add(index1);
+			arrList.add(elb.getOrgName());
+			arrList.add(elb.getFullName());
+			arrList.add(elb.getEmployeeCode());
+			arrList.add(elb.getDocumentName());
+			arrList.add(elb.getAction());
+			arrList.add(elb.getDateTime());
+			TableRow dataRow2 = table2.addRow();
+			for (int col = 0; col < arrList.size(); ++col) {
+				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+
+			}
+
+			index1++;
+		}
+
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+		}
+
+
+		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
+		File tmpFile = Paths.get(res_.toURI()).toFile();
+		String absoluteTmpPath = tmpFile.getAbsolutePath();
+		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
+
+		new DownloadReportUtils().downloadReportDOC(docSpire, response, getServletContext(), "download/BC_ACTIVITY_DOCUMENT.doc");
+
+	}
+
+	public void doExportTHCNVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
+								 List<ActivityLogExportBean> exportGeneralBeanList, List<ActivityLogExportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException, ServletException {
+
+		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.xlsx");
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+		map.put("fromDate", format1.format(filter.getBegin().getTime()));
+		map.put("toDate", format1.format(DateUtils.addDays(filter.getEnd().getTime(), -1)));
+		map.put("orgName", orgUser.getName());
+		map.put("orgCode", orgUser.getCode());
+		map.put("generalBeans", exportGeneralBeanList);
+		map.put("detailBeans", exportBeanList);
+		map.put("totalDoc", String.valueOf(
+				exportGeneralBeanList
+								.stream()
+								.map(object -> object.getDocumentName())
+								.collect(Collectors.toList())
+								.stream()
+								.distinct().count()
+				)
+		);
+
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		resultWorkbook.write(byteArrayOutputStream);
+
+
+		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 }

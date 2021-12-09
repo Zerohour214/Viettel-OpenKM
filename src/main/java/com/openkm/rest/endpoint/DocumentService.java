@@ -36,6 +36,7 @@ import com.openkm.module.OrgVTXModule;
 import com.openkm.rest.GenericException;
 import com.openkm.rest.util.DocumentList;
 import com.openkm.rest.util.VersionList;
+import com.openkm.servlet.frontend.DashboardServlet;
 import com.openkm.util.FormatUtil;
 import com.openkm.util.PathUtils;
 import io.swagger.annotations.Api;
@@ -672,7 +673,7 @@ public class DocumentService {
 	@GET
 	@Path("video")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public Response video(@QueryParam("uuid") String uuid, @QueryParam("path") String path) throws  IOException, AccessDeniedException, RepositoryException, PathNotFoundException, DatabaseException {
+	public Response video(@QueryParam("uuid") String uuid, @QueryParam("path") String path, @QueryParam("userId") String userId) throws  IOException, AccessDeniedException, RepositoryException, PathNotFoundException, DatabaseException {
 
 		InputStream is = null;
 
@@ -682,7 +683,7 @@ public class DocumentService {
 		} else if (path != null && !path.isEmpty()) {
 			path = FormatUtil.sanitizeInput(path);
 		}
-
+		new DashboardServlet().startReadDoc(userId, uuid);
 		Document doc = OKMDocument.getInstance().getProperties(null, path);
 		String fileName = PathUtils.getName(doc.getPath());
 

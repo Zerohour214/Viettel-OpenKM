@@ -41,6 +41,8 @@ public class ActivityFilter implements Serializable {
 	private String docIdKQTT;
 	private String orgIdCLVB;
 	private String docIdCLVB;
+	private String orgIdTHCNVB;
+	private String docIdTHCNVB;
 
 	public Calendar getBegin() {
 		return begin;
@@ -137,6 +139,22 @@ public class ActivityFilter implements Serializable {
 
 	public void setGroup(String group) {
 		this.group = group;
+	}
+
+	public String getOrgIdTHCNVB() {
+		return orgIdTHCNVB;
+	}
+
+	public void setOrgIdTHCNVB(String orgIdTHCNVB) {
+		this.orgIdTHCNVB = orgIdTHCNVB;
+	}
+
+	public String getDocIdTHCNVB() {
+		return docIdTHCNVB;
+	}
+
+	public void setDocIdTHCNVB(String docIdTHCNVB) {
+		this.docIdTHCNVB = docIdTHCNVB;
 	}
 
 	public String toString() {

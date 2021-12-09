@@ -296,7 +296,7 @@ public class Preview extends Composite {
 		video.setHTML(
 				"<div id=\"mediaplayercontainer\">" +
 						"<video width=\"854\" height=\"480\" controls >\n" +
-						"    <source src=\"/kms/services/rest/document/video?uuid=" + docUuid + "\"" +
+						"    <source src=\"/kms/services/rest/document/video?uuid=" + docUuid + "&userId=" +Main.get().workspaceUserProperties.getUser().getId()+"\""+
 						" type=\"video/mp4\">\n" +
 						"</video>" +
 				"</div>\n"
