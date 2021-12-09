@@ -24,6 +24,25 @@
             padding-right: 14px;
         }
 
+        #remove-org-search-THDVB,
+        #remove-doc-search-THDVB,
+        #remove-doc-search-CLVB,
+        #remove-doc-search-KQTT,
+        #remove-org-search-KQTT{
+            position: relative;
+            left: -21px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #docNameCLVB,
+        #orgNameKQTT,
+        #orgNameTHDVB,
+        #docNameKQTT,
+        #docNameTHDVB {
+            padding-right: 25px;
+        }
+
     </style>
 
     <script type="text/javascript" src="../js/utils.js"></script>
@@ -59,6 +78,7 @@
                     dataTableAddRows(this, oSettings);
                 }
             });
+
             function dbegin(element) {
                 element.datepicker({
                     showOn: "button",
@@ -156,7 +176,6 @@
             })
 
 
-
             $('#orgSearchSubmitBtn').click((e) => {
                 e.preventDefault();
                 $('#table-org-search tbody').empty()
@@ -213,6 +232,7 @@
                 })
 
             }
+
             var orgInputTab;
             $(".org-input").click((e) => {
                 let id = e.target.id;
@@ -304,6 +324,20 @@
                 }
             })
 
+            function removeSearchText(removeButton, idInput, nameInput) {
+                removeButton.click(e => {
+                    if(idInput)
+                        idInput.val("");
+                    if(nameInput)
+                        nameInput.val("");
+                })
+            }
+
+            removeSearchText($('#remove-org-search-THDVB'), $('#orgIdTHDVB'), $('#orgNameTHDVB'))
+            removeSearchText($('#remove-doc-search-THDVB'), $('#docIdTHDVB'), $('#docNameTHDVB'))
+            removeSearchText($('#remove-org-search-KQTT'), $('#orgIdKQTT'), $('#orgNameKQTT'))
+            removeSearchText($('#remove-doc-search-KQTT'), $('#docIdKQTT'), $('#docNameKQTT'))
+            removeSearchText($('#remove-doc-search-CLVB'), $('#docIdCLVB'), $('#docNameCLVB'))
         });
     </script>
     <title>Activity Log</title>
@@ -323,9 +357,14 @@
 
             <ul class="nav nav-tabs">
 
-                <li  class="${tab=='THDVB' ? 'active' : ''}"><a data-toggle="tab" href="#THDVB">Báo cáo tình hình đọc văn bản</a></li>
-                <li  class="${tab=='KQTT' ? 'active' : ''}"><a data-toggle="tab" href="#KQTT">Báo cáo kết quả truyền thông</a></li>
-                <li  class="${tab=='CLVB' ? 'active' : ''}"><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn bản</a></li>
+                <li class="${tab=='THDVB' ? 'active' : ''}"><a data-toggle="tab" href="#THDVB"
+                                                               onclick="$('#THDVB-form').submit()">Báo cáo tình hình đọc
+                    văn bản</a></li>
+                <li class="${tab=='KQTT' ? 'active' : ''}"><a data-toggle="tab" href="#KQTT"
+                                                              onclick="$('#KQTT-form').submit()">Báo cáo kết quả truyền
+                    thông</a></li>
+                <li class="${tab=='CLVB' ? 'active' : ''}"><a data-toggle="tab" href="#CLVB">Báo cáo chất lượng văn
+                    bản</a></li>
 
             </ul>
             <div class="tab-content">
@@ -336,21 +375,38 @@
                                 <thead>
                                 <tr class="header">
                                     <td align="left" colspan="9">
-                                        <form action="ReportExport" style="width: 100vw">
-                                            <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
-                                                   type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
-                                            <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal" class="org-input" value="${orgNameTHDVB}"/>
-                                            <input type="hidden" name="orgIdTHDVB" id="orgIdTHDVB" value="${orgIdTHDVB}">
-                                            <b>Tài liệu</b> <input type="text" name="docNameTHDVB" id="docNameTHDVB" size="30" autocomplete="off"
-                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameTHDVB}"/>
-                                            <input type="hidden" name="docIdTHDVB" id="docIdTHDVB" value="${docIdTHDVB}">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin"  size="15"
+                                        <form action="ReportExport" style="width: 100vw" id="THDVB-form">
+                                                <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
+                                                       type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
+                                            <b>Đơn vị</b> <input type="text" name="orgNameTHDVB" id="orgNameTHDVB"
+                                                                 size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"
+                                                                 class="org-input" value="${orgNameTHDVB}"/>
+                                            <input type="hidden" name="orgIdTHDVB" id="orgIdTHDVB"
+                                                   value="${orgIdTHDVB}">
+                                            <span
+                                                id="remove-org-search-THDVB"
+                                            >
+                                                &times;
+                                            </span>
+                                            <b>Tài liệu</b> <input type="text" name="docNameTHDVB" id="docNameTHDVB"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input" value="${docNameTHDVB}"/>
+                                            <input type="hidden" name="docIdTHDVB" id="docIdTHDVB"
+                                                   value="${docIdTHDVB}">
+                                                    <span
+                                                        id="remove-doc-search-THDVB"
+                                                    >
+                                                &times;
+                                            </span>
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
                                             <b>User</b>
-                                            <select name="user" id="user" style="width: 125px;" data-placeholder="&nbsp;">
+                                            <input list="user" name="user" value="${userFilter}" autocomplete="off"/>
+                                            <datalist name="" id="user" style="width: 125px;" data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -362,15 +418,25 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>
-                                            </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-THDVB"/>
-                                            <input type="hidden" name="action_" id="action-input-THDVB" value="THDVB">
+                                            </datalist>
+                                            <button type="submit" class="searchButton btn btn-primary"
+                                                    id="filter-input-THDVB" style="padding: 0px 15px !important;">
+                                                <span class="fa fa-search"></span>&nbsp;Filter
+                                            </button>
+                                            <input type="hidden" name="action_" id="action-input-THDVB"
+                                                   value="Filter-THDVB">
                                             <input type="hidden" name="type_report" id="type-report-THDVB">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-THDVB-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-THDVB-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-THDVB-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-THDVB-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
+                                            </button>
+                                            <button type="button" class="btn btn-danger" id="reset-btn-THDVB-XLS"
+                                                    style="padding: 0px 15px !important;">
+                                                &nbsp;Reset
                                             </button>
                                         </form>
                                     </td>
@@ -395,10 +461,12 @@
                                         <td>${act.docName}</td>
                                         <td>${act.viewNum}</td>
                                         <td>
-                                            <fmt:formatNumber type="number" maxFractionDigits="1" value="${act.totalTimeView/60000}" />
-                                                </td>
+                                            <fmt:formatNumber type="number" maxFractionDigits="1"
+                                                              value="${act.totalTimeView/60000}"/>
+                                        </td>
                                         <td>${act.author}</td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.timeUpload}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
@@ -414,21 +482,36 @@
                             <table id="results-KQTT" class="results">
                                 <thead>
                                 <tr class="header">
-                                    <td align="right" colspan="9">
-                                        <form action="ReportExport" style="width: 50vw">
-                                            <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT" size="20" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#myModal" class="org-input"/>
+                                    <td align="left" colspan="9">
+                                        <form action="ReportExport" style="width: 100vw" id="KQTT-form">
+                                            <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT"
+                                                                 size="20" autocomplete="off"
+                                                                 data-toggle="modal" data-target="#myModal"
+                                                                 class="org-input"/>
                                             <input type="hidden" name="orgIdKQTT" id="orgIdKQTT">
-                                            <b>Tài liệu</b> <input type="text" name="docNameKQTT" id="docNameKQTT" size="30" autocomplete="off"
-                                                                 data-toggle="modal" data-target="#docSearchModal" class="doc-input"/>
+                                            <span
+                                                id="remove-org-search-KQTT"
+                                            >
+                                                &times;
+                                            </span>
+                                            <b>Tài liệu</b> <input type="text" name="docNameKQTT" id="docNameKQTT"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input"/>
                                             <input type="hidden" name="docIdKQTT" id="docIdKQTT">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT"  size="15"
+                                            <span
+                                                id="remove-doc-search-KQTT"
+                                            >
+                                                &times;
+                                            </span>
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-KQTT" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend-KQTT"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend-KQTT" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
 
                                             <b>User</b>
-                                            <select name="user" id="user-KQTT" style="width: 125px;" data-placeholder="&nbsp;">
+                                            <select name="user" id="user-KQTT" style="width: 125px;"
+                                                    data-placeholder="&nbsp;">
                                                 <option value="">All</option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
@@ -441,13 +524,17 @@
                                                     </c:choose>
                                                 </c:forEach>
                                             </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-KQTT"/>
-                                            <input type="hidden" name="action_" id="action-input-KQTT">
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-KQTT"/>
+                                            <input type="hidden" name="action_" id="action-input-KQTT"
+                                                   value="Filter-KQTT">
                                             <input type="hidden" name="type_report" id="type-report-KQTT">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-KQTT-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-KQTT-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-KQTT-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-KQTT-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
@@ -472,10 +559,14 @@
                                         <td>${act.fullname}</td>
                                         <td>${act.employeeCode}</td>
                                         <td>${act.docName}</td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.assignDoc}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.confirmDate}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.startConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
-                                        <td nowrap="nowrap"><fmt:formatDate value="${act.endConfirm}" pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.assignDoc}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.confirmDate}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.startConfirm}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
+                                        <td nowrap="nowrap"><fmt:formatDate value="${act.endConfirm}"
+                                                                            pattern="MM/dd/yyyy HH:mm"/></td>
                                         <td>${act.timeRead/60000}</td>
                                     </tr>
                                 </c:forEach>
@@ -494,34 +585,44 @@
                                 <tr class="header">
                                     <td align="left" colspan="9">
                                         <form action="ReportExport" style="width: 100vw">
-                                            <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB" size="30" autocomplete="off"
-                                                                   data-toggle="modal" data-target="#docSearchModal" class="doc-input" value="${docNameCLVB}"/>
+                                            <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB"
+                                                                   size="30" autocomplete="off"
+                                                                   data-toggle="modal" data-target="#docSearchModal"
+                                                                   class="doc-input" value="${docNameCLVB}"/>
                                             <input type="hidden" name="docIdCLVB" id="docIdCLVB" value="${docIdCLVB}">
-                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB"  size="15"
+                                            <span
+                                                id="remove-doc-search-CLVB"
+                                            >
+                                                &times;
+                                            </span>
+                                            <b>From</b> <input type="text" name="dbegin" id="dbegin-CLVB" size="15"
                                                                readonly="readonly" value="${dbeginFilter}"/>
-                                            <b>To</b> <input type="text" name="dend" id="dend-CLVB"  size="15"
+                                            <b>To</b> <input type="text" name="dend" id="dend-CLVB" size="15"
                                                              readonly="readonly" value="${dendFilter}"/>
-                                            <b>User</b>
-                                            <select name="user" id="user-CLVB" style="width: 125px;" data-placeholder="&nbsp;">
-                                                <option value="">All</option>
-                                                <c:forEach var="user" items="${users}" varStatus="row">
-                                                    <c:choose>
-                                                        <c:when test="${user == userFilter}">
-                                                            <option value="${user}" selected="selected">${user}</option>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <option value="${user}">${user}</option>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </c:forEach>
-                                            </select>
-                                            <input type="submit" value="Filter" class="searchButton btn btn-primary" id="filter-input-CLVB"/>
+                                                <%--<b>User</b>
+                                                <select name="user" id="user-CLVB" style="width: 125px;" data-placeholder="&nbsp;">
+                                                    <option value="">All</option>
+                                                    <c:forEach var="user" items="${users}" varStatus="row">
+                                                        <c:choose>
+                                                            <c:when test="${user == userFilter}">
+                                                                <option value="${user}" selected="selected">${user}</option>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <option value="${user}">${user}</option>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:forEach>
+                                                </select>--%>
+                                            <input type="submit" value="Filter" class="searchButton btn btn-primary"
+                                                   id="filter-input-CLVB"/>
                                             <input type="hidden" name="action_" id="action-input-CLVB">
                                             <input type="hidden" name="type_report" id="type-report-CLVB">
-                                            <button type="submit" class="btn btn-primary" id="export-btn-CLVB-DOC" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-primary" id="export-btn-CLVB-DOC"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;DOC
                                             </button>
-                                            <button type="submit" class="btn btn-success" id="export-btn-CLVB-XLS" style="padding: 0px 15px !important;">
+                                            <button type="submit" class="btn btn-success" id="export-btn-CLVB-XLS"
+                                                    style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
                                         </form>
