@@ -773,4 +773,9 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 		}
 		super.onDetach();
 	}
+
+	public void endViewIfInPreviewMode(){
+		if (this.previewVisible)
+			Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(), doc.getUuid());
+	}
 }

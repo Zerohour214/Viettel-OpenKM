@@ -133,6 +133,7 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 	 * OKM Logout
 	 */
 	public void logout() {
+		Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.endViewIfInPreviewMode();
 		button.setEnabled(false);
 		int left = (Window.getClientWidth() - 300) / 2;
 		int top = (Window.getClientHeight() - 200) / 2;
