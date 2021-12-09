@@ -63,7 +63,8 @@
                         </div>
 
                         <div>
-                            <a id="btn-download-file-org" href="/kms/services/rest/organization/downloadTemplateImportOrg">Download template</a>
+                            <a id="btn-download-file-org"
+                               href="/kms/services/rest/organization/downloadTemplateImportOrg">Download template</a>
                         </div>
                     </div>
                 </div>
@@ -164,7 +165,7 @@
         <div class="col-md-4">
             <div class="card mt-3">
                 <div class="card-body">
-                    <form id="form-create-org">
+                    <form id="form-create-org" class="form-horizontal">
                         <div class="mt-3">
                             <label for="orgName">Tên đơn vị :</label>
                             <input type="text" class="form-control" id="orgName" placeholder="Nhập tên đơn vị"
@@ -177,13 +178,21 @@
                                    name="orgCode">
                         </div>
 
-                        <div class="mt-3">
+                        <div class="mt-3 form-group">
                             <label for="myModal" class="form-label">Đơn vị cha:</label>
-                            <input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
-                                   type="text" autocomplete="off" data-bs-toggle="modal" data-bs-target="#myModal">
+                            <div class="input-group">
+                                <input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
+                                       type="text" autocomplete="off" data-bs-toggle="modal" data-bs-target="#myModal">
 
-                            <input class="form-control" name="orgParentId" id="orgParentId"
-                                   type="hidden"/>
+                                    <button class="btn btn-danger" type="button" onclick="$('#orgParent').val(''); $('#orgParentId').val('');">
+                                        <i class="fa fa-remove"></i>
+                                    </button>
+
+
+                            </div>
+                                <input class="form-control" name="orgParentId" id="orgParentId"
+                                       type="hidden"/>
+
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -640,7 +649,6 @@
                     }
                 })
             })
-
 
 
         }
