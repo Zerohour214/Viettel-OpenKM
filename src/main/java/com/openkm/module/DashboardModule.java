@@ -42,6 +42,9 @@ public interface DashboardModule {
 	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
 
+	public List<DashboardDocumentResult> getMustConfirmDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException;
+
 	/**
 	 * Get list of locked documents by user
 	 */

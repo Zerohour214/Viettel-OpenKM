@@ -66,6 +66,7 @@ public class Preview extends Composite {
 
 	private HorizontalPanel hPanelMustReads;
 	private HTML mustReadImage;
+	private HTML mustReadImageDisable;
 	private HTML mustReadText;
 
 	/**
@@ -110,6 +111,10 @@ public class Preview extends Composite {
 		hPanelMustReads.add(new HTML("&nbsp;"));
 		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
 		mustReadImage.addStyleName("okm-Hyperlink");
+
+		mustReadImageDisable = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew disable-Confirm-Button\"></span>");
+		mustReadImageDisable.addStyleName("disable-Confirm");
+		mustReadImageDisable.setVisible(false);
 		mustReadImage.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -117,6 +122,7 @@ public class Preview extends Composite {
 			}
 		});
 		hPanelMustReads.add(mustReadImage);
+		hPanelMustReads.add(mustReadImageDisable);
 		hPanelMustReads.setCellVerticalAlignment(mustReadText, HasAlignment.ALIGN_MIDDLE);
 		vPanelOut = new VerticalPanel();
 		vPanelOut.add(hPanelMustReads);
@@ -383,6 +389,7 @@ public class Preview extends Composite {
 	public void previewDocument(boolean refreshing, GWTDocument doc) {
 		GWT.log("MIME: " + doc.getMimeType());
 		Main.get().mainPanel.dashboard.userDashboard.startReadDoc(Main.get().workspaceUserProperties.getUser().getId(), doc.getUuid());
+		Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
 		if (doc.getMimeType().equals("video/x-flv") || doc.getMimeType().equals("video/mp4") || doc.getMimeType().equals("audio/mpeg")) {
 			if (!refreshing) {
 				showMediaFile(RPCService.DownloadServlet + "?uuid=" + URL.encodeQueryString(doc.getUuid()), doc.getMimeType(), doc.getUuid());
@@ -491,6 +498,6 @@ public class Preview extends Composite {
 
 	public void setMustReadIconVisiable(boolean visible){
 		mustReadImage.setVisible(visible);
-		mustReadText.setVisible(visible);
+		mustReadImageDisable.setVisible(!visible);
 	}
 }
