@@ -587,7 +587,6 @@
             })
 
             $('#import-user-org').click(e => {
-                if (orgChoosed) {
 
                     let files = document.getElementById('input-file-user').files;
                     let formData = new FormData();
@@ -595,23 +594,19 @@
                         formData.append("file", files[0]);
 
                         $.ajax({
-                            url: '/kms/services/rest/organization/importUserToOrg?orgId=' + orgChoosed,
+                            url: '/kms/services/rest/organization/importUserToOrg',
                             type: 'POST',
                             enctype: 'multipart/form-data',
                             cache: false,
-                            contentType: false,
+                            contentType: 'application/json',
                             processData: false,
                             data: formData,
-                            success: () => {
+                            success: (res) => {
+                                console.log(res)
                                 getUsersByOrgId(orgChoosed);
                             }
                         })
                     }
-
-                } else {
-                    alert("Chưa chọn đơn vị")
-                }
-
             })
 
             $('#import-org-submit').click(e => {

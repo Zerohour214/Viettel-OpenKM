@@ -73,7 +73,7 @@ public class OrganizationVTX {
 		this.orgLevelMangage = orgLevelMangage;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

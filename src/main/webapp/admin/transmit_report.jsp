@@ -54,31 +54,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            /*$('#results').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });
-
-            $('#results-KQTT').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });
-            $('#results-CLVB').dataTable({
-                "bStateSave": true,
-                "iDisplayLength": 15,
-                "lengthMenu": [[10, 15, 20], [10, 15, 20]],
-                "fnDrawCallback": function (oSettings) {
-                    dataTableAddRows(this, oSettings);
-                }
-            });*/
 
             function setDataTable(element) {
                 element.dataTable({
@@ -214,7 +189,6 @@
                     contentType: 'application/x-www-form-urlencoded',
                     data: $("#form-search-org").serialize(),
                     success: (response) => {
-                        console.log(response)
                         loadOrgSearchParent(response)
                     }
                 });
@@ -306,7 +280,7 @@
                     let tdName = document.createElement('td'), tdCode = document.createElement('td'),
                         tdChoose = document.createElement('td');
                     tdName.innerText = doc.docName;
-                    tdCode.innerText = doc.docCode;
+                    tdCode.innerText = doc.docCode ? doc.docCode : "";
 
                     let iconChoose = document.createElement('span');
                     iconChoose.setAttribute('class', "fa fa-check-circle")
@@ -375,16 +349,8 @@
                 })
             }
 
-            function resetFieldSearch(resetButton, orgId, orgName, docId, docName, dbegin, dend, userInput, userOpts) {
+            function resetFieldSearch(resetButton, orgId, orgName, docId, docName, dbegin, dend, userInput, userOpts, actionOpts) {
                 resetButton.click(function () {
-                    /*$('#dbegin').val("");
-                    $('#dend').val("");
-                    $('#user option:eq(0)').prop('selected', true);
-                    $('#action option:eq(0)').prop('selected', true);
-                    $('#user').trigger("chosen:updated");
-                    $('#action').trigger("chosen:updated");
-                    $('#item').val("");*/
-
                     if (dbegin) dbegin.val("");
                     if (dend) dend.val("");
                     if (orgId) orgId.val("");
@@ -393,6 +359,7 @@
                     if (docName) docName.val("");
                     if (userInput) userInput.val("");
                     if (userOpts) userOpts.val("");
+                    if (actionOpts) actionOpts.prop('selected', true);
                 });
             }
 
@@ -424,8 +391,10 @@
                 $('#reset-btn-THCNVB'), $('#orgIdTHCNVB'),
                 $('#orgNameTHCNVB'), $('#docIdTHCNVB'),
                 $('#docNameTHCNVB'), $('#dbegin-THCNVB'),
-                $('#dend-THCNVB'), $('#user-THCNVB-input'), $('#user-THCNVB')
+                $('#dend-THCNVB'), $('#user-THCNVB-input'),
+                $('#user-THCNVB'), $('#action-default')
             )
+
         });
     </script>
     <title>Activity Log</title>
@@ -509,14 +478,14 @@
                                                    autocomplete="off" id="user-THDVB-input"/>
                                             <datalist name="" id="user-THDVB" style="width: 125px;"
                                                       data-placeholder="&nbsp;">
-                                                <option value="">All</option>
+                                                <option value="All"></option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
                                                         <c:when test="${user == userFilter}">
-                                                            <option value="${user}" selected="selected">${user}</option>
+                                                            <option value="${user}" selected="selected"></option>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <option value="${user}">${user}</option>
+                                                            <option value="${user}"></option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>
@@ -638,14 +607,14 @@
                                                    id="user-KQTT-input"/>
                                             <datalist name="" id="user-KQTT" style="width: 125px;"
                                                       data-placeholder="&nbsp;">
-                                                <option value="">All</option>
+                                                <option value="All"></option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
                                                         <c:when test="${user == userFilter}">
-                                                            <option value="${user}" selected="selected">${user}</option>
+                                                            <option value="${user}" selected="selected"></option>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <option value="${user}">${user}</option>
+                                                            <option value="${user}"></option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>
@@ -837,19 +806,82 @@
                                                    autocomplete="off" id="user-THCNVB-input"/>
                                             <datalist name="" id="user-THCNVB" style="width: 125px;"
                                                       data-placeholder="&nbsp;">
-                                                <option value="">All</option>
+                                                <option value="All"></option>
                                                 <c:forEach var="user" items="${users}" varStatus="row">
                                                     <c:choose>
                                                         <c:when test="${user == userFilter}">
-                                                            <option value="${user}" selected="selected">${user}</option>
+                                                            <option value="${user}" selected="selected"></option>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <option value="${user}">${user}</option>
+                                                            <option value="${user}"></option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:forEach>
-
                                             </datalist>
+                                            <select name="action-THCNVB" id="action-THCNVB" style="width: 350px"
+                                                    data-placeholder="&nbsp;">
+                                                    <%--<option value="">All</option>
+                                                    <option value="CREATE_DOCUMENT">Thêm mới</option>
+                                                    <option value="CHECKIN_DOCUMENT">Chỉnh sửa</option>
+                                                    <option value="DELETE_DOCUMENT">Xoá (thùng rác)</option>
+                                                    <option value="PURGE_DOCUMENT">Xoá</option>
+                                                    <option value="MOVE_DOCUMENT">Phục hổi</option>--%>
+
+                                                <c:choose>
+                                                    <c:when test="${\"\" == actionTHCNVB}">
+                                                        <option value="" selected="selected" id="action-default">All
+                                                        </option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="">All</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${\"CREATE_DOCUMENT\" == actionTHCNVB}">
+                                                        <option value="CREATE_DOCUMENT" selected="selected">Thêm mới
+                                                        </option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="CREATE_DOCUMENT">Thêm mới</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${\"CHECKIN_DOCUMENT\" == actionTHCNVB}">
+                                                        <option value="CHECKIN_DOCUMENT" selected="selected">Sửa
+                                                        </option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="CHECKIN_DOCUMENT">Sửa</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${\"DELETE_DOCUMENT\" == actionTHCNVB}">
+                                                        <option value="DELETE_DOCUMENT" selected="selected">Xoá (thùng
+                                                            rác)
+                                                        </option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="DELETE_DOCUMENT">Xoá (thùng rác)</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${\"PURGE_DOCUMENT\" == actionTHCNVB}">
+                                                        <option value="PURGE_DOCUMENT" selected="selected">Xoá</option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="PURGE_DOCUMENT">Xoá</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${\"MOVE_DOCUMENT\" == actionTHCNVB}">
+                                                        <option value="MOVE_DOCUMENT" selected="selected">Phục hồi
+                                                        </option>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <option value="MOVE_DOCUMENT">Phục hồi</option>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </select>
                                             <button type="submit" class="searchButton btn btn-primary"
                                                     id="filter-input-THCNVB" style="padding: 0px 15px !important;">
                                                 <span class="fa fa-search"></span>
@@ -865,10 +897,10 @@
                                                     style="padding: 0px 15px !important;">
                                                 <span class="fa fa-download"></span>&nbsp;XLS
                                             </button>
-                                                    <button type="button" class="btn btn-danger" id="reset-btn-THCNVB"
-                                                            style="padding: 0px 15px !important;">
-                                                        &nbsp;Reset
-                                                    </button>
+                                            <button type="button" class="btn btn-danger" id="reset-btn-THCNVB"
+                                                    style="padding: 0px 15px !important;">
+                                                &nbsp;Reset
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -956,11 +988,11 @@
                             <div class="modal-header">
                                 <form id="form-search-doc" class="row" style="width: 100%;">
 
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <input type="text" class="form-control" placeholder="Mã tài liệu"
                                                name="docCode">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-5">
                                         <input type="text" class="form-control" placeholder="Tên tài liệu"
                                                name="docName">
                                     </div>
