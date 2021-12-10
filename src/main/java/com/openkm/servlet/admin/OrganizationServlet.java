@@ -33,43 +33,6 @@ public class OrganizationServlet extends BaseServlet {
 	private static Logger log = LoggerFactory.getLogger(OrganizationServlet.class);
 	private OrganizationVTXDAO organizationVTXDAO = new OrganizationVTXDAO();
 
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		String action = WebUtils.getString(request, "action");
-		if(action.equals("userImportByFile")) {
-			Part filePart = request.getPart("userFile");
-			Long orgId = null;
 
-			List<FileItem> multiparts = null;
-			try {
-				multiparts = new ServletFileUpload(
-						new DiskFileItemFactory()).parseRequest(request);
-				for(FileItem item : multiparts){
-					if(!item.isFormField()){
-						orgId = Long.parseLong(item.getString());
-					}
-				}
-			} catch (FileUploadException e) {
-				e.printStackTrace();
-			}
-
-
-
-			InputStream fileContent = filePart.getInputStream();
-
-			Workbook workbook = null;
-			try {
-				workbook = Workbook.getWorkbook(fileContent);
-				Sheet sheet = workbook.getSheet(0);
-				for(int i=1; i<sheet.getRows(); ++i) {
-					String id = sheet.getCell(0, i).getContents();
-					organizationVTXDAO.addUserToOrg(id,orgId);
-				}
-			} catch (BiffException | DatabaseException e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
 
 }

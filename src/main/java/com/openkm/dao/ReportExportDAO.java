@@ -253,7 +253,7 @@ public class ReportExportDAO {
 
 	public static List<ActivityLogExportBean> exportByFilter(ActivityFilter filter) throws DatabaseException {
 
-		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT', 'MOVE_DOCUMENT' )";
+		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT' )";
 
 		String qs = "SELECT o.CODE as orgCode, o.NAME as orgName, ou.USR_ID as employeeCode, " +
 				"ou.USR_NAME as fullName, onb.NBS_NAME as documentName, oa.ACT_ACTION as action, oa.ACT_DATE as dateTime " +
@@ -264,8 +264,8 @@ public class ReportExportDAO {
 				"JOIN OKM_NODE_DOCUMENT okd ON okd.NBS_UUID = oa.ACT_ITEM\n" +
 				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = okd.NBS_UUID\n " +
 				"WHERE oa.ACT_DATE between :begin and :end " +
-				"AND oa.ACT_ACTION IN " + actionReports
-				;
+				"AND ( oa.ACT_ACTION IN " + actionReports + "\n" +
+				"OR (oa.ACT_ACTION = 'MOVE_DOCUMENT' AND oa.ACT_PATH like '/okm:trash/%' ) ) ";
 
 		if (filter.getUser() != null && !filter.getUser().equals(""))
 			qs += "and ou.USR_ID=:user ";
@@ -281,6 +281,10 @@ public class ReportExportDAO {
 
 		if(filter.getDocIdTHCNVB() != null && !filter.getDocIdTHCNVB().trim().equals("")) {
 			qs += "AND onb.NBS_UUID = :docId\n";
+		}
+
+		if(filter.getAction() != null && !filter.getAction().trim().equals("")) {
+			qs += "AND oa.ACT_ACTION = :action\n";
 		}
 
 		qs += "order by oa.ACT_DATE, o.CODE";
@@ -304,6 +308,10 @@ public class ReportExportDAO {
 			}
 			if(filter.getDocIdTHCNVB() != null && !filter.getDocIdTHCNVB().trim().equals("")) {
 				q.setString("docId", filter.getDocIdTHCNVB());
+			}
+
+			if(filter.getAction() != null && !filter.getAction().trim().equals("")) {
+				q.setString("action", filter.getAction());
 			}
 
 			q.setResultTransformer(Transformers.aliasToBean(ActivityLogExportBean.class));
@@ -352,7 +360,7 @@ public class ReportExportDAO {
 
 	public static List<ActivityLogExportBean> exportByFilterGeneral(ActivityFilter filter) throws DatabaseException {
 
-		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT', 'MOVE_DOCUMENT' )";
+		String actionReports = " ( 'CREATE_DOCUMENT', 'CHECKIN_DOCUMENT', 'DELETE_DOCUMENT', 'PURGE_DOCUMENT' )";
 
 		String qs = "SELECT o.CODE as orgCode, o.NAME as orgName,\n" +
 				"onb.NBS_NAME as documentName, oa.ACT_ACTION as action, oa.ACT_DATE as dateTime " +
@@ -363,7 +371,8 @@ public class ReportExportDAO {
 				"JOIN OKM_NODE_DOCUMENT okd ON okd.NBS_UUID = oa.ACT_ITEM\n" +
 				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = okd.NBS_UUID\n " +
 				"WHERE oa.ACT_DATE between :begin and :end " +
-				"AND oa.ACT_ACTION IN " + actionReports + "\n";
+				"AND oa.ACT_ACTION IN " + actionReports + "\n" +
+				"OR (oa.ACT_ACTION = 'MOVE_DOCUMENT' AND oa.ACT_PATH like '/okm:trash/%' )";
 
 
 		if (filter.getUser() != null && !filter.getUser().equals(""))
@@ -371,7 +380,11 @@ public class ReportExportDAO {
 		if (filter.getAction() != null && !filter.getAction().equals(""))
 			qs += "and oa.ACT_ACTION=:action ";
 		if (filter.getItem() != null && !filter.getItem().equals("")) {
-			qs += "and oa.ACT_ITEM=:item ";
+			qs += "and oa.ACT_ITEM=:item\n";
+		}
+
+		if(filter.getAction() != null && !filter.getAction().trim().equals("")) {
+			qs += "AND oa.ACT_ACTION = :action\n";
 		}
 
 		qs += "GROUP BY orgCode, documentName, action\n";
@@ -390,6 +403,10 @@ public class ReportExportDAO {
 				q.setString("action", filter.getAction());
 			if (filter.getItem() != null && !filter.getItem().equals(""))
 				q.setString("item", filter.getItem());
+
+			if(filter.getAction() != null && !filter.getAction().trim().equals("")) {
+				q.setString("action", filter.getAction());
+			}
 
 			q.setResultTransformer(Transformers.aliasToBean(ActivityLogExportBean.class));
 			q.addScalar("orgCode");

@@ -132,20 +132,18 @@ public class OrganizationService extends BaseServlet {
 	}
 
 	@POST
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Consumes({MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON})
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/importUserToOrg")
-	public void importUserToOrg(
-			List<Attachment> atts,
-			@QueryParam("orgId") Long orgId
+	public String importUserToOrg(
+			List<Attachment> atts
 	) throws DatabaseException, IOException {
 		InputStream is = null;
 		for (Attachment att : atts) {
-
-				is = att.getDataHandler().getInputStream();
-
+			is = att.getDataHandler().getInputStream();
 		}
 		OrgVTXModule om = ModuleManager.getOrgVTXModule();
-		om.importUserToOrg(is, orgId);
+		return om.importUserToOrg(is);
 	}
 
 	@GET
@@ -209,8 +207,11 @@ public class OrganizationService extends BaseServlet {
 	@GET
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Path("/downloadTemplateImportOrg")
-	public Response downloadTemplateImportOrg() throws DatabaseException, IOException, URISyntaxException {
-		URL res = getClass().getClassLoader().getResource("template/IMPORT_ORG.xlsx");
+	public Response downloadTemplateImportOrg(@QueryParam("type") String type) throws DatabaseException, IOException, URISyntaxException {
+
+		String resourceName = "ORG".equals(type) ? "template/IMPORT_ORG.xls" : "template/IMPORT_USER_ORG.xls";
+
+		URL res = getClass().getClassLoader().getResource(resourceName);
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
 

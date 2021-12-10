@@ -56,8 +56,8 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	}
 
 	@Override
-	public void importUserToOrg(InputStream fileContent, Long orgId) {
-		OrganizationVTXDAO.getInstance().importUserToOrg(fileContent, orgId);
+	public String importUserToOrg(InputStream fileContent) {
+		return OrganizationVTXDAO.getInstance().importUserToOrg(fileContent);
 	}
 
 	@Override

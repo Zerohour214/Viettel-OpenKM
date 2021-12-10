@@ -17,7 +17,7 @@ public interface OrgVTXModule {
 	public List<OrganizationVTX> getAllOrgLevelRoot() throws DatabaseException;
 	public void addUserToOrg(String userId, Long orgId) throws DatabaseException;
 
-	public void importUserToOrg(InputStream fileContent, Long orgId);
+	public String importUserToOrg(InputStream fileContent);
 
 	public List<User>  findUsersbyOrg(String orgId) throws DatabaseException;
 

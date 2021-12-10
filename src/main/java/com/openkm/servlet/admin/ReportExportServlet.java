@@ -75,7 +75,8 @@ public class ReportExportServlet extends BaseServlet {
 		String dbegin = WebUtils.getString(request, "dbegin");
 		String dend = WebUtils.getString(request, "dend");
 		String user = WebUtils.getString(request, "user");
-		String action = WebUtils.getString(request, "action");
+		if("All".equals(user)) user = "";
+		String actionTHCNVB = WebUtils.getString(request, "action-THCNVB");
 
 		String item = WebUtils.getString(request, "item");
 		String action_ = WebUtils.getString(request, "action_");
@@ -131,7 +132,7 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setDocIdCLVB(docIdCLVB);
 				filter.setOrgIdTHCNVB(orgIdTHCNVB);
 				filter.setDocIdTHCNVB(docIdTHCNVB);
-
+				filter.setAction(actionTHCNVB);
 				filter.setGroup(group);
 
 				OrganizationVTX orgUser = UserDAO.getInstance().getOrgByUserId(userId);
@@ -227,10 +228,11 @@ public class ReportExportServlet extends BaseServlet {
 				sc.setAttribute("docIdTHCNVB", docIdTHCNVB);
 				sc.setAttribute("orgNameTHCNVB", orgNameTHCNVB);
 				sc.setAttribute("docNameTHCNVB", docNameTHCNVB);
+				sc.setAttribute("actionTHCNVB", actionTHCNVB);
 			}
 			sc.setAttribute("dbeginFilter", dbegin);
 			sc.setAttribute("dendFilter", dend);
-			sc.setAttribute("userFilter", user);
+			sc.setAttribute("userFilter", "".equals(user) ? "All" : user);
 			sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
 			sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 

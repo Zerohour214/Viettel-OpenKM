@@ -1,5 +1,6 @@
 package com.openkm.dao;
 
+import com.bradmcevoy.http.Auth;
 import com.openkm.bean.OrganizationVTXBean;
 import com.openkm.core.AccessDeniedException;
 import com.openkm.core.DatabaseException;
@@ -277,16 +278,17 @@ public class OrganizationVTXDAO {
 		}
 	}
 
-    public void importUserToOrg(InputStream fileContent, Long orgId) {
-
+    public String importUserToOrg(InputStream fileContent) {
+		String NOT_EXIST = "Người dùng không tồn tại";
+		String IN_ORG = "Người dùng đã được gán vào đơn vị khác";
 		try {
 			Workbook workbook = null;
 			workbook = Workbook.getWorkbook(fileContent);
 			Sheet sheet = workbook.getSheet(0);
-
+			String userNotExist = "";
 			for(int i=1; i<sheet.getRows(); ++i) {
-				String id = sheet.getCell(0, i).getContents(),
-				name = sheet.getCell(1, i).getContents(),
+				String userId = sheet.getCell(0, i).getContents();
+				/*name = sheet.getCell(1, i).getContents(),
 						email = sheet.getCell(2, i).getContents(),
 				roles = sheet.getCell(3, i).getContents();
 				List<String> usrRoles = Arrays.asList(roles.split(","));
@@ -299,20 +301,31 @@ public class OrganizationVTXDAO {
 				for (String rolId : usrRoles) {
 					user.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));
 				}
-				AuthDAO.createUser(user);
-				addUserToOrg(id, orgId);
-			}
+				AuthDAO.createUser(user);*/
 
+				User user = AuthDAO.findUserByPk(userId);
+				if(user == null) userNotExist += userId + "," + NOT_EXIST;
+				else {
+					String orgCode = sheet.getCell(1, i).getContents();
+					OrganizationVTX organizationVTX = UserDAO.getInstance().getOrgByUserId(userId);
+					if(organizationVTX == null)
+						addUserToOrg(userId, getOrganizationbyCode(orgCode).getId());
+					else
+					{
+						userNotExist += userId + "," + IN_ORG;
+					}
+				}
+				userNotExist += ",";
+			}
+			return userNotExist;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (BiffException e) {
 			e.printStackTrace();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
-		} catch (AccessDeniedException e) {
-			e.printStackTrace();
 		}
-
+		return "";
 	}
 
 	public void updateOrg(OrganizationVTXBean newOrg) throws DatabaseException {

@@ -2504,7 +2504,10 @@ public class NodeBaseDAO {
 		String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode FROM OKM_NODE_BASE nb \n" +
 				"JOIN OKM_NODE_DOCUMENT d\n" +
 				"ON nb.NBS_UUID = d.NBS_UUID\n" +
-				"WHERE nb.NBS_NAME LIKE CONCAT('%', :docName, '%') AND d.NDC_DOC_CODE LIKE CONCAT('%', :docCode, '%')";
+				"WHERE nb.NBS_NAME LIKE CONCAT('%', :docName, '%')";
+
+		if(!docCode.trim().equals("") && docCode != null)
+				qs += " AND d.NDC_DOC_CODE LIKE CONCAT('%', :docCode, '%')";
 
 		Session session = null;
 
@@ -2512,7 +2515,9 @@ public class NodeBaseDAO {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q =  session.createSQLQuery(qs);
 			q.setString("docName", docName);
-			q.setString("docCode", docCode);
+
+			if(!docCode.trim().equals("") && docCode != null)
+				q.setString("docCode", docCode);
 
 			q.setResultTransformer(Transformers.aliasToBean(Document.class));
 			q.addScalar("docName");
