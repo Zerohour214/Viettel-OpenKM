@@ -24,7 +24,6 @@ public class UserService {
 		UserModule um = ModuleManager.getUserModule();
 		if(userSearch == null) userSearch = "";
 
-
 		String json = new Gson().toJson(um.getAllUser(userSearch, isNotInOrg));
 		return json;
 	}

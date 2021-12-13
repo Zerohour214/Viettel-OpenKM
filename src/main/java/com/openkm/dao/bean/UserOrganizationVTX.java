@@ -20,7 +20,7 @@ public class UserOrganizationVTX implements Serializable {
 	private String userId;
 
 
-	@Id
+
 	@Column(name = "ORG_ID")
 	@Field(index = Index.UN_TOKENIZED, store = Store.YES)
 	private Long orgId;

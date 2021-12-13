@@ -43,7 +43,9 @@ public class UserDAO {
 			q = session.createSQLQuery(nativeQuery);
 			q.setString("search", search);
 			if(userInOrgList.size() == 0) userInOrgList = new ArrayList<>();
-			q.setParameterList("userInOrgList", userInOrgList);
+
+			if(isNotInOrg == 1)
+				q.setParameterList("userInOrgList", userInOrgList);
 			List<User> ret = q.list();
 			log.debug("getAllUser: {}", ret);
 			return ret;

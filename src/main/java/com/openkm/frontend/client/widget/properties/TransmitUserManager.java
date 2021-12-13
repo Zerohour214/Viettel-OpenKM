@@ -45,9 +45,10 @@ import com.openkm.frontend.client.service.OKMPropertyService;
 import com.openkm.frontend.client.service.OKMPropertyServiceAsync;
 import com.openkm.frontend.client.util.CommonUI;
 import com.openkm.frontend.client.util.Util;
-import com.openkm.frontend.client.util.WindowUtils;
 import com.openkm.frontend.client.widget.ConfirmPopup;
+import com.openkm.frontend.client.widget.UserPopup;
 import com.openkm.frontend.client.widget.organizationVTX.OrganizationVtxSelectPopup;
+import com.openkm.frontend.client.widget.userVTX.UserVtxSelectPopup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ import java.util.Set;
  * @author jllort
  *
  */
-public class TransmitManager {
+public class TransmitUserManager {
 	private final OKMPropertyServiceAsync propertyService = (OKMPropertyServiceAsync) GWT.create(OKMPropertyService.class);
 	public static final int ORIGIN_FOLDER = 1;
 	public static final int ORIGIN_DOCUMENT = 2;
@@ -76,20 +77,22 @@ public class TransmitManager {
 	private boolean removeCategoryEnabled = false;
 	//private String orgs = "";
 
-	OrganizationVtxSelectPopup organizationVtxSelectPopup = new OrganizationVtxSelectPopup();
+	//OrganizationVtxSelectPopup organizationVtxSelectPopup = new OrganizationVtxSelectPopup();
+	UserVtxSelectPopup userVtxSelectPopup = new UserVtxSelectPopup();
+
 	/**
 	 * CategoryManager
 	 */
-	public TransmitManager(int origin) {
+	public TransmitUserManager(int origin) {
 		this.origin = origin;
 		tableSubscribedCategories = new FlexTable();
 		hPanelCategories = new HorizontalPanel();
-		categoriesText = new HTML("<br/><b>" + "Transmit" + "</b>");
+		categoriesText = new HTML("<br/><b>" + "Transmit user" + "</b>");
 		categoriesImage = new HTML("<br/><span class=\"glyphicons glyphicons-transfer child-menuitem-glyphicon-renew\"></span>");
 		categoriesImage.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				organizationVtxSelectPopup.show();
+				userVtxSelectPopup.show();
 			}
 		});
 
@@ -102,6 +105,8 @@ public class TransmitManager {
 		tableSubscribedCategories.setStyleName("okm-DisableSelect");
 		categoriesImage.addStyleName("okm-Hyperlink");
 		categoriesImage.setVisible(false);
+
+		userVtxSelectPopup.setStyleName("okm-Popup");
 
 	}
 
@@ -438,7 +443,7 @@ public class TransmitManager {
 			orgPathTrace.push(jsonArray_.get(4).isString().stringValue());
 		}
 
-		organizationVtxSelectPopup.setOrgCheckeds(orgCheckeds, orgPathTrace);
+		//organizationVtxSelectPopup.setOrgCheckeds(orgCheckeds, orgPathTrace);
 	}
 
 }

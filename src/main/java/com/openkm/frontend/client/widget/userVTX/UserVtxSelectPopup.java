@@ -19,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.openkm.frontend.client.widget.organizationVTX;
+package com.openkm.frontend.client.widget.userVTX;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArrayNumber;
@@ -30,15 +30,32 @@ import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.openkm.extension.frontend.client.util.OkmConstants;
 import com.openkm.frontend.client.Main;
-import com.openkm.frontend.client.bean.GWTFolder;
 import com.openkm.frontend.client.widget.categories.FolderSelectTree;
 import com.openkm.frontend.client.widget.categories.Status;
+import org.docx4j.wml.U;
 
-public class OrganizationVtxSelectPopup extends DialogBox {
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserVtxSelectPopup extends DialogBox {
+
+	private static class User {
+		private final String id;
+		private final String fullName;
+		private final String email;
+
+		public User(String id, String fullName, String email) {
+			this.id = id;
+			this.fullName = fullName;
+			this.email = email;
+		}
+	}
 
 	private VerticalPanel vPanel;
 	private HorizontalPanel hPanel;
@@ -54,7 +71,7 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 	JsArrayString orgPathTrace = (JsArrayString) JsArrayString.createArray();
 
 
-	public OrganizationVtxSelectPopup() {
+	public UserVtxSelectPopup() {
 		// Establishes auto-close when click outside
 		super(false, true);
 
@@ -113,138 +130,74 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 		actionButton.addStyleName("btn");
 		actionButton.addStyleName("btn-success");
 
+		CellTable table = drawUserTable();
 
+		verticalDirectoryPanel.add(table);
 		super.hide();
 		setWidget(vPanel);
 	}
 
-	public TreeItem generateTreeOrg(Long parentId, TreeItem root, Boolean auto, Boolean autoCheck) {
 
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, Main.CONTEXT + "/services/rest/organization/getAllOrgChild?parent=" + parentId);
+	public CellTable drawUserTable() {
+		CellTable<User> table = new CellTable<User>();
+
+		// Add a text column to show the id.
+		TextColumn<User> idColumn =
+				new TextColumn<User>() {
+					@Override
+					public String getValue(User object) {
+						return object.id;
+					}
+				};
+		table.addColumn(idColumn, "Code");
+
+		// Add a text column to show the name.
+		TextColumn<User> nameColumn =
+				new TextColumn<User>() {
+					@Override
+					public String getValue(User object) {
+						return object.fullName;
+					}
+				};
+		table.addColumn(nameColumn, "Name");
+
+		// Add a text column to show the email.
+		TextColumn<User> emailColumn
+				= new TextColumn<User>() {
+			@Override
+			public String getValue(User object) {
+				return object.email;
+			}
+		};
+		table.addColumn(emailColumn, "Email");
+
+		List<User> userList = new ArrayList<>();
+
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, Main.CONTEXT + "/services/rest/user/getAllUser?userSearch=&notInOrg=0");
+		builder.setHeader("Accept", "application/json");
 
 		try {
-			if(auto) root.removeItems();
 			builder.sendRequest(null, new RequestCallback() {
 						@Override
 						public void onResponseReceived(Request request,
 													   Response response) {
-
 							JSONValue jsonValue = JSONParser.parseStrict(response.getText());
 							JSONArray jsonArray = jsonValue.isArray();
 
 							for (int i = 0; i < jsonArray.size(); ++i) {
-								String orgName = jsonArray.get(i).isObject().get("name").isString().stringValue();
-								Double orgParent = jsonArray.get(i).isObject().get("parent").isNumber().doubleValue();
-								Double orgId = jsonArray.get(i).isObject().get("id").isNumber().doubleValue();
-								String orgPath = jsonArray.get(i).isObject().get("path").isString().stringValue();
+								User user = new User(
+										jsonArray.get(0).isString().stringValue(),
+										jsonArray.get(1).isString().stringValue(),
+										jsonArray.get(2).isString().stringValue()
+								);
+								userList.add(user);
 
-								HTML icon = new HTML("<i class='glyphicons glyphicons-folder-new'><i/>");
-								HorizontalPanel hc = new HorizontalPanel();
-								hc.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-								CheckBox checkbox = new CheckBox();
-
-								if(auto) {
-									if (autoCheck) {
-										checkbox.setChecked(true);
-										orgCheckeds.push(orgId);
-									} else {
-										checkbox.setChecked(false);
-										for (int j = 0; j < orgCheckeds.length(); j++) {
-											if (orgCheckeds.get(j) == orgId) {
-												orgCheckeds.set(j, -1);
-											}
-										}
-									}
-								}
-
-
-								for (int j = 0; j < orgCheckeds.length(); ++j) {
-									if (orgCheckeds.get(j) == orgId) {
-										checkbox.setValue(true);
-										break;
-									}
-								}
-								for (int j = 0; j < orgPathTrace.length(); ++j) {
-									if (orgPathTrace.get(j).contains(orgPath)) {
-										icon.setHTML("<i class='glyphicons glyphicons-folder-new' style='color: #27B45F'><i/>");
-										break;
-									}
-								}
-
-								hc.add(icon);
-								hc.add(checkbox);
-								hc.add(new Label(orgName));
-
-								TreeItem orgNode = new TreeItem(hc);
-
-
-								checkbox.addClickHandler(
-										new ClickHandler() {
-											@Override
-											public void onClick(ClickEvent event) {
-												actionButton.setEnabled(true);
-												boolean checked = ((CheckBox) event.getSource()).getValue();
-												if (checked) {
-													orgCheckeds.push(orgId);
-													generateTreeOrg(orgId.longValue(), orgNode, true, true);
-
-												} else {
-													for (int j = 0; j < orgCheckeds.length(); j++) {
-														if (orgCheckeds.get(j) == orgId) {
-															orgCheckeds.set(j, -1);
-														}
-													}
-													generateTreeOrg(orgId.longValue(), orgNode, true, false);
-												}
-											}
-										});
-
-								root.setState(true);
-
-
-								icon.addClickHandler(new ClickHandler() {
-									@Override
-									public void onClick(ClickEvent clickEvent) {
-
-										if (orgNode.getState()) {
-											orgNode.setState(false);
-											icon.setHTML("<i class='glyphicons glyphicons-folder-new'><i/>");
-											for (int j = 0; j < orgPathTrace.length(); ++j) {
-												if (orgPathTrace.get(j).contains(orgPath)) {
-													icon.setHTML("<i class='glyphicons glyphicons-folder-new' style='color: #27B45F'><i/>");
-													break;
-												}
-											}
-										} else {
-											orgNode.setState(true);
-											icon.setHTML("<i class='glyphicons glyphicons-folder-open'><i/>");
-											for (int j = 0; j < orgPathTrace.length(); ++j) {
-												if (orgPathTrace.get(j).contains(orgPath)) {
-													icon.setHTML("<i class='glyphicons glyphicons-folder-open' style='color: #27B45F'><i/>");
-													break;
-												}
-											}
-										}
-
-										if (orgNode.getChildCount() == 0) {
-											generateTreeOrg(orgId.longValue(), orgNode, false, false);
-										}
-									}
-								});
-
-
-								root.addItem(orgNode);
-
-
-								if (auto) {
-									if (autoCheck) {
-										generateTreeOrg(orgId.longValue(), orgNode, true, true);
-									} else {
-										generateTreeOrg(orgId.longValue(), orgNode, true, false);
-									}
-								}
 							}
-							root.setState(true);
+
+							userList.add(new User("111", "222", "333"));
+
+							table.setRowCount(userList.size(), true);
+							table.setRowData(0, userList);
 						}
 
 						@Override
@@ -256,20 +209,10 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 		} catch (RequestException e) {
 			e.printStackTrace();
 		}
-		return root;
-	}
 
-	public void drawOrgTree() {
-		verticalDirectoryPanel.clear();
-		Tree tree = new Tree();
-		TreeItem root = new TreeItem(new Label("root"));
-		root = generateTreeOrg(-1L, root, false, false);
-		tree.addItem(root);
-		verticalDirectoryPanel.add(tree);
-	}
 
-	public void checkAllChild(TreeItem root, Long orgId) {
 
+		return table;
 	}
 
 
@@ -300,10 +243,10 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 	 */
 	public void show() {
 		initButtons();
-		int left = (Window.getClientWidth() - 500) / 2;
-		int top = (Window.getClientHeight() - 300) / 2;
+		int left = (Window.getClientWidth() - 600) / 2;
+		int top = (Window.getClientHeight() - 400) / 2;
 		setPopupPosition(left, top);
-		setText("Add organization");
+		setText("Add user");
 
 		// Resets to initial tree value
 		folderSelectTree.reset();
@@ -327,9 +270,4 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 		actionButton.setEnabled(false);
 	}
 
-	public void setOrgCheckeds(JsArrayNumber orgCheckeds, JsArrayString orgPathTrace) {
-		this.orgCheckeds = orgCheckeds;
-		this.orgPathTrace = orgPathTrace;
-		drawOrgTree();
-	}
 }

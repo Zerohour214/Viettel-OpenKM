@@ -229,7 +229,7 @@ public class OrganizationVTXDAO {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			UserOrganizationVTX userOrganizationVTX = new UserOrganizationVTX();
-			userOrganizationVTX.setOrgId(orgId);
+			//userOrganizationVTX.setOrgId(orgId);
 			userOrganizationVTX.setUserId(userId);
 
 			session.beginTransaction();

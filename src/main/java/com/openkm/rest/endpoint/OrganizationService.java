@@ -209,7 +209,21 @@ public class OrganizationService extends BaseServlet {
 	@Path("/downloadTemplateImportOrg")
 	public Response downloadTemplateImportOrg(@QueryParam("type") String type) throws DatabaseException, IOException, URISyntaxException {
 
-		String resourceName = "ORG".equals(type) ? "template/IMPORT_ORG.xls" : "template/IMPORT_USER_ORG.xls";
+		String resourceName = "";
+
+		switch (type) {
+			case "ORG":
+				resourceName = "template/IMPORT_ORG.xls";
+				break;
+			case "USER_ORG":
+				resourceName = "template/IMPORT_USER_ORG.xls";
+				break;
+			case "USER_CREATE":
+				resourceName = "template/IMPORT_USER_CREATE.xls";
+				break;
+		}
+
+
 
 		URL res = getClass().getClassLoader().getResource(resourceName);
 		File file = Paths.get(res.toURI()).toFile();

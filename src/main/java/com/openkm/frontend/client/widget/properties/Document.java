@@ -30,7 +30,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
@@ -46,7 +45,6 @@ import com.openkm.frontend.client.service.OKMDocumentServiceAsync;
 import com.openkm.frontend.client.util.OKMBundleResources;
 import com.openkm.frontend.client.util.Util;
 import com.openkm.frontend.client.widget.ClipboardIcon;
-import com.openkm.frontend.client.widget.ConfirmPopup;
 import com.openkm.frontend.client.widget.properties.CategoryManager.CategoryToRemove;
 import com.openkm.frontend.client.widget.properties.KeywordManager.KeywordToRemove;
 import com.openkm.frontend.client.widget.thesaurus.ThesaurusSelectPopup;
@@ -69,7 +67,8 @@ public class Document extends Composite {
 	private HorizontalPanel hPanelSubscribedUsers;
 	private CategoryManager categoryManager;
 
-	private TransmitManager transmitManager;
+	private TransmitOrganizationManager transmitOrganizationManager;
+	private TransmitUserManager transmitUserManager;
 
 	private KeywordManager keywordManager;
 	private ScrollPanel scrollPanel;
@@ -80,7 +79,8 @@ public class Document extends Composite {
 	 */
 	public Document() {
 		categoryManager = new CategoryManager(CategoryManager.ORIGIN_DOCUMENT);
-		transmitManager = new TransmitManager(TransmitManager.ORIGIN_DOCUMENT);
+		transmitOrganizationManager = new TransmitOrganizationManager(TransmitOrganizationManager.ORIGIN_DOCUMENT);
+		transmitUserManager = new TransmitUserManager(TransmitUserManager.ORIGIN_DOCUMENT);
 		keywordManager = new KeywordManager(ThesaurusSelectPopup.DOCUMENT_PROPERTIES);
 		document = new GWTDocument();
 		table = new FlexTable();
@@ -175,8 +175,11 @@ public class Document extends Composite {
 
 		HTML space4 = new HTML("");
 		vPanel2.add(space4);
-		vPanel2.add(transmitManager.getPanelCategories());
-		vPanel2.add(transmitManager.getSubscribedCategoriesTable());
+		vPanel2.add(transmitOrganizationManager.getPanelCategories());
+		vPanel2.add(transmitOrganizationManager.getSubscribedCategoriesTable());
+
+		vPanel2.add(transmitUserManager.getPanelCategories());
+		vPanel2.add(transmitUserManager.getSubscribedCategoriesTable());
 
 		vPanel2.setCellHeight(space2, "10px");
 		vPanel2.setCellHeight(space3, "10px");
@@ -517,7 +520,8 @@ public class Document extends Composite {
 	public void setVisibleButtons(boolean visible) {
 		keywordManager.setVisible(visible);
 		categoryManager.setVisible(visible);
-		transmitManager.setVisible(visible);
+		transmitOrganizationManager.setVisible(visible);
+		transmitUserManager.setVisible(visible);
 	}
 
 	/**
@@ -607,7 +611,7 @@ public class Document extends Composite {
 	}
 
 	public void transmit(String orgs) {
-		transmitManager.transmit(orgs, document.getUuid());
+		transmitOrganizationManager.transmit(orgs, document.getUuid());
 	}
 
 	public void getOrgsByDocId() {
@@ -620,7 +624,7 @@ public class Document extends Composite {
 						@Override
 						public void onResponseReceived(Request request,
 													   Response response) {
-							transmitManager.setOrgs(response.getText());
+							transmitOrganizationManager.setOrgs(response.getText());
 
 						}
 

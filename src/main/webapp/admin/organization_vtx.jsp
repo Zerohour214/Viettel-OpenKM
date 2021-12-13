@@ -587,7 +587,6 @@
             })
 
             $('#import-user-org').click(e => {
-
                     let files = document.getElementById('input-file-user').files;
                     let formData = new FormData();
                     if (files.length > 0) {
@@ -598,12 +597,21 @@
                             type: 'POST',
                             enctype: 'multipart/form-data',
                             cache: false,
-                            contentType: 'application/json',
+                            contentType: false,
                             processData: false,
                             data: formData,
-                            success: (res) => {
-                                console.log(res)
-                                getUsersByOrgId(orgChoosed);
+                            complete: function(jqXHR) {
+                                if(jqXHR.readyState === 4) {
+                                    let warnList = jqXHR.responseText.split(",");
+                                    let warnStr = "";
+                                    if(warnList[0] === "") warnList.shift()
+                                    for(let i=0; i<warnList.length-1; i+=2) {
+
+                                        warnStr += warnList[i] + " - " + warnList[i+1] + "\n";
+                                    }
+                                    alert(warnStr);
+                                    getUsersByOrgId(orgChoosed);
+                                }
                             }
                         })
                     }
