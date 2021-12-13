@@ -834,3 +834,8 @@ table.log-panel.debug-panel-renew {
 	padding-left: 23px;
 }
 
+.flex-table-user-transmit td {
+	border: 1px solid #BBBBBB;
+	padding: 3px;
+	border-collapse: collapse;
+}

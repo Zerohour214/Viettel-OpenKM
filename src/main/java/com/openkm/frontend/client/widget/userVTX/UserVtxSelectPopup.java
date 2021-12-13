@@ -26,6 +26,8 @@ import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
+import com.google.gwt.gen2.table.client.FixedWidthGrid;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
@@ -38,6 +40,7 @@ import com.openkm.extension.frontend.client.util.OkmConstants;
 import com.openkm.frontend.client.Main;
 import com.openkm.frontend.client.widget.categories.FolderSelectTree;
 import com.openkm.frontend.client.widget.categories.Status;
+import com.openkm.frontend.client.widget.filebrowser.ExtendedScrollTable;
 import org.docx4j.wml.U;
 
 import java.util.ArrayList;
@@ -65,10 +68,13 @@ public class UserVtxSelectPopup extends DialogBox {
 	private Button cancelButton;
 	private Button actionButton;
 	public Status status;
+	public FlexTable table;
 
 
 	JsArrayNumber orgCheckeds = (JsArrayNumber) JsArrayNumber.createArray();
 	JsArrayString orgPathTrace = (JsArrayString) JsArrayString.createArray();
+
+	public List<String> userChecked = new ArrayList<>();
 
 
 	public UserVtxSelectPopup() {
@@ -88,10 +94,10 @@ public class UserVtxSelectPopup extends DialogBox {
 		scrollDirectoryPanel.setStyleName("okm-Popup-text");
 		verticalDirectoryPanel = new VerticalPanel();
 		verticalDirectoryPanel.setSize("100%", "100%");
+
 		folderSelectTree = new FolderSelectTree();
 		folderSelectTree.setSize("100%", "100%");
 
-		verticalDirectoryPanel.add(folderSelectTree);
 		scrollDirectoryPanel.add(verticalDirectoryPanel);
 
 		cancelButton = new Button(OkmConstants.ICON_NO_BUTTON + Main.i18n("button.close"), new ClickHandler() {
@@ -130,16 +136,14 @@ public class UserVtxSelectPopup extends DialogBox {
 		actionButton.addStyleName("btn");
 		actionButton.addStyleName("btn-success");
 
-		CellTable table = drawUserTable();
-
-		verticalDirectoryPanel.add(table);
+		drawUserTable();
 		super.hide();
 		setWidget(vPanel);
 	}
 
 
-	public CellTable drawUserTable() {
-		CellTable<User> table = new CellTable<User>();
+	public void drawUserTable() {
+		/*CellTable<User> table = new CellTable<User>();
 
 		// Add a text column to show the id.
 		TextColumn<User> idColumn =
@@ -171,7 +175,7 @@ public class UserVtxSelectPopup extends DialogBox {
 		};
 		table.addColumn(emailColumn, "Email");
 
-		List<User> userList = new ArrayList<>();
+		List<User> userList = new ArrayList<>();*/
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, Main.CONTEXT + "/services/rest/user/getAllUser?userSearch=&notInOrg=0");
 		builder.setHeader("Accept", "application/json");
@@ -184,20 +188,46 @@ public class UserVtxSelectPopup extends DialogBox {
 							JSONValue jsonValue = JSONParser.parseStrict(response.getText());
 							JSONArray jsonArray = jsonValue.isArray();
 
-							for (int i = 0; i < jsonArray.size(); ++i) {
-								User user = new User(
-										jsonArray.get(0).isString().stringValue(),
-										jsonArray.get(1).isString().stringValue(),
-										jsonArray.get(2).isString().stringValue()
-								);
-								userList.add(user);
+							table = new FlexTable();
+							table.setCellSpacing(5);
+							table.setCellPadding(3);
+							table.setWidth("100%");
+							table.addStyleName("flex-table-user-transmit");
 
+
+							table.setWidget(0, 0, new HTML("<b>Code</b>"));
+							table.setWidget(0, 1, new HTML("<b>Full name</b>"));
+							table.setWidget(0, 2, new HTML("<b>Email</b>"));
+							table.setWidget(0, 3, new HTML(""));
+							for (int i = 0; i < jsonArray.size(); ++i) {
+								String code = jsonArray.get(i).isArray().get(1).isString().stringValue();
+								String fullName = jsonArray.get(i).isArray().get(0).isString().stringValue();
+								String email = jsonArray.get(i).isArray().get(2).isString().stringValue();
+								table.setWidget(i+1, 0, new Label(code));
+								table.setWidget(i+1, 1, new Label(fullName));
+								table.setWidget(i+1, 2, new Label(email));
+
+								CheckBox userCheckbox = new CheckBox();
+
+								userCheckbox.addClickHandler(
+										new ClickHandler() {
+											@Override
+											public void onClick(ClickEvent event) {
+												boolean checked = ((CheckBox) event.getSource()).getValue();
+												Window.alert("check:" + checked);
+												if(checked) {
+													userChecked.add(code);
+												} else {
+													userChecked.remove(code);
+												}
+											}
+										});
+								table.setWidget(i+1, 3, userCheckbox);
 							}
 
-							userList.add(new User("111", "222", "333"));
+							verticalDirectoryPanel.add(table);
 
-							table.setRowCount(userList.size(), true);
-							table.setRowData(0, userList);
+
 						}
 
 						@Override
@@ -210,9 +240,6 @@ public class UserVtxSelectPopup extends DialogBox {
 			e.printStackTrace();
 		}
 
-
-
-		return table;
 	}
 
 
@@ -220,13 +247,12 @@ public class UserVtxSelectPopup extends DialogBox {
 	 * Executes the action
 	 */
 	public void executeAction() {
-		StringBuilder orgs = new StringBuilder();
-		for (int i = 0; i < orgCheckeds.length(); ++i) {
-			if (orgCheckeds.get(i) != -1)
-				orgs.append(",").append(orgCheckeds.get(i));
+		StringBuilder usrs = new StringBuilder();
+		for (int i = 0; i < userChecked.size(); ++i) {
+			usrs.append(",").append(userChecked.get(i));
 		}
-		orgs.deleteCharAt(0);
-		Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.transmit(orgs.toString());
+		usrs.deleteCharAt(0);
+		Window.alert(usrs.toString());
 	}
 
 	/**
@@ -267,7 +293,7 @@ public class UserVtxSelectPopup extends DialogBox {
 	 */
 	private void initButtons() {
 		cancelButton.setEnabled(true);
-		actionButton.setEnabled(false);
+		actionButton.setEnabled(true);
 	}
 
 }

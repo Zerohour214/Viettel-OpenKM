@@ -1757,3 +1757,12 @@ input.okm-Input {
 .disable-Confirm-Button{
 	color: gray;
 }
+
+.flex-table-user-transmit {
+	border-collapse: collapse;
+}
+
+.flex-table-user-transmit td {
+	border: 1px solid #BBBBBB;
+	padding: 3px;
+}
