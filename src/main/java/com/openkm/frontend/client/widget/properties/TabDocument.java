@@ -221,8 +221,10 @@ public class TabDocument extends Composite implements HasDocumentEvent, HasDocum
 	 * @param doc The document object
 	 */
 	public void setProperties(GWTDocument doc) {
-		if (this.doc != null && this.doc.getUuid() != null && this.doc.getUuid() != doc.getUuid() && selectedTab == PREVIEW_TAB)
-			Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(),this.doc.getUuid());
+		if (this.doc != null && this.doc.getUuid() != null && this.doc.getUuid() != doc.getUuid() && selectedTab == PREVIEW_TAB) {
+			Main.get().mainPanel.dashboard.userDashboard.endReadDoc(Main.get().workspaceUserProperties.getUser().getId(), this.doc.getUuid());
+			Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
+		}
 
 		// We must declare status here due pending downloading ( fired by status )
 		if (securityVisible) {

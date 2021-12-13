@@ -279,7 +279,7 @@ strong {
 	border: 1px solid #A5A596;
 }
 
-.okm-Popup .Caption  {	
+.okm-Popup .Caption  {
 	height: 20px;
 	padding-top: 5px;
 	font-size: 12px;
@@ -298,7 +298,7 @@ strong {
 .okm-Popup .dialogTop .dialogTopCenter {
 	text-align: center;
 	background: #CDE0E0;
-	background: -webkit-linear-gradient(top, #CDE0E0 0%, #A5CECE 100%); 
+	background: -webkit-linear-gradient(top, #CDE0E0 0%, #A5CECE 100%);
 	background: -moz-linear-gradient(top, #CDE0E0 0%, #A5CECE 100%);
 	background: -ms-linear-gradient(top, #CDE0E0 0%, #A5CECE 100%);
 	background: -o-linear-gradient(top, #CDE0E0 0%, #A5CECE 100%);
@@ -312,7 +312,7 @@ strong {
 .okm-Popup-Error .dialogTop .dialogTopCenter {
 	text-align: center;
 	background: #DB9D9D;
-	background: -webkit-linear-gradient(top, #DB9D9D 0%, #C96C6C 100%); 
+	background: -webkit-linear-gradient(top, #DB9D9D 0%, #C96C6C 100%);
 	background: -moz-linear-gradient(top, #DB9D9D 0%, #C96C6C 100%);
 	background: -ms-linear-gradient(top, #DB9D9D 0%, #C96C6C 100%);
 	background: -o-linear-gradient(top, #DB9D9D 0%, #C96C6C 100%);
@@ -370,7 +370,7 @@ strong {
 	font-size: 4px;
 }
 
-/* Solution to IE transparent popup <iframe> problem  
+/* Solution to IE transparent popup <iframe> problem
 iframe {
 	filter: progid : DXImageTransform . Microsoft . Alpha(opacity = 0);
 } */
@@ -469,7 +469,7 @@ iframe {
 .okm-ToolBar-Big-selected {
 	background-color: #b5bad7;
 	cursor: pointer;
-	cursor: hand;	
+	cursor: hand;
 }
 
 .okm-ToolBar-BigTMP-selected {
@@ -501,7 +501,7 @@ iframe {
 	white-space: nowrap;
 }
 
-.gwt-TabBar {	
+.gwt-TabBar {
 	white-space: nowrap;
 	background-color: #E5E5E1;
 	font-size: smaller;
@@ -822,7 +822,7 @@ button:hover {
 
 input.okm-Input {
 	height: 18px !important;
-} 
+}
 
 .okm-Input-System {
 	border: 1px solid #A5A596;
@@ -936,7 +936,7 @@ input.okm-Input {
 }
 
 /* Disable text selection */
-.okm-DisableSelect { 
+.okm-DisableSelect {
     -webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: -moz-none;;
@@ -1074,7 +1074,7 @@ input.okm-Input {
 }
 
 /**
- * CalendarWidget 
+ * CalendarWidget
  */
 .CalendarWidget {
 	border: 1px solid #000;
@@ -1129,14 +1129,14 @@ input.okm-Input {
 
 .CalendarWidget .day .gwt-HTML {
 	border: 1px solid #C3D9FF;
-} 
+}
 
 /**
- * DashBoard Widget 
+ * DashBoard Widget
  */
 .okm-DashboardWidget .header {
  	background: #CED6AF;
-	background: -webkit-linear-gradient(top, #CED6AF 0%, #C0CA98 100%); 
+	background: -webkit-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -moz-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -ms-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -o-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
@@ -1153,7 +1153,7 @@ input.okm-Input {
  	background-color: white;
  	border-left: 1px solid #A5A596;
  	border-bottom: 1px solid #A5A596;
- 	border-right: 1px solid #A5A596; 
+ 	border-right: 1px solid #A5A596;
 }
 
 .okm-DashboardWidget .data tr:hover {
@@ -1166,11 +1166,11 @@ input.okm-Input {
 }
 
 /**
- * Hyperlink 
+ * Hyperlink
  */
 .okm-Hyperlink {
 	text-decoration: underline;
-	cursor: pointer; 
+	cursor: pointer;
   	cursor: hand;
 }
 .okm-Hyperlink a:hover {
@@ -1197,12 +1197,12 @@ input.okm-Input {
  	background-color: #E5E5E1;
  	border-left: 1px solid #A5A596;
  }
- 
+
  .okm-WorkflowFormPanel-Title {
 	white-space: nowrap;
 	padding: 2px 7px 2px 7px;
 	background: #CED6AF;
-	background: -webkit-linear-gradient(top, #CED6AF 0%, #C0CA98 100%); 
+	background: -webkit-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -moz-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -ms-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
 	background: -o-linear-gradient(top, #CED6AF 0%, #C0CA98 100%);
@@ -1379,7 +1379,7 @@ input.okm-Input {
 }
 
 .okm-Mail-Link {
-	cursor: pointer; 
+	cursor: pointer;
   	cursor: hand;
 }
 
@@ -1391,7 +1391,7 @@ input.okm-Input {
 }
 
 /* Horizontal split panel */
-.hsplitter { 
+.hsplitter {
 	background-image: url(img/separator_points.gif);
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
@@ -1405,7 +1405,7 @@ input.okm-Input {
 	width: 10px;
 }
 
-.okm-HorizontalSplitPanel .hsplitter { 
+.okm-HorizontalSplitPanel .hsplitter {
 	background-image: url(img/separator_points.gif);
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
@@ -1414,12 +1414,12 @@ input.okm-Input {
 	font-size: 4px;
 	background-color: #E5E5E1;
 	horizontal-align: 50%;
-    border: 0px; 
+    border: 0px;
 	width: 10px;
 }
 
 /* Vertical split panel */
-.vsplitter { 
+.vsplitter {
 	background-image: url(img/horizontal_separator_points.gif);
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
@@ -1442,7 +1442,7 @@ input.okm-Input {
 	border-top: 1px solid #A5A596;
 }
 
-.okm-KeyMap-Selected {	
+.okm-KeyMap-Selected {
 	background-color: #C3D9FF;
 	padding: 1px 5px;
 	border: 1px solid #FFFFFF;
@@ -1464,7 +1464,7 @@ input.okm-Input {
 }
 
 .okm-KeyMap-ImageHover {
-	cursor: pointer; 
+	cursor: pointer;
   	cursor: hand;
 }
 
@@ -1547,23 +1547,23 @@ input.okm-Input {
 	text-align: center;
 	margin: auto;
 }
-               
+
 .okm-cloudTags {
 	float: left;
 	padding: 0px 5px;
 	font-size: 5pt;
-	font-family: "Lucida Grande","Lucida Sans Unicode",Arial,Verdana,sans-serif;   
+	font-family: "Lucida Grande","Lucida Sans Unicode",Arial,Verdana,sans-serif;
 	height: 30px;
 	text-decoration:none;
-}   
-  
+}
+
 .okm-cloudTags a {
 	color: #000000;
 	text-decoration: none;
 	font-size: 5pt;
 	position: relative;
 	text-decoration:none;
-}   
+}
 
 .okm-cloudSeparator {
 	background-color: #CACCC8;
@@ -1599,12 +1599,12 @@ input.okm-Input {
 }
 
 .okm-validationFailedBorder {
-	border: 2px solid #ff0000;		
+	border: 2px solid #ff0000;
 }
 
 .okm-validationFailedText {
 	color: #ff0000;
-	font-weight: bold;		
+	font-weight: bold;
 }
 
 /* TabLayoutPanel */
@@ -1623,7 +1623,7 @@ input.okm-Input {
 	border-right: 1px solid #666;
 	padding: 2px 7px 2px 7px;
 	background-color: #caccc8;
-	cursor: pointer; 
+	cursor: pointer;
   	cursor: hand;
   	height: 20px;
 }
@@ -1637,7 +1637,7 @@ input.okm-Input {
 	border-left: 1px solid #bbb;
 	border-right: 1px solid #666;
 	padding: 2px 7px 2px 7px;
-	cursor: pointer; 
+	cursor: pointer;
   	cursor: hand;
   	height: 20px;
 }
@@ -1648,12 +1648,12 @@ input.okm-Input {
 	font-size: 1.2em;
     font-weight: bold;
     text-decoration: none;
-    cursor: pointer; 
+    cursor: pointer;
   	cursor: hand;
 }
 
 .okm-Forum-User {
-	color : #105289; 
+	color : #105289;
 }
 
 .okm-Forum-Gray {
@@ -1750,4 +1750,10 @@ input.okm-Input {
 	.okm-refreshButton {
 		padding-left: 20px;
 	}
+}
+.disable-Confirm{
+	pointer-events: none;
+}
+.disable-Confirm-Button{
+	color: gray;
 }

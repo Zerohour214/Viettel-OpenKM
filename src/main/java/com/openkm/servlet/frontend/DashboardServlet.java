@@ -884,7 +884,7 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 		DashboardModule dm = ModuleManager.getDashboardModule();
 		try {
 			boolean check = false;
-			List<DashboardDocumentResult> result = dm.getMustReadDocuments(null);
+			List<DashboardDocumentResult> result = dm.getMustConfirmDocuments(null);
 			for(int i=0;i<result.size();i++){
 				if(result.get(i).getDocument().getUuid().equalsIgnoreCase(docId)){
 					check = true;
