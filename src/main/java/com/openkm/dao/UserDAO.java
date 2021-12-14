@@ -36,15 +36,16 @@ public class UserDAO {
 			String userInOrgQuery = "SELECT uo.USER_ID FROM USER_ORG_VTX uo";
 			Query q = session.createSQLQuery(userInOrgQuery);
 			List<String> userInOrgList = q.list();
-			if(isNotInOrg == 1) {
+			if(userInOrgList.size() == 0) userInOrgList = new ArrayList<>();
+			if(isNotInOrg == 1 && userInOrgList.size() != 0) {
 				nativeQuery += " and u.USR_ID NOT IN :userInOrgList";
 			}
 
 			q = session.createSQLQuery(nativeQuery);
 			q.setString("search", search);
-			if(userInOrgList.size() == 0) userInOrgList = new ArrayList<>();
 
-			if(isNotInOrg == 1)
+
+			if(isNotInOrg == 1 && userInOrgList.size() != 0)
 				q.setParameterList("userInOrgList", userInOrgList);
 			List<User> ret = q.list();
 			log.debug("getAllUser: {}", ret);

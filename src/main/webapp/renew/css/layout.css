@@ -839,3 +839,6 @@ table.log-panel.debug-panel-renew {
 	padding: 3px;
 	border-collapse: collapse;
 }
+.disable-Confirm-Button {
+	color: gray;
+}
