@@ -644,11 +644,24 @@ public class DocumentService {
 
 	@POST
 	@Path("/transmit")
-	public void extendedCopy(@QueryParam("docId") String docId, @QueryParam("orgs") String orgs) throws GenericException {
+	public void transmitToOrg(@QueryParam("docId") String docId, @QueryParam("orgs") String orgs) throws GenericException {
 		try {
 			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{orgs});
 			DocumentModule dm = ModuleManager.getDocumentModule();
 			dm.transmit(docId, orgs);
+			log.debug("extendedCopy: void");
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
+	@POST
+	@Path("/transmitToUser")
+	public void transmitToUser(@QueryParam("docId") String docId, @QueryParam("usrs") String usrs) throws GenericException {
+		try {
+			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{usrs});
+			DocumentModule dm = ModuleManager.getDocumentModule();
+			dm.transmitToUser(docId, usrs);
 			log.debug("extendedCopy: void");
 		} catch (Exception e) {
 			throw new GenericException(e);
@@ -663,6 +676,21 @@ public class DocumentService {
 			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{docId});
 			DocumentModule dm = ModuleManager.getDocumentModule();
 			String json = new Gson().toJson(dm.getOrgsByDocId(docId));
+			return json;
+
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
+	@GET
+	@Path("/getUsrsByDocId")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getUsrsByDocId(@QueryParam("docId") String docId) throws GenericException {
+		try {
+			log.debug("extendedCopy({}, {}, {}, {}, {}, {}, {}, {})", new Object[]{docId});
+			DocumentModule dm = ModuleManager.getDocumentModule();
+			String json = new Gson().toJson(dm.getUsrsByDocId(docId));
 			return json;
 
 		} catch (Exception e) {

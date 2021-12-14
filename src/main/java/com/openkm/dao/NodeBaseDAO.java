@@ -2407,10 +2407,39 @@ public class NodeBaseDAO {
 		}
 	}
 
-	public void hqlTruncate(String docId) {
+	public UserDocumentTransmitVTX getUsrDocTransmitById(String docId, String userId) throws DatabaseException {
+		String qs = "from UserDocumentTransmitVTX u where u.docId = :docId and u.userId = :userId";
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Query q = session.createQuery(qs);
+			q.setString("userId", userId);
+			q.setString("docId", docId);
+			UserDocumentTransmitVTX ret = (UserDocumentTransmitVTX) q.setMaxResults(1).uniqueResult();
+			log.debug("getOrg: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	public void hqlTruncateOrgDoc(String docId) {
 		Session session = null;
 		session = HibernateUtil.getSessionFactory().openSession();
 		String hql = "delete from OrgDocumentVTX od where od.docId = :docId";
+		Query query = session.createQuery(hql);
+		query.setString("docId", docId);
+		session.beginTransaction();
+		query.executeUpdate();
+		session.getTransaction().commit();
+	}
+
+	public void hqlTruncateUserDoc(String docId) {
+		Session session = null;
+		session = HibernateUtil.getSessionFactory().openSession();
+		String hql = "delete from UserDocumentTransmitVTX ud where ud.docId = :docId";
 		Query query = session.createQuery(hql);
 		query.setString("docId", docId);
 		session.beginTransaction();
@@ -2443,7 +2472,7 @@ public class NodeBaseDAO {
 
 //			getAllChildOfOrgChecked(org, orgCheckeds);
 
-			hqlTruncate(docId);
+			hqlTruncateOrgDoc(docId);
 
 			session.beginTransaction();
 
@@ -2470,11 +2499,6 @@ public class NodeBaseDAO {
 	}
 
 	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException {
-		String qs = "from OrganizationVTX o " +
-				"  join OrgDocumentVTX od on o.id = od.orgId " +
-				"  join NodeDocument d on d.uuid = od.docId " +
-				" where d.uuid = :docId";
-
 		String sqlQuery = "SELECT o.ID as id, o.CODE as code, o.NAME as name, o.ORG_PARENT as parent, o.PATH " +
 				" FROM ORGANIZATION_VTX o " +
 				" JOIN ORG_DOC od ON o.ID = od.ORG_ID " +
@@ -2484,11 +2508,6 @@ public class NodeBaseDAO {
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			/*Query q = session.createQuery(qs);
-			q.setString("docId", docId);
-			List<OrganizationVTXBean> ret = (List<OrganizationVTXBean>) q.list();
-			log.debug("getAllChild: {}", ret);
-			return ret;*/
 			SQLQuery q = session.createSQLQuery(sqlQuery);
 			q.setString("docId", docId);
 			List<OrganizationVTXBean> ret = q.list();
@@ -2535,4 +2554,57 @@ public class NodeBaseDAO {
 			HibernateUtil.close(session);
 		}
     }
+
+    public void transmitToUser(String docId, String usrs) throws DatabaseException {
+		Session session = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+
+			List<String> users = Arrays.asList(usrs.split(","));
+			if (usrs.equals("")) users = new ArrayList<>();
+			hqlTruncateUserDoc(docId);
+
+			session.beginTransaction();
+
+			for (String userId : users) {
+				if (getUsrDocTransmitById(docId, userId) == null) {
+					UserDocumentTransmitVTX userDocumentTransmitVTX = new UserDocumentTransmitVTX();
+					userDocumentTransmitVTX.setUserId(userId);
+					userDocumentTransmitVTX.setDocId(docId);
+					session.save(userDocumentTransmitVTX);
+					session.flush();
+					session.clear();
+				}
+			}
+
+			session.getTransaction().commit();
+
+		} catch (HibernateException | DatabaseException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+    }
+
+	public List<User> getUsrsByDocId(String docId) throws DatabaseException {
+		String sqlQuery = "SELECT u.USR_ID as id, u.USR_NAME as name, u.USR_EMAIL as email " +
+				" FROM OKM_USER u " +
+				" JOIN USER_DOC_TRANSMIT ud ON u.USR_ID = ud.USER_ID " +
+				" JOIN OKM_NODE_DOCUMENT d ON d.NBS_UUID = ud.DOC_ID " +
+				" WHERE d.NBS_UUID = :docId";
+
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			SQLQuery q = session.createSQLQuery(sqlQuery);
+			q.setString("docId", docId);
+			List<User> ret = q.list();
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
 }

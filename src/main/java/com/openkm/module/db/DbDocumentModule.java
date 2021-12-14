@@ -1581,6 +1581,16 @@ public class DbDocumentModule implements DocumentModule {
 		return NodeBaseDAO.getInstance().search(docCode, docName);
 	}
 
+	@Override
+	public void transmitToUser(String docId, String usrs) throws DatabaseException {
+		NodeBaseDAO.getInstance().transmitToUser(docId, usrs);
+	}
+
+	@Override
+	public List<User> getUsrsByDocId(String docId) throws DatabaseException {
+		return NodeBaseDAO.getInstance().getUsrsByDocId(docId);
+	}
+
 
 	/*
 	 * ========================

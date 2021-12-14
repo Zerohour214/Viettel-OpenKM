@@ -157,13 +157,13 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 									}
 								}
 
-
 								for (int j = 0; j < orgCheckeds.length(); ++j) {
 									if (orgCheckeds.get(j) == orgId) {
 										checkbox.setValue(true);
 										break;
 									}
 								}
+
 								for (int j = 0; j < orgPathTrace.length(); ++j) {
 									if (orgPathTrace.get(j).contains(orgPath)) {
 										icon.setHTML("<i class='glyphicons glyphicons-folder-new' style='color: #27B45F'><i/>");

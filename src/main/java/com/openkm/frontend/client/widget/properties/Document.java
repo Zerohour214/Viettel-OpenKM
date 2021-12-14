@@ -346,6 +346,8 @@ public class Document extends Composite {
 
 		getOrgsByDocId();
 
+		getUsrsByDocId();
+
 		// Sets wordWrap for al rows
 		for (int i = 0; i < 11; i++) {
 			setRowWordWarp(i, 1, true, tableProperties);
@@ -639,6 +641,32 @@ public class Document extends Composite {
 		}
 
 	}
+
+	public void getUsrsByDocId() {
+		RequestBuilder builder = new RequestBuilder(
+				RequestBuilder.GET, Main.CONTEXT + "/services/rest/document/getUsrsByDocId?docId=" + document.getUuid());
+		builder.setHeader("Accept", "application/json");
+
+		try {
+			builder.sendRequest(null, new RequestCallback() {
+						@Override
+						public void onResponseReceived(Request request,
+													   Response response) {
+							transmitUserManager.setUsers(response.getText());
+						}
+
+						@Override
+						public void onError(Request request, Throwable throwable) {
+
+						}
+					}
+			);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public void setReadDoc(){
 		try {
 			Main.get().mainPanel.dashboard.userDashboard.setUserReadDoc(Main.get().workspaceUserProperties.getUser().getId(), document.getUuid());
@@ -646,5 +674,9 @@ public class Document extends Composite {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void transmitToUser(String usrs) {
+		transmitUserManager.transmitToUser(usrs, document.getUuid());
 	}
 }

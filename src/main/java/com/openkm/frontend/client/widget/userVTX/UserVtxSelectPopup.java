@@ -45,20 +45,10 @@ import org.docx4j.wml.U;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserVtxSelectPopup extends DialogBox {
 
-	private static class User {
-		private final String id;
-		private final String fullName;
-		private final String email;
-
-		public User(String id, String fullName, String email) {
-			this.id = id;
-			this.fullName = fullName;
-			this.email = email;
-		}
-	}
 
 	private VerticalPanel vPanel;
 	private HorizontalPanel hPanel;
@@ -71,8 +61,7 @@ public class UserVtxSelectPopup extends DialogBox {
 	public FlexTable table;
 
 
-	JsArrayNumber orgCheckeds = (JsArrayNumber) JsArrayNumber.createArray();
-	JsArrayString orgPathTrace = (JsArrayString) JsArrayString.createArray();
+	JsArrayString usrCheckeds = (JsArrayString) JsArrayString.createArray();
 
 	public List<String> userChecked = new ArrayList<>();
 
@@ -95,8 +84,7 @@ public class UserVtxSelectPopup extends DialogBox {
 		verticalDirectoryPanel = new VerticalPanel();
 		verticalDirectoryPanel.setSize("100%", "100%");
 
-		folderSelectTree = new FolderSelectTree();
-		folderSelectTree.setSize("100%", "100%");
+
 
 		scrollDirectoryPanel.add(verticalDirectoryPanel);
 
@@ -136,46 +124,33 @@ public class UserVtxSelectPopup extends DialogBox {
 		actionButton.addStyleName("btn");
 		actionButton.addStyleName("btn-success");
 
-		drawUserTable();
+		FormPanel formSearch = new FormPanel();
+		TextBox tbSearch = new TextBox();
+		tbSearch.setWidth("220");
+		VerticalPanel panelSearch = new VerticalPanel();
+
+
+		formSearch.setWidget(panelSearch);
+		panelSearch.add(tbSearch);
+		panelSearch.add(new Button("Submit", new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				formSearch.submit();
+			}
+		}));
+
+
+		DecoratorPanel decoratorPanel = new DecoratorPanel();
+		decoratorPanel.add(formSearch);
+		verticalDirectoryPanel.add(decoratorPanel);
+
+
 		super.hide();
 		setWidget(vPanel);
 	}
 
 
 	public void drawUserTable() {
-		/*CellTable<User> table = new CellTable<User>();
-
-		// Add a text column to show the id.
-		TextColumn<User> idColumn =
-				new TextColumn<User>() {
-					@Override
-					public String getValue(User object) {
-						return object.id;
-					}
-				};
-		table.addColumn(idColumn, "Code");
-
-		// Add a text column to show the name.
-		TextColumn<User> nameColumn =
-				new TextColumn<User>() {
-					@Override
-					public String getValue(User object) {
-						return object.fullName;
-					}
-				};
-		table.addColumn(nameColumn, "Name");
-
-		// Add a text column to show the email.
-		TextColumn<User> emailColumn
-				= new TextColumn<User>() {
-			@Override
-			public String getValue(User object) {
-				return object.email;
-			}
-		};
-		table.addColumn(emailColumn, "Email");
-
-		List<User> userList = new ArrayList<>();*/
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, Main.CONTEXT + "/services/rest/user/getAllUser?userSearch=&notInOrg=0");
 		builder.setHeader("Accept", "application/json");
@@ -209,12 +184,20 @@ public class UserVtxSelectPopup extends DialogBox {
 
 								CheckBox userCheckbox = new CheckBox();
 
+								for (int j = 0; j < usrCheckeds.length(); ++j) {
+									if (usrCheckeds.get(j).equals(code)) {
+										userCheckbox.setChecked(true);
+										userChecked.add(code);
+										break;
+									}
+								}
+
 								userCheckbox.addClickHandler(
 										new ClickHandler() {
 											@Override
 											public void onClick(ClickEvent event) {
 												boolean checked = ((CheckBox) event.getSource()).getValue();
-												Window.alert("check:" + checked);
+
 												if(checked) {
 													userChecked.add(code);
 												} else {
@@ -225,6 +208,7 @@ public class UserVtxSelectPopup extends DialogBox {
 								table.setWidget(i+1, 3, userCheckbox);
 							}
 
+							verticalDirectoryPanel.clear();
 							verticalDirectoryPanel.add(table);
 
 
@@ -252,7 +236,7 @@ public class UserVtxSelectPopup extends DialogBox {
 			usrs.append(",").append(userChecked.get(i));
 		}
 		usrs.deleteCharAt(0);
-		Window.alert(usrs.toString());
+		Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.transmitToUser(usrs.toString());
 	}
 
 	/**
@@ -294,6 +278,12 @@ public class UserVtxSelectPopup extends DialogBox {
 	private void initButtons() {
 		cancelButton.setEnabled(true);
 		actionButton.setEnabled(true);
+	}
+
+	public void setUsrCheckeds(JsArrayString usrCheckeds) {
+		this.usrCheckeds = usrCheckeds;
+		drawUserTable();
+
 	}
 
 }

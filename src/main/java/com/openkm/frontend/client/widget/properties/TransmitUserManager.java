@@ -337,16 +337,16 @@ public class TransmitUserManager {
 		return found;
 	}
 
-	public void transmit(String orgs, String docId) {
+	public void transmitToUser(String usrs, String docId) {
 		RequestBuilder builder = new RequestBuilder(
-				RequestBuilder.POST, Main.CONTEXT + "/services/rest/document/transmit?orgs=" + orgs + "&docId=" + docId);
+				RequestBuilder.POST, Main.CONTEXT + "/services/rest/document/transmitToUser?usrs=" + usrs + "&docId=" + docId);
 		builder.setHeader("Accept", "application/json");
 		try {
 			builder.sendRequest(null, new RequestCallback() {
 						@Override
 						public void onResponseReceived(Request request,
 													   Response response) {
-							Window.alert("Đã chuyển văn bản đến các đơn vị!");
+							Window.alert("Đã chuyển văn bản đến người dùng!");
 							Main.get().mainPanel.dashboard.userDashboard.getMustReadDocuments();
 							Main.get().mainPanel.dashboard.userDashboard.isUserReadDoc(Main.get().workspaceUserProperties.getUser().getId(), docId);
 						}
@@ -432,17 +432,17 @@ public class TransmitUserManager {
 		}
 	}
 
-	public void setOrgs(String orgs) {
-		JsArrayNumber orgCheckeds = (JsArrayNumber) JsArrayNumber.createArray();
-		JsArrayString orgPathTrace = (JsArrayString) JsArrayString.createArray();
-		JSONValue jsonValue = JSONParser.parseStrict(orgs);
+	public void setUsers(String usrs) {
+		JsArrayString userCheckeds = (JsArrayString) JsArrayString.createArray();
+
+		JSONValue jsonValue = JSONParser.parseStrict(usrs);
 		JSONArray jsonArray = jsonValue.isArray();
 		for(int i=0; i<jsonArray.size(); ++i) {
 			JSONArray jsonArray_ = jsonArray.get(i).isArray();
-			orgCheckeds.push(jsonArray_.get(0).isNumber().doubleValue());
-			orgPathTrace.push(jsonArray_.get(4).isString().stringValue());
-		}
+			userCheckeds.push(jsonArray_.get(0).isString().stringValue());
 
+		}
+		userVtxSelectPopup.setUsrCheckeds(userCheckeds);
 		//organizationVtxSelectPopup.setOrgCheckeds(orgCheckeds, orgPathTrace);
 	}
 
