@@ -1423,7 +1423,8 @@ public class DbDashboardModule implements DashboardModule {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 
-			Query queryGr = session.createSQLQuery("SELECT od.DOC_ID FROM ORG_DOC od INNER JOIN USER_ORG_VTX uov WHERE od.ORG_ID = uov.ORG_ID AND uov.USER_ID = (:userId)");
+			Query queryGr = session.createSQLQuery("SELECT od.DOC_ID FROM ORG_DOC od INNER JOIN USER_ORG_VTX uov WHERE od.ORG_ID = uov.ORG_ID AND uov.USER_ID = (:userId) "+
+			"UNION SELECT udt.DOC_ID FROM USER_DOC_TRANSMIT udt WHERE udt.USER_ID = (:userId)");
 			queryGr.setParameter("userId",user);
 			List<String> arrDoc = queryGr.list();
 			String qs = "from NodeDocument nd where nd.uuid in (:ids)";

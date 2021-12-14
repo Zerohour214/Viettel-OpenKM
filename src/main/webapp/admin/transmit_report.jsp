@@ -131,6 +131,9 @@
 
 
             $("#filter-input-THDVB").click(() => {
+                if (!Date.parse($("#dbegin").value) || !Date.parse($("#dend").value)){
+                    alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                }
                 $("#action-input-THDVB").val("Filter-THDVB")
             })
 
