@@ -32,6 +32,7 @@ public class UIDockPanelConstants {
 	public static final int DESKTOP = 0;
 	public static final int SEARCH = 1;
 	public static final int DASHBOARD = 2;
-	public static final int ADMINISTRATION = 3;
-	public static final int EXTENSIONS = 4;
+	public static final int REPORT = 3;
+	public static final int ADMINISTRATION = 4;
+	public static final int EXTENSIONS = 5;
 }

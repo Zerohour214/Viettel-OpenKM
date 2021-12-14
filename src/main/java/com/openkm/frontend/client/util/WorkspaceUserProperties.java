@@ -219,6 +219,11 @@ public class WorkspaceUserProperties {
 				Main.get().mainPanel.topPanel.tabWorkspace.showAdministration();
 				refreshTab = true;
 			}
+			if (result.isTabReportVisible()) {
+				Main.get().mainPanel.topPanel.mainMenu.report.setVisible(true);
+				Main.get().mainPanel.topPanel.tabWorkspace.showReport();
+				refreshTab = true;
+			}
 			refreshTab = Main.get().mainPanel.topPanel.tabWorkspace.showExtensionTabs() || refreshTab;
 			if (refreshTab) {
 				Main.get().mainPanel.topPanel.tabWorkspace.init();

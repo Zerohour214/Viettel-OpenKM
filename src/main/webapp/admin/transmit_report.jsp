@@ -402,11 +402,13 @@
 <body>
 <c:set var="isAdmin"><%=BaseServlet.isAdmin(request)%>
 </c:set>
+<c:set var="isReport"><%=BaseServlet.isReport(request)%>
+</c:set>
 <c:choose>
-    <c:when test="${isAdmin}">
+    <c:when test="${isAdmin||isReport}">
         <ul id="breadcrumb">
             <li class="path">
-                <a href="ActivityLog">Báo cáo</a>
+                <a href="ReportExport">Báo cáo</a>
             </li>
         </ul>
         <br/>

@@ -137,6 +137,7 @@ public class MainMenu extends Composite {
 	private MenuItem skin;
 	private MenuItem debugConsole;
 	public MenuItem administration;
+	public MenuItem report;
 	private MenuItem preferences;
 	private MenuBar subMenuPreferences;
 	private MenuItem userPreferences;
@@ -420,6 +421,11 @@ public class MainMenu extends Composite {
 		administration.addStyleName("okm-MainMenuItem");
 		administration.setVisible(false);
 
+		report = new MenuItem(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-old-man", Main.i18n("general.menu.tools.report")),
+				true, showReport);
+		report.addStyleName("okm-MainMenuItem");
+		report.setVisible(false);
+
 		// Submenu preferences opions
 		subMenuPreferences = new MenuBar(true);
 		subMenuPreferences.setStyleName("okm-SubMenuBar");
@@ -451,6 +457,7 @@ public class MainMenu extends Composite {
 		subMenuTools.addItem(skin);
 		subMenuTools.addItem(debugConsole);
 		subMenuTools.addItem(administration);
+		subMenuTools.addItem(report);
 		subMenuTools.addItem(preferences);
 		subMenuTools.addItem(omr);
 		subMenuTools.addItem(convert);
@@ -656,6 +663,7 @@ public class MainMenu extends Composite {
 		skinBigFont.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-text-width", Main.i18n("general.menu.tools.skin.bigfont")));
 		debugConsole.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-embed-close", Main.i18n("general.menu.tools.debug.console")));
 		administration.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-old-man", Main.i18n("general.menu.tools.administration")));
+		report.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-old-man", Main.i18n("general.menu.tools.report")));
 		preferences.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-wrench", Main.i18n("general.menu.tools.preferences")));
 		userPreferences.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-user", Main.i18n("general.menu.tools.user.preferences")));
 		omr.setHTML(Util.menuHTMLWithGlyphicon("glyphicons glyphicons-list-alt", Main.i18n("general.menu.tools.omr")));
@@ -1496,6 +1504,13 @@ public class MainMenu extends Composite {
 		@Override
 		public void execute() {
 			Window.open(Main.CONTEXT + "/admin/index.jsp", "Administration", "");
+		}
+	};
+
+	Command showReport = new Command() {
+		@Override
+		public void execute() {
+			Window.open(Main.CONTEXT + "/report/index.jsp", "Report", "");
 		}
 	};
 

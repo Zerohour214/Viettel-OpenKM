@@ -114,6 +114,7 @@ public class GWTWorkspace implements IsSerializable {
 	private boolean tabSearchVisible;
 	private boolean tabDashboardVisible;
 	private boolean tabAdminVisible;
+	private boolean tabReportVisible;
 	private boolean dashboardUserVisible;
 	private boolean dashboardMailVisible;
 	private boolean dashboardNewsVisible;
@@ -605,6 +606,14 @@ public class GWTWorkspace implements IsSerializable {
 
 	public void setTabAdminVisible(boolean tabAdminVisible) {
 		this.tabAdminVisible = tabAdminVisible;
+	}
+
+	public boolean isTabReportVisible() {
+		return tabReportVisible;
+	}
+
+	public void setTabReportVisible(boolean tabReportVisible) {
+		this.tabReportVisible = tabReportVisible;
 	}
 
 	public boolean isDashboardUserVisible() {

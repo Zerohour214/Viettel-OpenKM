@@ -905,6 +905,10 @@
         <servlet-name>ReportExportServlet</servlet-name>
         <url-pattern>/admin/ReportExport</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReportExportServlet</servlet-name>
+        <url-pattern>/report/ReportExport</url-pattern>
+    </servlet-mapping>
   <servlet-mapping>
     <servlet-name>LoggedUsersServlet</servlet-name>
     <url-pattern>/admin/LoggedUsers</url-pattern>

@@ -214,6 +214,8 @@ public class WorkspaceServlet extends OKMRemoteServiceServlet implements OKMWork
 			workspace.setTabDashboardVisible(up.getPrfTab().isDashboardVisible());
 			workspace.setTabAdminVisible(getThreadLocalRequest().isUserInRole(Config.DEFAULT_ADMIN_ROLE)
 					&& up.getPrfTab().isAdministrationVisible());
+			workspace.setTabReportVisible(getThreadLocalRequest().isUserInRole(Config.DEFAULT_REPORT_ROLE)
+					&& !getThreadLocalRequest().isUserInRole(Config.DEFAULT_ADMIN_ROLE));
 
 			// If there's no stack visible force Desktop to do not be visible
 			if (!up.getPrfStack().isTaxonomyVisible() && !up.getPrfStack().isCategoriesVisible() && !up.getPrfStack().isMetadataVisible()

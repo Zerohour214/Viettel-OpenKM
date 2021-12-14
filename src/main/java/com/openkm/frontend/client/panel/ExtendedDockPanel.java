@@ -73,6 +73,7 @@ public class ExtendedDockPanel extends Composite {
 	public Search search;
 	public Dashboard dashboard;
 	public Administration administration;
+	public Administration report;
 
 	private int actualView = -1;
 
@@ -81,13 +82,13 @@ public class ExtendedDockPanel extends Composite {
 
 	int centerWidth = 0;
 	int centerHeight = 0;
-	int usableHeight = 0;		
+	int usableHeight = 0;
 
 	/**
 	 * Extended dock panel
 	 */
-	public ExtendedDockPanel() {	    
-	    
+	public ExtendedDockPanel() {
+
 		dockPanel = new DockLayoutPanel(Unit.PX);
 		folderSelectPopup = new FolderSelectPopup();
 		enableKeyShorcuts();
@@ -109,6 +110,7 @@ public class ExtendedDockPanel extends Composite {
 
 		// Administration panel initialization
 		administration = new Administration();
+		report = new Administration(true);
 
 		// set inner component's size
 		setWidgetsSize();
@@ -160,6 +162,10 @@ public class ExtendedDockPanel extends Composite {
 				Main.get().mainPanel.topPanel.toolBar.changeView(0, UIDockPanelConstants.ADMINISTRATION);
 				actualView = workspace;
 				break;
+			case UIDockPanelConstants.REPORT:
+				Main.get().mainPanel.topPanel.toolBar.changeView(0, UIDockPanelConstants.REPORT);
+				actualView = workspace;
+				break;
 
 			default:
 				Main.get().mainPanel.topPanel.toolBar.changeView(0, UIDockPanelConstants.EXTENSIONS);
@@ -187,6 +193,10 @@ public class ExtendedDockPanel extends Composite {
 				dockPanel.remove(administration);
 				break;
 
+			case UIDockPanelConstants.REPORT:
+				dockPanel.remove(report);
+				break;
+
 			default:
 				dockPanel.remove(topPanel.tabWorkspace.getWidgetExtensionByIndex(actualView));
 				break;
@@ -211,6 +221,10 @@ public class ExtendedDockPanel extends Composite {
 
 			case UIDockPanelConstants.ADMINISTRATION:
 				dockPanel.add(administration);
+				break;
+
+			case UIDockPanelConstants.REPORT:
+				dockPanel.add(report);
 				break;
 
 			default:
@@ -266,8 +280,8 @@ public class ExtendedDockPanel extends Composite {
 
 						// case Keyboard.KEY_SUPR:
 						// if (actualView == UIDockPanelConstants.DESKTOP &&
-						// Main.get().activeFolderTree.isPanelSelected() 
-						// && Main.get().mainPanel.topPanel.toolBar.getToolBarOption().deleteOption 
+						// Main.get().activeFolderTree.isPanelSelected()
+						// && Main.get().mainPanel.topPanel.toolBar.getToolBarOption().deleteOption
 						// && Main.get().workspaceUserProperties.getWorkspace().getAvailableOption().isDeleteOption() &&
 						// (Main.get().mainPanel.desktop.navigator.getStackIndex()==UIDesktopConstants.NAVIGATOR_TAXONOMY
 						// ||
@@ -414,7 +428,7 @@ public class ExtendedDockPanel extends Composite {
 							break;
 
 						case Keyboard.KEY_D:
-							// Case CTRL + D									    
+							// Case CTRL + D
 							if (event.getNativeEvent().getCtrlKey() && actualView == UIDockPanelConstants.DESKTOP
 							        && Main.get().mainPanel.topPanel.toolBar.getToolBarOption().downloadOption
 									&& Main.get().workspaceUserProperties.getWorkspace().getAvailableOption().isDownloadOption()) {
@@ -500,7 +514,7 @@ public class ExtendedDockPanel extends Composite {
 //								 Main.get().mainPanel.desktop.browser.fileBrowser.table.selectDown();
 //							}
 //							break;
-//						
+//
 //						case Keyboard.KEY_UP:
 //							if (isFilebrowserKeyEnabled()) {
 //								 Main.get().mainPanel.desktop.browser.fileBrowser.table.selectUp();
@@ -524,8 +538,8 @@ public class ExtendedDockPanel extends Composite {
 	 */
 //	private boolean isFilebrowserKeyEnabled() {
 //		return (Main.get().mainPanel.desktop.browser.fileBrowser.isPanelSelected() && !Main.get().notifyPopup.isShowing() &&
-//			    !Main.get().fileUpload.isShowing() && !Main.get().securityPopup.isShowing()); 
-//		
+//			    !Main.get().fileUpload.isShowing() && !Main.get().securityPopup.isShowing());
+//
 //	}
 
 	/**
@@ -584,6 +598,7 @@ public class ExtendedDockPanel extends Composite {
 		search.setSize(centerWidth, centerHeight);
 		dashboard.setSize(centerWidth, centerHeight);
 		administration.setSize(centerWidth, centerHeight);
+		report.setSize(centerWidth, centerHeight);
 	}
 
 	/**

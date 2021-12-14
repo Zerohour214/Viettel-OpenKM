@@ -3314,6 +3314,10 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 				viewValues.put("view_administration:option", toolBarOption);
 				break;
 
+			case UIDockPanelConstants.REPORT:
+				viewValues.put("view_administration:option", toolBarOption);
+				break;
+
 			case UIDockPanelConstants.EXTENSIONS:
 				viewValues.put("view_extension:option", toolBarOption);
 				break;
@@ -3414,6 +3418,15 @@ public class ToolBar extends Composite implements OriginPanel, HasToolBarEvent, 
 				break;
 
 			case UIDockPanelConstants.ADMINISTRATION:
+				if (viewValues.containsKey("view_administration:option")) {
+					toolBarOption = viewValues.get("view_administration:option");
+				} else {
+					toolBarOption = getDefaultAdministrationToolBar();
+				}
+				toolBarEnabled = false;
+				break;
+
+			case UIDockPanelConstants.REPORT:
 				if (viewValues.containsKey("view_administration:option")) {
 					toolBarOption = viewValues.get("view_administration:option");
 				} else {

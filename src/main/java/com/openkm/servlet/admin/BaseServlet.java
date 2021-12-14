@@ -51,12 +51,16 @@ public class BaseServlet extends HttpServlet {
 	public boolean isPost(HttpServletRequest request) {
 		return WebUtils.METHOD_POST.equals(request.getMethod());
 	}
-	
+
 	/**
 	 * Test if an user can access to administration
 	 */
 	public static boolean isAdmin(HttpServletRequest request) {
 		return request.isUserInRole(Config.DEFAULT_ADMIN_ROLE);
+	}
+
+	public static boolean isReport(HttpServletRequest request) {
+		return request.isUserInRole(Config.DEFAULT_REPORT_ROLE);
 	}
 
 	/**

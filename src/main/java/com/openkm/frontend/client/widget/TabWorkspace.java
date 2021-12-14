@@ -49,6 +49,7 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 	private boolean searchVisible = false;
 	private boolean dashboardVisible = false;
 	private boolean adminitrationVisible = false;
+	private boolean reportVisible = false;
 	private List<TabWorkspaceExtension> widgetExtensionList;
 	private List<WorkspaceHandlerExtension> workHandlerExtensionList;
 	public boolean[] tabVisited = new boolean[NUMBER_OF_TABS];
@@ -57,6 +58,7 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 	private int tabSearchPos = 0;
 	private int tabDashboardPos = 0;
 	private int tabAdministrationPos = 0;
+	private int tabReportPos = 0;
 
 	/**
 	 * Tab Workspace
@@ -130,6 +132,10 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 			tabBar.addTab(Main.i18n("tab.workspace.administration"));
 		}
 
+		if (reportVisible) {
+			tabBar.addTab(Main.i18n("tab.workspace.administration"));
+		}
+
 		for (Iterator<TabWorkspaceExtension> it = widgetExtensionList.iterator(); it.hasNext(); ) {
 			tabBar.addTab(it.next().getTabText());
 		}
@@ -138,7 +144,7 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 	}
 
 	/**
-	 * Gets the selected workspace 
+	 * Gets the selected workspace
 	 *
 	 * @return The selected workspace
 	 */
@@ -172,6 +178,10 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 				tabBar.selectTab(tabAdministrationPos);
 				Main.get().mainPanel.setView(UIDockPanelConstants.ADMINISTRATION);
 				break;
+			case UIDockPanelConstants.REPORT:
+				tabBar.selectTab(tabReportPos);
+				Main.get().mainPanel.setView(UIDockPanelConstants.REPORT);
+				break;
 		}
 
 		tabVisited[tabIndex] = true;
@@ -198,6 +208,10 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 		}
 
 		if (!adminitrationVisible && corrected >= UIDockPanelConstants.ADMINISTRATION) {
+			corrected++;
+		}
+
+		if (!reportVisible && corrected >= UIDockPanelConstants.REPORT) {
 			corrected++;
 		}
 
@@ -241,6 +255,11 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 		adminitrationVisible = true;
 	}
 
+	public void showReport() {
+		tabBar.addTab(Main.i18n("tab.workspace.report"));
+		tabReportPos = tabBar.getTabCount() - 1;
+		reportVisible = true;
+	}
 	/**
 	 * showExtensionTabs
 	 */

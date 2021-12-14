@@ -56,6 +56,27 @@ public class Administration extends Composite {
 		initWidget(iframe);
 	}
 
+	public Administration(boolean report) {
+		iframe = new Frame("about:blank");
+
+		DOM.setElementProperty(iframe.getElement(), "frameborder", "0");
+		DOM.setElementProperty(iframe.getElement(), "marginwidth", "0");
+		DOM.setElementProperty(iframe.getElement(), "marginheight", "0");
+		DOM.setElementProperty(iframe.getElement(), "scrolling", "no");
+
+		// Commented because on IE show clear if allowtransparency=true
+		DOM.setElementProperty(iframe.getElement(), "allowtransparency", "false");
+
+		if (report)
+			iframe.setUrl(Main.CONTEXT + "/report/index.jsp");
+		else
+			iframe.setUrl(Main.CONTEXT + "/admin/index.jsp");
+		iframe.setStyleName("okm-Iframe");
+		iframe.addStyleName("okm-Iframe-admin-renew");
+
+		initWidget(iframe);
+	}
+
 	/**
 	 * Sets the size on initialization
 	 *

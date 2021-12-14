@@ -423,6 +423,7 @@ public class Config {
 
 	public static String DEFAULT_USER_ROLE = "ROLE_USER";
 	public static String DEFAULT_ADMIN_ROLE = "ROLE_ADMIN";
+	public static String DEFAULT_REPORT_ROLE = "ROLE_REPORT";
 
 	public static List<String> WEBSERVICES_VISIBLE_PROPERTIES = new ArrayList<>();
 
