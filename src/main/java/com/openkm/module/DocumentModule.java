@@ -24,6 +24,8 @@ package com.openkm.module;
 import com.openkm.automation.AutomationException;
 import com.openkm.bean.*;
 import com.openkm.core.*;
+import com.openkm.dao.bean.User;
+import com.openkm.dao.bean.UserDocumentTransmitVTX;
 import com.openkm.extension.core.ExtensionException;
 import com.openkm.principal.PrincipalAdapterException;
 
@@ -451,4 +453,8 @@ public interface DocumentModule {
 	public List<OrganizationVTXBean> getOrgsByDocId(String docId) throws DatabaseException;
 
     public List<Document> search(String docCode, String docName) throws DatabaseException;
+
+    public void transmitToUser(String docId, String usrs) throws DatabaseException;
+
+	public List<User> getUsrsByDocId(String docId) throws DatabaseException;
 }

@@ -24,6 +24,8 @@ package com.openkm.api;
 import com.openkm.automation.AutomationException;
 import com.openkm.bean.*;
 import com.openkm.core.*;
+import com.openkm.dao.bean.User;
+import com.openkm.dao.bean.UserDocumentTransmitVTX;
 import com.openkm.extension.core.ExtensionException;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
@@ -376,5 +378,17 @@ public class OKMDocument implements DocumentModule {
 	public List<Document> search(String docCode, String docName) throws DatabaseException {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.search(docCode, docName);
+	}
+
+	@Override
+	public void transmitToUser(String docId, String usrs) throws DatabaseException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		dm.transmitToUser(docId, usrs);
+	}
+
+	@Override
+	public List<User> getUsrsByDocId(String docId) throws DatabaseException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.getUsrsByDocId(docId);
 	}
 }

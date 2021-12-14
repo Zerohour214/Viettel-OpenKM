@@ -396,6 +396,8 @@ public class TransmitOrganizationManager {
 		removeCategoryEnabled = true;
 	}
 
+
+
 	/**
 	 * CategoryToRemove
 	 *
