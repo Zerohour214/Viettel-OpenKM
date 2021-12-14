@@ -64,7 +64,7 @@ public class UserVtxSelectPopup extends DialogBox {
 	JsArrayString usrCheckeds = (JsArrayString) JsArrayString.createArray();
 
 	public List<String> userChecked = new ArrayList<>();
-	private String textSearch = "";
+	private String textSearch;
 
 
 	public UserVtxSelectPopup() {
@@ -126,7 +126,7 @@ public class UserVtxSelectPopup extends DialogBox {
 		actionButton.addStyleName("btn");
 		actionButton.addStyleName("btn-success");
 
-
+		textSearch = "";
 
 		super.hide();
 		setWidget(vPanel);
@@ -169,7 +169,10 @@ public class UserVtxSelectPopup extends DialogBox {
 								for (int j = 0; j < usrCheckeds.length(); ++j) {
 									if (usrCheckeds.get(j).equals(code)) {
 										userCheckbox.setChecked(true);
-										userChecked.add(code);
+
+										if(!userChecked.contains(code))
+											userChecked.add(code);
+
 										break;
 									}
 								}
@@ -179,7 +182,6 @@ public class UserVtxSelectPopup extends DialogBox {
 											@Override
 											public void onClick(ClickEvent event) {
 												boolean checked = ((CheckBox) event.getSource()).getValue();
-
 												if(checked) {
 													userChecked.add(code);
 												} else {
@@ -192,7 +194,7 @@ public class UserVtxSelectPopup extends DialogBox {
 
 							verticalDirectoryPanel.clear();
 							HorizontalPanel horizontalPanel = new HorizontalPanel();
-							horizontalPanel.setWidth("60%");
+							horizontalPanel.setWidth("50%");
 							horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
 							TextBox nameBox = new TextBox();
@@ -202,7 +204,6 @@ public class UserVtxSelectPopup extends DialogBox {
 							buttonSearch.addClickHandler(new ClickHandler() {
 								@Override
 								public void onClick(ClickEvent event) {
-									Window.alert(nameBox.getText());
 									textSearch = nameBox.getText();
 									drawUserTable(textSearch);
 								}
@@ -286,6 +287,7 @@ public class UserVtxSelectPopup extends DialogBox {
 
 	public void setUsrCheckeds(JsArrayString usrCheckeds) {
 		this.usrCheckeds = usrCheckeds;
+		this.textSearch = "";
 		drawUserTable("");
 
 	}

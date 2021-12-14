@@ -634,7 +634,7 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		vtTable.setWidget(1, 3, docExpiredDateLabel);
 		vtTable.setWidget(1, 4, docExpiredDate);
 
-		orgListBox = new ListBox();
+		/*orgListBox = new ListBox();
 		orgListBox.setName("docOrgId");
 		orgListBox.setStyleName("okm-Input");
 		orgListBox.setVisible(true);
@@ -642,7 +642,7 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		docOrgLabel.setText("Đơn vị: ");
 		docOrgLabel.setWidth("150px");
 		vtTable.setWidget(2, 0, docOrgLabel);
-		vtTable.setWidget(2, 1, orgListBox);
+		vtTable.setWidget(2, 1, orgListBox);*/
 
 		docConfidentialityListBox = new ListBox();
 		docConfidentialityListBox.setName("docConfidentiality");
