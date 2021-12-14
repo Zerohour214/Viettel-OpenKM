@@ -64,6 +64,7 @@ public class UserVtxSelectPopup extends DialogBox {
 	JsArrayString usrCheckeds = (JsArrayString) JsArrayString.createArray();
 
 	public List<String> userChecked = new ArrayList<>();
+	private String textSearch = "";
 
 
 	public UserVtxSelectPopup() {
@@ -84,7 +85,8 @@ public class UserVtxSelectPopup extends DialogBox {
 		verticalDirectoryPanel = new VerticalPanel();
 		verticalDirectoryPanel.setSize("100%", "100%");
 
-
+		folderSelectTree = new FolderSelectTree();
+		folderSelectTree.setSize("100%", "100%");
 
 		scrollDirectoryPanel.add(verticalDirectoryPanel);
 
@@ -124,25 +126,6 @@ public class UserVtxSelectPopup extends DialogBox {
 		actionButton.addStyleName("btn");
 		actionButton.addStyleName("btn-success");
 
-		FormPanel formSearch = new FormPanel();
-		TextBox tbSearch = new TextBox();
-		tbSearch.setWidth("220");
-		VerticalPanel panelSearch = new VerticalPanel();
-
-
-		formSearch.setWidget(panelSearch);
-		panelSearch.add(tbSearch);
-		panelSearch.add(new Button("Submit", new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				formSearch.submit();
-			}
-		}));
-
-
-		DecoratorPanel decoratorPanel = new DecoratorPanel();
-		decoratorPanel.add(formSearch);
-		verticalDirectoryPanel.add(decoratorPanel);
 
 
 		super.hide();
@@ -150,9 +133,9 @@ public class UserVtxSelectPopup extends DialogBox {
 	}
 
 
-	public void drawUserTable() {
+	public void drawUserTable(String search) {
 
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, Main.CONTEXT + "/services/rest/user/getAllUser?userSearch=&notInOrg=0");
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, Main.CONTEXT + "/services/rest/user/getAllUser?userSearch=" + search + "&notInOrg=0");
 		builder.setHeader("Accept", "application/json");
 
 		try {
@@ -168,7 +151,6 @@ public class UserVtxSelectPopup extends DialogBox {
 							table.setCellPadding(3);
 							table.setWidth("100%");
 							table.addStyleName("flex-table-user-transmit");
-
 
 							table.setWidget(0, 0, new HTML("<b>Code</b>"));
 							table.setWidget(0, 1, new HTML("<b>Full name</b>"));
@@ -209,8 +191,30 @@ public class UserVtxSelectPopup extends DialogBox {
 							}
 
 							verticalDirectoryPanel.clear();
-							verticalDirectoryPanel.add(table);
+							HorizontalPanel horizontalPanel = new HorizontalPanel();
+							horizontalPanel.setWidth("60%");
+							horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
+							TextBox nameBox = new TextBox();
+							nameBox.setValue(textSearch);
+							Button buttonSearch = new Button("Search");
+
+							buttonSearch.addClickHandler(new ClickHandler() {
+								@Override
+								public void onClick(ClickEvent event) {
+									Window.alert(nameBox.getText());
+									textSearch = nameBox.getText();
+									drawUserTable(textSearch);
+								}
+							});
+
+							horizontalPanel.add(nameBox);
+							horizontalPanel.add(buttonSearch);
+
+							verticalDirectoryPanel.add(horizontalPanel);
+
+							verticalDirectoryPanel.add(new HTML("<br />"));
+							verticalDirectoryPanel.add(table);
 
 						}
 
@@ -282,7 +286,7 @@ public class UserVtxSelectPopup extends DialogBox {
 
 	public void setUsrCheckeds(JsArrayString usrCheckeds) {
 		this.usrCheckeds = usrCheckeds;
-		drawUserTable();
+		drawUserTable("");
 
 	}
 
