@@ -292,7 +292,9 @@ public class ActivityLogServlet extends BaseServlet {
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
 		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
 
-		new DownloadReportUtils().downloadReportDOC(docSpire, response, getServletContext(), "download/BC_ACTIVITY_DOCUMENT.doc");
+		OutputStream outputStream = response.getOutputStream();
+		docSpire.saveToStream(outputStream, FileFormat.Doc);
+		new DownloadReportUtils().downloadReport("BC_ACTIVITY_DOCUMENT.doc", response, (ByteArrayOutputStream) outputStream);
 
 		/*InputStream is = null;
 		OutputStream os = null;
@@ -373,7 +375,7 @@ public class ActivityLogServlet extends BaseServlet {
 		resultWorkbook.write(byteArrayOutputStream);
 
 
-		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
+		new DownloadReportUtils().downloadReport("/BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 		/*InputStream is = null;
 		OutputStream os = null;
 		try {

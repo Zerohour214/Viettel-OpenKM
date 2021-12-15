@@ -44,7 +44,6 @@ public class UserDAO {
 			q = session.createSQLQuery(nativeQuery);
 			q.setString("search", search);
 
-
 			if(isNotInOrg == 1 && userInOrgList.size() != 0)
 				q.setParameterList("userInOrgList", userInOrgList);
 			List<User> ret = q.list();

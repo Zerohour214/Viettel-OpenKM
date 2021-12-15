@@ -249,9 +249,7 @@ public class ReportExportServlet extends BaseServlet {
 
 	public void doExportTHDVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,
 								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<THDVBReportBeanDetail> exportBeanList)
-			throws IOException, URISyntaxException, DatabaseException, ServletException {
-
-
+			throws IOException, URISyntaxException, DatabaseException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -343,15 +341,18 @@ public class ReportExportServlet extends BaseServlet {
 		}
 
 
-		ServletContext context = getServletContext();
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
-		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		docSpire.saveToStream(byteArrayOutputStream, FileFormat.Doc);
+
+		downloadReportUtils.downloadReport("BC_SITUATION_DOCUMENT.doc", response, byteArrayOutputStream);
 
 	}
 
 	public void doExportTHDVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
 								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<THDVBReportBeanDetail> exportBeanList)
-			throws IOException, URISyntaxException, DatabaseException, ServletException {
+			throws IOException, URISyntaxException, DatabaseException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_SITUATION_DOCUMENT.xlsx");
 		File file = Paths.get(res.toURI()).toFile();
@@ -405,12 +406,12 @@ public class ReportExportServlet extends BaseServlet {
 		resultWorkbook.write(byteArrayOutputStream);
 
 
-		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
+		new DownloadReportUtils().downloadReport("BC_SITUATION_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
 	public void doExportKQTTXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
 								 List<THDVBReportBeanGeneral> exportGeneralBeanList, List<KQTTReportBean> exportBeanList)
-			throws IOException, URISyntaxException, DatabaseException, ServletException {
+			throws IOException, URISyntaxException, DatabaseException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.xlsx");
 		File file = Paths.get(res.toURI()).toFile();
@@ -464,9 +465,9 @@ public class ReportExportServlet extends BaseServlet {
 		resultWorkbook.write(byteArrayOutputStream);
 
 
-		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_RESULT_TRANSMIT.xlsx", response, byteArrayOutputStream);
+		new DownloadReportUtils().downloadReport("BC_RESULT_TRANSMIT.xlsx", response, byteArrayOutputStream);
 	}
-	public void doExportCLVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, ServletException, IOException {
+	public void doExportCLVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, IOException {
 		URL res = getClass().getClassLoader().getResource("template/BC_QUALITY_DOCUMENT.doc");
 		File file = Paths.get(res.toURI()).toFile();
 		String absolutePath = file.getAbsolutePath();
@@ -523,7 +524,11 @@ public class ReportExportServlet extends BaseServlet {
 
 		ServletContext context = getServletContext();
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
-		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_SITUATION_DOCUMENT.doc");
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		docSpire.saveToStream(byteArrayOutputStream, FileFormat.Doc);
+
+		downloadReportUtils.downloadReport("BC_QUALITY_DOCUMENT.doc", response, byteArrayOutputStream);
 	}
 
 	public void doExportCLVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser, List<CLVBReportBean> exportBeanList) throws URISyntaxException, IOException {
@@ -566,10 +571,11 @@ public class ReportExportServlet extends BaseServlet {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		resultWorkbook.write(byteArrayOutputStream);
 
-		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_QUALITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
+		new DownloadReportUtils().downloadReport("BC_QUALITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 
-	public void doExportKQTTDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,List<THDVBReportBeanGeneral> exportGeneralBeanList,List<KQTTReportBean> exportBeanList) throws IOException, URISyntaxException, DatabaseException, ServletException {
+	public void doExportKQTTDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,List<THDVBReportBeanGeneral> exportGeneralBeanList,List<KQTTReportBean> exportBeanList)
+			throws IOException, URISyntaxException, DatabaseException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_RESULT_TRANSMIT.doc");
 		File file = Paths.get(res.toURI()).toFile();
@@ -641,7 +647,12 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getStartConfirm());
 			arrList.add(elb.getEndConfirm());
 
-			Double totalTimeView = elb.getTimeRead()/60000.0;
+			Double totalTimeView;
+
+			if(elb.getTimeRead() == null)
+				totalTimeView = 0/60000.0;
+			else
+				totalTimeView = elb.getTimeRead()/60000.0;
 			DecimalFormat df = new DecimalFormat("#.#");;
 			arrList.add(df.format(totalTimeView));
 
@@ -660,15 +671,18 @@ public class ReportExportServlet extends BaseServlet {
 		}
 
 
-		ServletContext context = getServletContext();
+
 		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
-		downloadReportUtils.downloadReportDOC(docSpire, response, context, "download/BC_RESULT_TRANSMIT.doc");
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		docSpire.saveToStream(byteArrayOutputStream, FileFormat.Doc);
+
+		downloadReportUtils.downloadReport("BC_RESULT_TRANSMIT.doc", response, byteArrayOutputStream);
 
 	}
 
 	public void doExportTHCNVBDOC(ActivityFilter filter, HttpServletResponse response, OrganizationVTX org,
 								 List<ActivityLogExportBean> exportGeneralBeanList, List<ActivityLogExportBean> exportBeanList)
-			throws IOException, URISyntaxException, DatabaseException, ServletException {
+			throws IOException, URISyntaxException, DatabaseException {
 
 
 		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.doc");
@@ -739,18 +753,18 @@ public class ReportExportServlet extends BaseServlet {
 		}
 
 
-		URL res_ = getClass().getClassLoader().getResource("download/BC_ACTIVITY_DOCUMENT.doc");
-		File tmpFile = Paths.get(res_.toURI()).toFile();
-		String absoluteTmpPath = tmpFile.getAbsolutePath();
-		docSpire.saveToFile(absoluteTmpPath, FileFormat.Doc);
+		DownloadReportUtils downloadReportUtils = new DownloadReportUtils();
 
-		new DownloadReportUtils().downloadReportDOC(docSpire, response, getServletContext(), "download/BC_ACTIVITY_DOCUMENT.doc");
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		docSpire.saveToStream(byteArrayOutputStream, FileFormat.Doc);
+
+		downloadReportUtils.downloadReport("BC_ACTIVITY_DOCUMENT.doc", response, byteArrayOutputStream);
 
 	}
 
 	public void doExportTHCNVBXLS(ActivityFilter filter, HttpServletResponse response, OrganizationVTX orgUser,
 								 List<ActivityLogExportBean> exportGeneralBeanList, List<ActivityLogExportBean> exportBeanList)
-			throws IOException, URISyntaxException, DatabaseException, ServletException {
+			throws IOException, URISyntaxException, DatabaseException {
 
 		URL res = getClass().getClassLoader().getResource("template/BC_ACTIVITY_DOCUMENT.xlsx");
 		File file = Paths.get(res.toURI()).toFile();
@@ -788,6 +802,6 @@ public class ReportExportServlet extends BaseServlet {
 		resultWorkbook.write(byteArrayOutputStream);
 
 
-		new DownloadReportUtils().downloadReportXLS(getServletContext(), "download/BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
+		new DownloadReportUtils().downloadReport("BC_ACTIVITY_DOCUMENT.xlsx", response, byteArrayOutputStream);
 	}
 }
