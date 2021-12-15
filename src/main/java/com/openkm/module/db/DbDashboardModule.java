@@ -1437,9 +1437,9 @@ public class DbDashboardModule implements DashboardModule {
 				return new ArrayList<DashboardDocumentResult>();
 			else
 				results = q.list();
-			String query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) GROUP BY urdt.DOC_ID";
-			if (confirm)
-				query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
+			String query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
+//			if (confirm)
+//				query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
 			Query q_checkRead = session.createSQLQuery(query);
 			q_checkRead.setParameter("userId", user);
 			List<String> ret = q_checkRead.list();

@@ -130,86 +130,134 @@
             $('select#user-THCNVB').chosen({disable_search_threshold: 10});
 
 
-            $("#filter-input-THDVB").click(() => {
+            $("#filter-input-THDVB").click((e) => {
                 if (!Date.parse($("#dbegin").val()) || !Date.parse($("#dend").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin").val()) > Date.parse($("#dend").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THDVB").val("Filter-THDVB")
             })
 
-            $("#filter-input-KQTT").click(() => {
-                if (!Date.parse($("#dbegin-KQTT").val() || !Date.parse($("#dend-KQTT").val()))){
+            $("#filter-input-KQTT").click((e) => {
+                if (!Date.parse($("#dbegin-KQTT").val()) || !Date.parse($("#dend-KQTT").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-KQTT").val()) > Date.parse($("#dend-KQTT").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-KQTT").val("Filter-KQTT")
             })
 
-            $("#filter-input-CLVB").click(() => {
+            $("#filter-input-CLVB").click((e) => {
                 if (!Date.parse($("#dbegin-CLVB").val()) || !Date.parse($("#dend-CLVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-CLVB").val()) > Date.parse($("#dend-CLVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-CLVB").val("Filter-CLVB")
             })
-            $("#filter-input-THCNVB").click(() => {
+            $("#filter-input-THCNVB").click((e) => {
                 if (!Date.parse($("#dbegin-THCNVB").val()) || !Date.parse($("#dend-THCNVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-THCNVB").val()) > Date.parse($("#dend-THCNVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THCNVB").val("Filter-THCNVB")
             })
 
 
-            $("#export-btn-KQTT-DOC").click(() => {
-                if (!Date.parse($("#dbegin-KQTT").val() || !Date.parse($("#dend-KQTT").val()))){
+            $("#export-btn-KQTT-DOC").click((e) => {
+                if (!Date.parse($("#dbegin-KQTT").val()) || !Date.parse($("#dend-KQTT").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-KQTT").val()) > Date.parse($("#dend-KQTT").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-KQTT").val("KQTT")
                 $("#type-report-KQTT").val("DOC")
             })
-            $("#export-btn-KQTT-XLS").click(() => {
-                if (!Date.parse($("#dbegin-KQTT").val() || !Date.parse($("#dend-KQTT").val()))){
+            $("#export-btn-KQTT-XLS").click((e) => {
+                if (!Date.parse($("#dbegin-KQTT").val()) || !Date.parse($("#dend-KQTT").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-KQTT").val()) > Date.parse($("#dend-KQTT").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-KQTT").val("KQTT")
                 $("#type-report-KQTT").val("XLS")
             })
-            $("#export-btn-THDVB-DOC").click(() => {
+            $("#export-btn-THDVB-DOC").click((e) => {
                 if (!Date.parse($("#dbegin").val()) || !Date.parse($("#dend").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin").val()) > Date.parse($("#dend").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THDVB").val("THDVB")
                 $("#type-report-THDVB").val("DOC")
             })
-            $("#export-btn-THDVB-XLS").click(() => {
+            $("#export-btn-THDVB-XLS").click((e) => {
                 if (!Date.parse($("#dbegin").val()) || !Date.parse($("#dend").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin").val()) > Date.parse($("#dend").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THDVB").val("THDVB")
                 $("#type-report-THDVB").val("XLS")
             })
-            $("#export-btn-CLVB-DOC").click(() => {
+            $("#export-btn-CLVB-DOC").click((e) => {
                 if (!Date.parse($("#dbegin-CLVB").val()) || !Date.parse($("#dend-CLVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-CLVB").val()) > Date.parse($("#dend-CLVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-CLVB").val("CLVB")
                 $("#type-report-CLVB").val("DOC")
             })
-            $("#export-btn-CLVB-XLS").click(() => {
+            $("#export-btn-CLVB-XLS").click((e) => {
                 if (!Date.parse($("#dbegin-CLVB").val()) || !Date.parse($("#dend-CLVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-CLVB").val()) > Date.parse($("#dend-CLVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-CLVB").val("CLVB")
                 $("#type-report-CLVB").val("XLS")
             })
-            $("#export-btn-THCNVB-DOC").click(() => {
+            $("#export-btn-THCNVB-DOC").click((e) => {
                 if (!Date.parse($("#dbegin-THCNVB").val()) || !Date.parse($("#dend-THCNVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-THCNVB").val()) > Date.parse($("#dend-THCNVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THCNVB").val("THCNVB")
                 $("#type-report-THCNVB").val("DOC")
             })
-            $("#export-btn-THCNVB-XLS").click(() => {
+            $("#export-btn-THCNVB-XLS").click((e) => {
                 if (!Date.parse($("#dbegin-THCNVB").val()) || !Date.parse($("#dend-THCNVB").val())){
                     alert('Ngày bắt đầu và ngày kết thúc không được để trống !');
+                    e.preventDefault();
+                }else if (Date.parse($("#dbegin-THCNVB").val()) > Date.parse($("#dend-THCNVB").val())){
+                    alert('Ngày bắt đầu phải trước ngày kết thúc !');
+                    e.preventDefault();
                 }
                 $("#action-input-THCNVB").val("THCNVB")
                 $("#type-report-THCNVB").val("XLS")

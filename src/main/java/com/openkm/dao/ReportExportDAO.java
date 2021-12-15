@@ -152,19 +152,26 @@ public class ReportExportDAO {
 	public static List<KQTTReportBean> exportKQTTByFilter(ActivityFilter filter) throws DatabaseException {
 		String qs = "SELECT a.orgName, a.fullname, a.employeeCode, a.docName, a.assignDoc,\n" +
 				"ud.CONFIRM_DATE confirmDate, ud.START_CONFIRM startConfirm, ud.END_CONFIRM endConfirm, ud.TIME_LAST_PREVIEW timeRead\n" +
-				" FROM (SELECT ov.NAME orgName, ou.USR_NAME fullname, ou.USR_ID employeeCode, onb.NBS_NAME docName,\n" +
+				" FROM (SELECT * FROM (SELECT ou.USR_ID,ov.NAME orgName, ou.USR_NAME fullname, ou.USR_ID employeeCode, onb.NBS_NAME docName,\n" +
 				"od.CREATED_AT assignDoc, onb.NBS_UUID docId\n" +
 				"FROM ORG_DOC od JOIN USER_ORG_VTX uov ON od.ORG_ID = uov.ORG_ID\n" +
 				"JOIN OKM_USER ou ON ou.USR_ID = uov.USER_ID\n" +
 				"JOIN ORGANIZATION_VTX ov ON ov.ID = od.ORG_ID\n" +
-				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = od.DOC_ID ";
+				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = od.DOC_ID\n" +
+				"UNION\n" +
+				"SELECT ou.USR_ID,ov.NAME orgName, ou.USR_NAME fullname, ou.USR_ID employeeCode, onb.NBS_NAME docName,\n" +
+				"udt.CREATED_AT assignDoc, onb.NBS_UUID docId\n" +
+				"FROM USER_DOC_TRANSMIT udt JOIN USER_ORG_VTX uov ON udt.USER_ID = uov.USER_ID\n" +
+				"JOIN OKM_USER ou ON ou.USR_ID = udt.USER_ID\n" +
+				"JOIN ORGANIZATION_VTX ov ON ov.ID = uov.ORG_ID\n" +
+				"JOIN OKM_NODE_BASE onb ON onb.NBS_UUID = udt.DOC_ID) mr ";
 		if (filter.getDocIdKQTT() != null && !filter.getDocIdKQTT().equals("") && (filter.getUser() == null || filter.getUser().equals("")))
-			qs += "WHERE od.DOC_ID=:doc\n ";
+			qs += "WHERE mr.docId=:doc\n ";
 		if (filter.getUser() != null && !filter.getUser().equals("") && (filter.getDocIdKQTT() == null || filter.getDocIdKQTT().equals("")))
-			qs += "WHERE ou.USR_ID=:user\n ";
+			qs += "WHERE mr.USR_ID=:user\n ";
 		if (filter.getUser() != null && !filter.getUser().equals("") && filter.getDocIdKQTT() != null && !filter.getDocIdKQTT().equals(""))
-			qs += "WHERE ou.USR_ID=:user AND od.DOC_ID=:doc\n ";
-		qs +=   ") a LEFT JOIN (\n" +
+			qs += "WHERE mr.USR_ID=:user AND mr.docId=:doc\n ";
+		qs +=   " GROUP BY mr.employeeCode, mr.docId ) a LEFT JOIN (\n" +
 				"SELECT x.LAST_PREVIEW,x.CONFIRM_DATE,x.START_CONFIRM, x.END_CONFIRM ,x.TIME_LAST_PREVIEW, x.USER_ID,x.DOC_ID FROM (\n" +
 				"SELECT * FROM USER_READ_DOC_TIMER urdt WHERE urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID,urdt.USER_ID\n" +
 				"UNION\n" +
@@ -196,6 +203,10 @@ public class ReportExportDAO {
 			q.addScalar("timeRead", Hibernate.LONG);
 
 			List<KQTTReportBean> ret = q.list();
+			for(int i=1; i <= ret.size(); ++i) {
+				ret.get(i-1).setIndex((long) i);
+
+			}
 			return ret;
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);

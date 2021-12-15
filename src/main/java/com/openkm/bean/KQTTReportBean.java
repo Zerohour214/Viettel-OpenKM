@@ -13,6 +13,15 @@ public class KQTTReportBean {
 	Timestamp startConfirm;
 	Timestamp endConfirm;
 	Long timeRead;
+	Long index;
+
+	public Long getIndex() {
+		return index;
+	}
+
+	public void setIndex(Long index) {
+		this.index = index;
+	}
 
 	public String getOrgName() {
 		return orgName;
