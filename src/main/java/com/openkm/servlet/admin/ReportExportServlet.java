@@ -127,6 +127,7 @@ public class ReportExportServlet extends BaseServlet {
 				filter.setEnd(end);
 				filter.setUser(user);
 
+				filter.setDocIdKQTT(docIdKQTT);
 				filter.setDocIdTHDVB(docIdTHDVB);
 				filter.setOrgIdTHDVB(orgIdTHDVB);
 				filter.setDocIdCLVB(docIdCLVB);
@@ -640,11 +641,12 @@ public class ReportExportServlet extends BaseServlet {
 			arrList.add(elb.getConfirmDate());
 			arrList.add(elb.getStartConfirm());
 			arrList.add(elb.getEndConfirm());
-
-			Double totalTimeView = elb.getTimeRead()/60000.0;
-			DecimalFormat df = new DecimalFormat("#.#");;
-			arrList.add(df.format(totalTimeView));
-
+			if (elb.getTimeRead() == null) {
+				arrList.add(null);
+			}else {
+				Double totalTimeView= elb.getTimeRead()/60000.0;
+				DecimalFormat df = new DecimalFormat("#.#");
+				arrList.add(df.format(totalTimeView));}
 
 			TableRow dataRow2 = table2.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
