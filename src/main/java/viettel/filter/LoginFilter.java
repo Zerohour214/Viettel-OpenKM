@@ -125,7 +125,7 @@ public class LoginFilter implements Filter {
 
 		AuthTicket authTicket = new AuthTicket();
 		authTicket.setTicket(tmpTicket);
-		authTicket.setEmpCode(userInfo.getStaffCode());
+		authTicket.setEmpCode(userInfo.getUserName());
 		try {
 			AuthTicketDao.saveOrUpdate(authTicket);
 		} catch (DatabaseException e) {
@@ -148,7 +148,7 @@ public class LoginFilter implements Filter {
 						SecurityContextHolder.getContext();
 
 						AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
-						UsernamePasswordAuthenticationToken userAuth = new UsernamePasswordAuthenticationToken(userInfo.getStaffCode(), null, AuthorityUtils.createAuthorityList(listGranted.toArray(new String[listGranted.size()])));
+						UsernamePasswordAuthenticationToken userAuth = new UsernamePasswordAuthenticationToken(userInfo.getUserName(), null, AuthorityUtils.createAuthorityList(listGranted.toArray(new String[listGranted.size()])));
 						userAuth.setDetails(authenticationDetailsSource.buildDetails(req));
 
 //							Authentication authentication = authenticationManager.authenticate(userAuth);
