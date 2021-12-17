@@ -5,11 +5,15 @@ import com.google.gson.reflect.TypeToken;
 import com.openkm.bean.OrganizationVTXBean;
 import com.openkm.bean.UserOrganizationVTXBean;
 import com.openkm.core.DatabaseException;
+import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.module.ModuleManager;
 import com.openkm.module.OrgVTXModule;
 import com.openkm.servlet.admin.BaseServlet;
 import io.swagger.annotations.Api;
+import net.sf.jxls.transformer.XLSTransformer;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
@@ -21,7 +25,9 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -231,6 +237,39 @@ public class OrganizationService extends BaseServlet {
 
 		return Response
 				.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+				.header("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()))
+				.build();
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Path("/downloadOrgList")
+	public Response downloadOrgList() throws DatabaseException, IOException, URISyntaxException {
+
+		String resourceName = "template/EXPORT_ORG.xls";
+		URL res = getClass().getClassLoader().getResource(resourceName);
+		File file = Paths.get(res.toURI()).toFile();
+		String absolutePath = file.getAbsolutePath();
+		InputStream is = new BufferedInputStream(new FileInputStream(absolutePath));
+
+		OrgVTXModule om = ModuleManager.getOrgVTXModule();
+		List<OrganizationVTX> organizationVTXList = om.search("", "");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("beans", organizationVTXList);
+		XLSTransformer transformer = new XLSTransformer();
+		Workbook resultWorkbook = null;
+		try {
+			resultWorkbook = transformer.transformXLS(is, map);
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+		resultWorkbook.write(byteArrayOutputStream);
+
+		return Response
+				.ok(byteArrayOutputStream.toByteArray(), MediaType.APPLICATION_OCTET_STREAM)
 				.header("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()))
 				.build();
 	}

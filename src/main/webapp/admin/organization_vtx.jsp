@@ -35,6 +35,13 @@
                             data-bs-target="#importOrgModal" id="btn-import_org">
                         <i class="fa fa-upload"></i>
                     </button>
+                    <a
+                        href="/kms/services/rest/organization/downloadOrgList">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" id="btn-export_org">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </a>
+
                 </div>
                 <div class="card-body">
                     <div id="jstree_demo_div">
@@ -658,6 +665,9 @@
                 })
             })
 
+        $('#btn-export_org').click(() => {
+
+        })
 
         }
     )

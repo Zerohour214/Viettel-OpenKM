@@ -6,14 +6,16 @@ import org.apache.commons.io.FileUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
 public class DownloadReportUtils {
-	public void downloadReportDOC(Document docSpire, HttpServletResponse response, ServletContext context, String templateResource) throws URISyntaxException, ServletException, IOException {
+	/*public void downloadReportDOC(Document docSpire, HttpServletResponse response, ServletContext context, String templateResource) throws URISyntaxException, ServletException, IOException {
 		URL res_ = getClass().getClassLoader().getResource(templateResource);
 		File tmpFile = Paths.get(res_.toURI()).toFile();
 		String absoluteTmpPath = tmpFile.getAbsolutePath();
@@ -55,44 +57,20 @@ public class DownloadReportUtils {
 			if (os != null)
 				os.close();
 		}
-	}
+	}*/
 
-	public void downloadReportXLS(ServletContext context, String templateResource, HttpServletResponse response, ByteArrayOutputStream byteArrayOutputStream) {
-		try {
-			URL res_ = getClass().getClassLoader().getResource(templateResource);
-			File tmpFile = Paths.get(res_.toURI()).toFile();
-			String absoluteTmpPath = tmpFile.getAbsolutePath();
+	public void downloadReport(String templateResource, HttpServletResponse response, ByteArrayOutputStream byteArrayOutputStream) throws IOException {
 
-			OutputStream os = response.getOutputStream();
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		response.setContentLength(byteArrayOutputStream.size());
 
-			byte[] exportInputStream = byteArrayOutputStream.toByteArray();
-			FileUtils.writeByteArrayToFile(tmpFile, exportInputStream);
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"", templateResource);
+		response.setHeader(headerKey, headerValue);
 
+		ServletOutputStream out = response.getOutputStream();
+		byteArrayOutputStream.writeTo(out);
+		out.flush();
 
-			InputStream is = new FileInputStream(tmpFile);
-
-			String mimeType = context.getMimeType(absoluteTmpPath);
-			if (mimeType == null) {
-				mimeType = "application/octet-stream";
-			}
-
-			response.setContentType(mimeType);
-			response.setContentLength((int) tmpFile.length());
-
-
-			String headerKey = "Content-Disposition";
-			String headerValue = String.format("attachment; filename=\"%s\"", tmpFile.getName());
-			response.setHeader(headerKey, headerValue);
-
-			int len = -1;
-			byte[] buffer = new byte[4096000];
-			while ((len = is.read(buffer, 0, buffer.length)) != -1) {
-				os.write(buffer, 0, len);
-			}
-			is.close();
-			os.close();
-		} catch (IOException | URISyntaxException e) {
-			e.printStackTrace();
-		}
 	}
 }
