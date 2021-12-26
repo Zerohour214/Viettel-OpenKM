@@ -302,7 +302,6 @@
             </div>
         </form>
     </div>
-    <a href="<%=request.getAttribute("urlSSO")%>">SSO</a>
 </div>
 
 <% if (Config.SYSTEM_DEMO) { %>

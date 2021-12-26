@@ -653,7 +653,8 @@ public class ReportExportServlet extends BaseServlet {
 			}else {
 				Double totalTimeView= elb.getTimeRead()/60000.0;
 				DecimalFormat df = new DecimalFormat("#.#");
-				arrList.add(df.format(totalTimeView));}
+				arrList.add(df.format(totalTimeView));
+			}
 
 
 			TableRow dataRow2 = table2.addRow();
