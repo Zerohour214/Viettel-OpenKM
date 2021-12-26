@@ -424,6 +424,9 @@
                     data: $("#form-create-org").serialize(),
                     success: (res) => {
                         getAllOrgRoot();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.responseText);
                     }
                 });
             })

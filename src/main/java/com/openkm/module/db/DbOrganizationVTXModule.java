@@ -2,12 +2,9 @@ package com.openkm.module.db;
 
 import com.openkm.bean.OrganizationVTXBean;
 import com.openkm.core.DatabaseException;
-import com.openkm.dao.OrganizationDao;
 import com.openkm.dao.OrganizationVTXDAO;
-import com.openkm.dao.bean.Organization;
 import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.dao.bean.User;
-import com.openkm.module.OrgModule;
 import com.openkm.module.OrgVTXModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.List;
 
@@ -31,8 +29,8 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	}
 
 	@Override
-	public void createOrg(OrganizationVTXBean organizationVTXBean) throws DatabaseException {
-		OrganizationVTXDAO.getInstance().createOrg(organizationVTXBean);
+	public Response createOrg(OrganizationVTXBean organizationVTXBean) throws DatabaseException {
+		return OrganizationVTXDAO.getInstance().createOrg(organizationVTXBean);
 	}
 
 	@Override

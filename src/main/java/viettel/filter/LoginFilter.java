@@ -136,7 +136,7 @@ public class LoginFilter implements Filter {
 			userInfo.setStaffCode("132415");*/
 			if (req.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) == null) {
 				try {
-					List<Role> roles = AuthDAO.findRolesByUser(userInfo.getStaffCode(), true);
+					List<Role> roles = AuthDAO.findRolesByUser(userInfo.getUserName(), true);
 					List<String> listGranted = new ArrayList<>();
 					if (roles.isEmpty()) {
 						String service = cnn.getServiceURL();

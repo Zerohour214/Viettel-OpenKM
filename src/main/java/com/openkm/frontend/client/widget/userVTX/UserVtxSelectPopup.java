@@ -61,9 +61,9 @@ public class UserVtxSelectPopup extends DialogBox {
 	public FlexTable table;
 
 
-	JsArrayString usrCheckeds = (JsArrayString) JsArrayString.createArray();
+	public JsArrayString usrCheckeds = (JsArrayString) JsArrayString.createArray();
 
-	public List<String> userChecked = new ArrayList<>();
+//	public List<String> userChecked = new ArrayList<>();
 	private String textSearch = "";
 
 
@@ -169,7 +169,7 @@ public class UserVtxSelectPopup extends DialogBox {
 								for (int j = 0; j < usrCheckeds.length(); ++j) {
 									if (usrCheckeds.get(j).equals(code)) {
 										userCheckbox.setChecked(true);
-										userChecked.add(code);
+										//userChecked.add(code);
 										break;
 									}
 								}
@@ -181,9 +181,13 @@ public class UserVtxSelectPopup extends DialogBox {
 												boolean checked = ((CheckBox) event.getSource()).getValue();
 
 												if(checked) {
-													userChecked.add(code);
+													usrCheckeds.push(code);
 												} else {
-													userChecked.remove(code);
+													for(int i=0; i<usrCheckeds.length(); ++i) {
+														if(code.equals(usrCheckeds.get(i))) {
+															usrCheckeds.set(i, "-1");
+														}
+													}
 												}
 											}
 										});
@@ -197,12 +201,13 @@ public class UserVtxSelectPopup extends DialogBox {
 
 							TextBox nameBox = new TextBox();
 							nameBox.setValue(textSearch);
-							Button buttonSearch = new Button("Search");
+							nameBox.setWidth("100%");
+							Button buttonSearch = new Button("<i class='glyphicons glyphicons-search'></i>");
+							buttonSearch.addStyleName("btn-search-user-popup");
 
 							buttonSearch.addClickHandler(new ClickHandler() {
 								@Override
 								public void onClick(ClickEvent event) {
-									Window.alert(nameBox.getText());
 									textSearch = nameBox.getText();
 									drawUserTable(textSearch);
 								}
@@ -236,8 +241,9 @@ public class UserVtxSelectPopup extends DialogBox {
 	 */
 	public void executeAction() {
 		StringBuilder usrs = new StringBuilder();
-		for (int i = 0; i < userChecked.size(); ++i) {
-			usrs.append(",").append(userChecked.get(i));
+		for (int i = 0; i < usrCheckeds.length(); ++i) {
+			if(!usrCheckeds.get(i).equals("-1"))
+			usrs.append(",").append(usrCheckeds.get(i));
 		}
 		usrs.deleteCharAt(0);
 		Main.get().mainPanel.desktop.browser.tabMultiple.tabDocument.document.transmitToUser(usrs.toString());
