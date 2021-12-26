@@ -111,6 +111,7 @@ public class LoginFilter implements Filter {
 
 					log.info("----------------------------USERNAME: " + userInfo.getUserName());
 					log.info("----------------------------STAFFCODE: " + userInfo.getStaffCode());
+
 					List<Role> roles = AuthDAO.findRolesByUser(userInfo.getUserName(), true);
 					List<String> listGranted = new ArrayList<>();
 					if (roles.isEmpty()) {

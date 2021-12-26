@@ -842,3 +842,8 @@ table.log-panel.debug-panel-renew {
 .disable-Confirm-Button {
 	color: gray;
 }
+
+.btn-search-user-popup {
+	background-color: #469408;
+	padding: 0;
+}

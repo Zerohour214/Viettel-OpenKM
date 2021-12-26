@@ -33,6 +33,20 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
+
+    <filter>
+        <filter-name>WebDAVFilter</filter-name>
+        <filter-class>com.openkm.webdav.WebDAVFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>UploadThrottleFilter</filter-name>
+        <filter-class>com.openkm.servlet.frontend.UploadThrottleFilter</filter-class>
+    </filter>
+
+
+    <!--  SSO FILTER -->
+    <!--<filter>
+
     <filter>
         <filter-name>WebDAVFilter</filter-name>
         <filter-class>com.openkm.webdav.WebDAVFilter</filter-class>
@@ -1000,6 +1014,7 @@
         <servlet-name>UnitTestingServlet</servlet-name>
         <url-pattern>/admin/UnitTesting</url-pattern>
     </servlet-mapping>
+<<<<<<< HEAD
 
     <!-- CMIS Servlet Mappings -->
     <servlet-mapping>
@@ -1016,6 +1031,26 @@
         <servlet-name>Test</servlet-name>
         <url-pattern>/Test</url-pattern>
     </servlet-mapping>
+=======
+
+    <!-- CMIS Servlet Mappings -->
+    <servlet-mapping>
+        <servlet-name>cmisAtom</servlet-name>
+        <url-pattern>/cmis/atom/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>cmisBrowser</servlet-name>
+        <url-pattern>/cmis/browser/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Test Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>Test</servlet-name>
+        <url-pattern>/Test</url-pattern>
+    </servlet-mapping>
+
+
+>>>>>>> 7e7131d6e056764564fdd1a0bab39c0c3f73d6c8
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

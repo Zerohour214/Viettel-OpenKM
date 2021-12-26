@@ -63,5 +63,6 @@ public class Swagger2Config extends Swagger2Feature {
                 + "the Free Software Foundation; either version 2 of the License.");
         this.setLicense("Community license of API");
         this.setLicenseUrl("https://docs.openkm.com/kcenter/view/licenses/");
+
     }
 }

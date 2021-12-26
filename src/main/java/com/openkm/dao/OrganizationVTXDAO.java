@@ -1,8 +1,6 @@
 package com.openkm.dao;
 
-import com.bradmcevoy.http.Auth;
 import com.openkm.bean.OrganizationVTXBean;
-import com.openkm.core.AccessDeniedException;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.Organization;
 import com.openkm.dao.bean.OrganizationVTX;
@@ -11,17 +9,16 @@ import com.openkm.dao.bean.UserOrganizationVTX;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import org.docx4j.wml.U;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OrganizationVTXDAO {
@@ -54,38 +51,43 @@ public class OrganizationVTXDAO {
 		}
 	}
 
-	public void createOrg (OrganizationVTXBean newOrg) throws DatabaseException {
+	public Response createOrg(OrganizationVTXBean newOrg) throws DatabaseException {
 		log.debug("createOrg({})");
 
-		if(getOrganizationbyCode(newOrg.getOrgCode()) != null) return;
+		if (getOrganizationbyCode(newOrg.getOrgCode()) != null) {
+			return Response.status(Response.Status.CONFLICT).entity("Mã đơn vị đã tồn tại").build();
+		} else {
 
-		Session session = null;
-		try {
-			session = HibernateUtil.getSessionFactory().openSession();
-			OrganizationVTX organizationVTX = new OrganizationVTX();
-			organizationVTX.setCode(newOrg.getOrgCode());
-			organizationVTX.setName(newOrg.getOrgName());
-			organizationVTX.setParent(newOrg.getOrgParent());
-			organizationVTX.setPath("");
 
-			session.beginTransaction();
-			Long id = (Long) session.save(organizationVTX);
-			session.getTransaction().commit();
+			Session session = null;
+			try {
+				session = HibernateUtil.getSessionFactory().openSession();
+				OrganizationVTX organizationVTX = new OrganizationVTX();
+				organizationVTX.setCode(newOrg.getOrgCode());
+				organizationVTX.setName(newOrg.getOrgName());
+				organizationVTX.setParent(newOrg.getOrgParent());
+				organizationVTX.setPath("");
 
-			if(newOrg.getOrgParent() == -1L) {
-				organizationVTX.setPath('/' + String.valueOf(id) + '/');
-			} else {
-				organizationVTX.setPath(getOrganizationbyId(newOrg.getOrgParent()).getPath() + id + '/');
+				session.beginTransaction();
+				Long id = (Long) session.save(organizationVTX);
+				session.getTransaction().commit();
+
+				if (newOrg.getOrgParent() == -1L) {
+					organizationVTX.setPath('/' + String.valueOf(id) + '/');
+				} else {
+					organizationVTX.setPath(getOrganizationbyId(newOrg.getOrgParent()).getPath() + id + '/');
+				}
+
+				session.beginTransaction();
+				session.save(organizationVTX);
+				session.getTransaction().commit();
+			} catch (HibernateException e) {
+				throw new DatabaseException(e.getMessage(), e);
+			} finally {
+				HibernateUtil.close(session);
 			}
-
-			session.beginTransaction();
-			session.save(organizationVTX);
-			session.getTransaction().commit();
-		} catch (HibernateException e) {
-			throw new DatabaseException(e.getMessage(), e);
-		} finally {
-			HibernateUtil.close(session);
 		}
+		return null;
 	}
 
 	public OrganizationVTX getOrganizationbyId(Long id) throws DatabaseException {
@@ -140,7 +142,7 @@ public class OrganizationVTXDAO {
 		}
 	}
 
-	public List<OrganizationVTX>  getAllOrgLevelRoot() throws DatabaseException {
+	public List<OrganizationVTX> getAllOrgLevelRoot() throws DatabaseException {
 		String qs = "from OrganizationVTX o where o.parent is null or o.parent = :param ";
 		Session session = null;
 		try {
@@ -199,10 +201,10 @@ public class OrganizationVTXDAO {
 			session = HibernateUtil.getSessionFactory().openSession();
 
 			Query q1 = session.createQuery("from OrganizationVTX o where o.path like '%/" + orgId + "/%' ");
-			List <OrganizationVTX> orgs = q1.list();
+			List<OrganizationVTX> orgs = q1.list();
 
 			List<Long> orgSuit = new ArrayList<>();
-			for(OrganizationVTX o : orgs) {
+			for (OrganizationVTX o : orgs) {
 				orgSuit.add(o.getId());
 			}
 
@@ -278,7 +280,7 @@ public class OrganizationVTXDAO {
 		}
 	}
 
-    public String importUserToOrg(InputStream fileContent) {
+	public String importUserToOrg(InputStream fileContent) {
 		String NOT_EXIST = "Người dùng không tồn tại";
 		String IN_ORG = "Người dùng đã được gán vào đơn vị khác";
 		try {
@@ -286,7 +288,7 @@ public class OrganizationVTXDAO {
 			workbook = Workbook.getWorkbook(fileContent);
 			Sheet sheet = workbook.getSheet(0);
 			String userNotExist = "";
-			for(int i=1; i<sheet.getRows(); ++i) {
+			for (int i = 1; i < sheet.getRows(); ++i) {
 				String userId = sheet.getCell(0, i).getContents();
 				/*name = sheet.getCell(1, i).getContents(),
 						email = sheet.getCell(2, i).getContents(),
@@ -304,14 +306,13 @@ public class OrganizationVTXDAO {
 				AuthDAO.createUser(user);*/
 
 				User user = AuthDAO.findUserByPk(userId);
-				if(user == null) userNotExist += userId + "," + NOT_EXIST;
+				if (user == null) userNotExist += userId + "," + NOT_EXIST;
 				else {
 					String orgCode = sheet.getCell(1, i).getContents();
 					OrganizationVTX organizationVTX = UserDAO.getInstance().getOrgByUserId(userId);
-					if(organizationVTX == null)
+					if (organizationVTX == null)
 						addUserToOrg(userId, getOrganizationbyCode(orgCode).getId());
-					else
-					{
+					else {
 						userNotExist += userId + "," + IN_ORG;
 					}
 				}
@@ -343,7 +344,7 @@ public class OrganizationVTXDAO {
 			session.update(organizationVTX);
 			session.getTransaction().commit();
 
-			if(newOrg.getOrgParent() == -1L) {
+			if (newOrg.getOrgParent() == -1L) {
 				organizationVTX.setPath('/' + String.valueOf(newOrg.getId()) + '/');
 			} else {
 				organizationVTX.setPath(getOrganizationbyId(newOrg.getOrgParent()).getPath() + newOrg.getId() + '/');
@@ -365,7 +366,7 @@ public class OrganizationVTXDAO {
 			workbook = Workbook.getWorkbook(is);
 			Sheet sheet = workbook.getSheet(0);
 
-			for(int i=1; i<sheet.getRows(); ++i) {
+			for (int i = 1; i < sheet.getRows(); ++i) {
 				String code = sheet.getCell(0, i).getContents(),
 						name = sheet.getCell(1, i).getContents(),
 						parent = sheet.getCell(2, i).getContents();
@@ -374,11 +375,10 @@ public class OrganizationVTXDAO {
 				newOrg.setOrgCode(code);
 				newOrg.setOrgName(name);
 
-				if(parent != null && !parent.equals("")) {
+				if (parent != null && !parent.equals("")) {
 					OrganizationVTX orgParent = getOrganizationbyCode(parent);
 					newOrg.setOrgParent(orgParent.getId());
-				}
-				else {
+				} else {
 					newOrg.setOrgParent(-1L);
 				}
 

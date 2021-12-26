@@ -1766,3 +1766,8 @@ input.okm-Input {
 	border: 1px solid #BBBBBB;
 	padding: 3px;
 }
+
+.btn-search-user-popup {
+	background-color: #469408;
+	padding: 0;
+}

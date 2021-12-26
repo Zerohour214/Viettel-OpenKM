@@ -87,10 +87,10 @@
   </security:http>
 
   <!-- REST -->
-  <security:http pattern="/services/rest/**" create-session="stateless">
+  <!--<security:http pattern="/services/rest/**" create-session="stateless">
     <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
     <security:http-basic/>
-  </security:http>
+  </security:http>-->
 
   <!-- Additional filter chain for normal users, matching all other requests -->
   <!-- http://info.michael-simons.eu/2011/01/28/disable-jsessionid-path-parameter-in-java-web-applications/ -->

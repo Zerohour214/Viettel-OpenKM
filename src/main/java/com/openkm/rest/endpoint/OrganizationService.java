@@ -39,7 +39,7 @@ public class OrganizationService extends BaseServlet {
 	@POST
 	@Path("/create")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void createOrg(@FormParam("orgName") String orgName,
+	public Response  createOrg(@FormParam("orgName") String orgName,
 						  @FormParam("orgCode") String orgCode,
 						  @FormParam("orgParentId") Long orgParentId,
 						  @FormParam("orgParent") String orgParent) throws DatabaseException {
@@ -55,7 +55,7 @@ public class OrganizationService extends BaseServlet {
 
 		OrgVTXModule om = ModuleManager.getOrgVTXModule();
 
-		om.createOrg(organizationVTXBean);
+		return om.createOrg(organizationVTXBean);
 	}
 
 	@POST
