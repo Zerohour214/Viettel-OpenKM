@@ -61,8 +61,8 @@ public class WebUtils {
 
 		if (value != null) {
 			try {
-//				return new String(value.getBytes(Config.TOMCAT_CONNECTOR_URI_ENCODING), "UTF-8").trim();
-				return new String(value.getBytes("UTF-8"), "UTF-8").trim();
+				return new String(value.getBytes(Config.TOMCAT_CONNECTOR_URI_ENCODING), "UTF-8").trim();
+//				return new String(value.getBytes("UTF-8"), "UTF-8").trim();
 			} catch (UnsupportedEncodingException e) {
 				// Ignore
 			}

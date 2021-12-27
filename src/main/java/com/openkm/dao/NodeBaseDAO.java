@@ -2573,6 +2573,7 @@ public class NodeBaseDAO {
 					UserDocumentTransmitVTX userDocumentTransmitVTX = new UserDocumentTransmitVTX();
 					userDocumentTransmitVTX.setUserId(userId);
 					userDocumentTransmitVTX.setDocId(docId);
+
 					session.save(userDocumentTransmitVTX);
 					OKMAuth.getInstance().grantUser(null, docId, userId, 1, false);
 					session.flush();

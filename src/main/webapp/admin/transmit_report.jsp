@@ -78,16 +78,16 @@
                     buttonImage: "img/action/calendar_icon_green.png",
                     buttonImageOnly: true,
                     dateFormat: "yy-mm-dd",
-                    defaultDate: "-1w",
+                    // defaultDate: "-1w",
                     changeMonth: true,
                     changeYear: true,
                     numberOfMonths: 1,
                     showWeek: false,
                     firstDay: 1,
-                    onClose: function (selectedDate) {
+                    /*onClose: function (selectedDate) {
                         element.datepicker("option", "minDate", selectedDate);
                         $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                    }
+                    }*/
                 });
             }
 
@@ -102,10 +102,10 @@
                     numberOfMonths: 1,
                     showWeek: false,
                     firstDay: 1,
-                    onClose: function (selectedDate) {
+                    /*onClose: function (selectedDate) {
                         element.datepicker("option", "maxDate", selectedDate);
                         $('.ui-datepicker-trigger').css("vertical-align", "middle");
-                    }
+                    }*/
                 });
             }
 

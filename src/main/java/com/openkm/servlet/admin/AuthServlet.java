@@ -108,9 +108,9 @@ public class AuthServlet extends BaseServlet {
 					validateUser(request, response);
 				} else if (action.equals("validatePassword")) {
 					validatePassword(request, response);
-				}else if (action.equals("validateEmail")) {
+				} else if (action.equals("validateEmail")) {
 					validateEmail(request, response);
-				}else if (action.equals("validateRole")) {
+				} else if (action.equals("validateRole")) {
 					validateRole(request, response);
 				} else if (action.endsWith("Export")) {
 					export(request, response, action);
@@ -148,7 +148,7 @@ public class AuthServlet extends BaseServlet {
 		String action = WebUtils.getString(request, "action");
 		String userId = request.getRemoteUser();
 		updateSessionManager(request);
-
+		request.setCharacterEncoding("UTF-8");
 		if (isMultipleInstancesAdmin(request) || request.isUserInRole(Config.DEFAULT_ADMIN_ROLE)) {
 			try {
 
@@ -156,7 +156,7 @@ public class AuthServlet extends BaseServlet {
 					userCreate(userId, request, response);
 				} else if (action.equals("userCreateByFile")) {
 					userCreateByFile(userId, request, response);
-				}else if (action.equals("roleCreate")) {
+				} else if (action.equals("roleCreate")) {
 					roleCreate(userId, request, response);
 				} else if (action.equals("userEdit")) {
 					userEdit(userId, request, response);
@@ -221,7 +221,7 @@ public class AuthServlet extends BaseServlet {
 		response.setContentType("text/json");
 
 		String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,20}$";
-		if(value.isEmpty()){
+		if (value.isEmpty()) {
 			out.print("{ \"success\": true }");
 		} else if (value.matches(regex)) {
 			out.print("{ \"success\": true }");
@@ -385,16 +385,31 @@ public class AuthServlet extends BaseServlet {
 		workbook = Workbook.getWorkbook(fileContent);
 		Sheet sheet = workbook.getSheet(0);
 
-		for(int i=1; i<sheet.getRows(); ++i) {
+		StringBuilder error = new StringBuilder();
+
+		for (int i = 1; i < sheet.getRows(); ++i) {
 			String id = sheet.getCell(0, i).getContents(),
 					name = sheet.getCell(1, i).getContents(),
 					email = sheet.getCell(2, i).getContents(),
-			 //active = sheet.getCell(3, i).getContents(),
-			 roles = sheet.getCell(3, i).getContents();
+					roles = sheet.getCell(3, i).getContents();
+
+			if(id.equals("")) {
+				error.append("Dòng thứ ").append(i).append(" không có mã nhân viên\n");
+				continue;
+			}
+			if(name.equals("")) {
+				error.append("Dòng thứ ").append(i).append(" không có tên nhân viên\n");
+				continue;
+			}
+			if(email.equals("")) {
+				error.append("Dòng thứ ").append(i).append(" không có email nhân viên\n");
+				continue;
+			}
+
 			List<String> usrRoles = Arrays.asList(roles.split(","));
 
 			User userById = AuthDAO.findUserByPk(id);
-			if(userById == null) {
+			if (userById == null) {
 				User usr = new User();
 				usr.setId(id);
 				usr.setName(name);
@@ -403,10 +418,6 @@ public class AuthServlet extends BaseServlet {
 
 				usr.setActive(true);
 
-				/*if(active.equals("1"))
-					usr.setActive(true);
-				else
-					usr.setActive(false);*/
 
 				for (String rolId : usrRoles) {
 					usr.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));
@@ -416,9 +427,19 @@ public class AuthServlet extends BaseServlet {
 
 				// Activity log
 				UserActivity.log(userId, "ADMIN_USER_CREATE", usr.getId(), null, usr.toString());
+			} else {
+				error.append("Mã nhân viên ").append(id).append(" đã tồn tại\n");
 			}
 
 		}
+		if (!"".equals(error.toString())) {
+			try {
+				sendErrorRedirect(request, response, new Exception(error.toString()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
