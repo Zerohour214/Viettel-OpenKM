@@ -25,6 +25,7 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -106,12 +107,12 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 		super.hide();
 //
 
-//		String logoutUrl = "https://10.60.156.97:8225/sso/logout";
-//		String service = "http://localhost:9000/kms/login_sso";
+//		String logoutUrl = "https://10.58.71.179:8225/sso/logout";
+//		final String service = "http://localhost:9000/kms/login_sso";
 
 		//VTX
 		String logoutUrl = "https://192.168.202.85:8445/sso/logout";
-		String service = "http://192.168.202.201:8080/kms";
+		final String service = "http://192.168.202.201:8080/kms/login.jsp";
 
 //		REAL
 //		String logoutUrl = "https://sso2.viettel.vn:8002/sso/logout";
@@ -123,6 +124,29 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 
 		String address = logoutUrl + "?service=" + service;
 		Window.open(address, "_self", null);
+		Window.open(service, "_blank", null);
+
+		/*RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, logoutUrl);
+
+		try {
+			builder.sendRequest(null, new RequestCallback() {
+
+						@Override
+						public void onResponseReceived(Request request, Response response) {
+							Window.open(service, "_self", null);
+						}
+
+						@Override
+						public void onError(Request request, Throwable throwable) {
+
+						}
+					}
+			);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}*/
+
+
 	}
 
 	/**
@@ -159,7 +183,7 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 
 	/**
 	 * disconnectChat
-	 *
+	 * <p>
 	 * Recursivelly disconnecting chat rooms and chat before login out
 	 */
 	private void disconnectChat() {
@@ -177,7 +201,7 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 				if (!Main.get().mainPanel.bottomPanel.userInfo.isPendingToClose()) {
 					authService.logout(callbackLogout);
 				} else {
-					logoutAfterChat(	);
+					logoutAfterChat();
 				}
 			}
 		};

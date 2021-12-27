@@ -41,14 +41,14 @@ public class OrganizationService extends BaseServlet {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response  createOrg(@FormParam("orgName") String orgName,
 						  @FormParam("orgCode") String orgCode,
-						  @FormParam("orgParentId") Long orgParentId,
+						  @FormParam("orgParentId") String orgParentId,
 						  @FormParam("orgParent") String orgParent) throws DatabaseException {
 		OrganizationVTXBean organizationVTXBean = new OrganizationVTXBean();
 		organizationVTXBean.setOrgCode(orgCode);
 		organizationVTXBean.setOrgName(orgName);
 
-		if(orgParentId != null)
-			organizationVTXBean.setOrgParent(orgParentId);
+		if(orgParentId != null && !orgParentId.isEmpty() && !"#".equals(orgParentId))
+			organizationVTXBean.setOrgParent(Long.valueOf(orgParentId));
 		else {
 			organizationVTXBean.setOrgParent(-1L);
 		}

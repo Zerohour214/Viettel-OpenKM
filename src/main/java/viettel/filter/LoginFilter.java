@@ -99,6 +99,7 @@ public class LoginFilter implements Filter {
 		AuthTicket authTicket = new AuthTicket();
 		authTicket.setTicket(tmpTicket);
 		authTicket.setEmpCode(userInfo.getUserName());
+//		authTicket.setEmpCode("132415");
 		try {
 			AuthTicketDao.saveOrUpdate(authTicket);
 		} catch (DatabaseException e) {

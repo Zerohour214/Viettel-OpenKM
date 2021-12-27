@@ -256,7 +256,7 @@ public class TabWorkspace extends Composite implements HasWorkspaceEvent, HasWor
 	}
 
 	public void showReport() {
-		tabBar.addTab(Main.i18n("tab.workspace.report"));
+		tabBar.addTab(Main.i18n("general.menu.report"));
 		tabReportPos = tabBar.getTabCount() - 1;
 		reportVisible = true;
 	}

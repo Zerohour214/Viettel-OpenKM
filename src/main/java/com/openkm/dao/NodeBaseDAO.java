@@ -21,6 +21,7 @@
 
 package com.openkm.dao;
 
+import com.openkm.api.OKMAuth;
 import com.openkm.bean.*;
 import com.openkm.core.*;
 import com.openkm.core.Config;
@@ -2573,6 +2574,7 @@ public class NodeBaseDAO {
 					userDocumentTransmitVTX.setUserId(userId);
 					userDocumentTransmitVTX.setDocId(docId);
 					session.save(userDocumentTransmitVTX);
+					OKMAuth.getInstance().grantUser(null, docId, userId, 1, false);
 					session.flush();
 					session.clear();
 				}
@@ -2582,6 +2584,12 @@ public class NodeBaseDAO {
 
 		} catch (HibernateException | DatabaseException e) {
 			throw new DatabaseException(e.getMessage(), e);
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (PathNotFoundException e) {
+			e.printStackTrace();
 		} finally {
 			HibernateUtil.close(session);
 		}
