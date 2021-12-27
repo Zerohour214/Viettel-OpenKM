@@ -80,6 +80,8 @@ public interface OKMDashboardService extends RemoteService {
 
 	public boolean isUserReadDoc(String userId, String docId);
 
+	public boolean isShowUserReadDoc(String userId, String docId);
+
 	public void startReadDoc(String userId, String docId);
 
 	public void endReadDoc(String userId, String docId);

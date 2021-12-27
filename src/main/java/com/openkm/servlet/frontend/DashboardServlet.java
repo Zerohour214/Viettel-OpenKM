@@ -905,6 +905,27 @@ public class DashboardServlet extends OKMRemoteServiceServlet implements OKMDash
 		return true;
 	}
 
+	@Override
+	public boolean isShowUserReadDoc(String userId, String docId){
+		DashboardModule dm = ModuleManager.getDashboardModule();
+		try {
+			List<DashboardDocumentResult> result = dm.getShowMustReadDocuments(null);
+			for(int i=0;i<result.size();i++){
+				if(result.get(i).getDocument().getUuid().equalsIgnoreCase(docId)){
+					return true;
+				}
+			}
+			return false;
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
 	public boolean haveUserReadDoc(String userId, String docId) {
 		log.debug("getUserReadDoc({})", userId);
 		Session session = null;
