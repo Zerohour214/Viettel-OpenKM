@@ -77,6 +77,8 @@ public interface OKMDashboardServiceAsync {
 
 	public void isUserReadDoc(String userId, String docId, AsyncCallback<Boolean> async);
 
+	public void isShowUserReadDoc(String userId, String docId, AsyncCallback<Boolean> async);
+
 	public void startReadDoc(String userId, String docId, AsyncCallback<Void> async);
 
 	public void endReadDoc(String userId, String docId, AsyncCallback<Void> async);

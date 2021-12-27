@@ -1340,6 +1340,30 @@ public class DbDashboardModule implements DashboardModule {
 	}
 
 	@Override
+	public List<DashboardDocumentResult> getShowMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException {
+		log.debug("getMustReadDocuments({})", token);
+		Authentication auth = null, oldAuth = null;
+
+		try {
+			if (token == null) {
+				auth = PrincipalUtils.getAuthentication();
+			} else {
+				oldAuth = PrincipalUtils.getAuthentication();
+				auth = PrincipalUtils.getAuthenticationByToken(token);
+			}
+
+			List<DashboardDocumentResult> al = getShowMustReadDocumentsSrv(auth.getName());
+			log.debug("getUserLockedDocuments: {}", al);
+			return al;
+		} finally {
+			if (token != null) {
+				PrincipalUtils.setAuthentication(oldAuth);
+			}
+		}
+	}
+
+	@Override
 	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
 			DatabaseException {
 		log.debug("getMustReadDocuments({})", token);
@@ -1386,7 +1410,7 @@ public class DbDashboardModule implements DashboardModule {
 		}
 	}
 
-	public List<DashboardDocumentResult> getMustReadDocumentsSrv(String user) throws RepositoryException,
+	public List<DashboardDocumentResult> getShowMustReadDocumentsSrv(String user) throws RepositoryException,
 			DatabaseException {
 		log.debug("getMustReadDocumentsSrv({})", user);
 		long begin = System.currentTimeMillis();
@@ -1399,6 +1423,21 @@ public class DbDashboardModule implements DashboardModule {
 		log.debug("getUserLockedDocumentsSrv: {}", al);
 		return al;
 	}
+
+	public List<DashboardDocumentResult> getMustReadDocumentsSrv(String user) throws RepositoryException,
+			DatabaseException {
+		log.debug("getMustReadDocumentsSrv({})", user);
+		long begin = System.currentTimeMillis();
+		List<DashboardDocumentResult> al = executeQueryDocumentNative(user, "MUST_READ_DOCUMENT", Integer.MAX_VALUE,true);
+
+		// Check for already visited results
+		checkVisitedDocuments(user, "UserLockedDocuments", al);
+		SystemProfiling.log(user, System.currentTimeMillis() - begin);
+		log.trace("getUserLockedDocumentsSrv.Time: {}", System.currentTimeMillis() - begin);
+		log.debug("getUserLockedDocumentsSrv: {}", al);
+		return al;
+	}
+
 	public List<DashboardDocumentResult> getMustConfirmDocumentsSrv(String user) throws RepositoryException,
 			DatabaseException {
 		log.debug("getMustReadDocumentsSrv({})", user);
@@ -1437,14 +1476,14 @@ public class DbDashboardModule implements DashboardModule {
 				return new ArrayList<DashboardDocumentResult>();
 			else
 				results = q.list();
-			String query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
-//			if (confirm)
-//				query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
-			Query q_checkRead = session.createSQLQuery(query);
-			q_checkRead.setParameter("userId", user);
-			List<String> ret = q_checkRead.list();
+			if (confirm) {
+				String query = "SELECT urdt.DOC_ID FROM USER_READ_DOC_TIMER urdt WHERE urdt.USER_ID=(:userId) AND urdt.CONFIRM = 'T' GROUP BY urdt.DOC_ID";
+				Query q_checkRead = session.createSQLQuery(query);
+				q_checkRead.setParameter("userId", user);
+				List<String> ret = q_checkRead.list();
 
-			results.removeIf(child -> ret.contains(child.getUuid()));
+				results.removeIf(child -> ret.contains(child.getUuid()));
+			}
 
 			for (Iterator<NodeDocument> it = results.iterator(); it.hasNext() && i < maxResults; ) {
 				NodeDocument nDoc = it.next();

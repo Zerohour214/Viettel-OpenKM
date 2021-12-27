@@ -39,6 +39,8 @@ public interface DashboardModule {
 	/**
 	 * Get list of must read documents by user
 	 */
+	public List<DashboardDocumentResult> getShowMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
+			DatabaseException;
 	public List<DashboardDocumentResult> getMustReadDocuments(String token) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
 

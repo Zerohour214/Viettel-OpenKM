@@ -106,7 +106,7 @@ public class Preview extends Composite {
 
 		//for must read check
 		hPanelMustReads = new HorizontalPanel();
-		mustReadText = new HTML("<br/><b>" + Main.i18n("document.mustread") + "</b>");
+		mustReadText = new HTML("<br/><b> Xác nhận đọc ?</b>");
 		hPanelMustReads.add(mustReadText);
 		hPanelMustReads.add(new HTML("&nbsp;"));
 		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
@@ -499,5 +499,8 @@ public class Preview extends Composite {
 	public void setMustReadIconVisiable(boolean visible){
 		mustReadImage.setVisible(visible);
 		mustReadImageDisable.setVisible(!visible);
+	}
+	public void setShowMustReadIconVisiable(boolean visible){
+		hPanelMustReads.setVisible(visible);
 	}
 }
