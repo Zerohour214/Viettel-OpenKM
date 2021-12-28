@@ -1,5 +1,5 @@
 // VTX
-/*package viettel.filter;
+package viettel.filter;
 
 import com.viettel.crypto.CryptoUtil;
 import org.apache.log4j.Logger;
@@ -307,10 +307,10 @@ public class KmConnector {
 		}
 	}
 
-}*/
+}
 
 
-package viettel.filter;
+/*package viettel.filter;
 
 import clients.ConnectService;
 import com.viettel.crypto.CryptoUtil;
@@ -562,7 +562,7 @@ public class KmConnector {
 		return KmConnector.passportLoginURL + "?appCode=" + KmConnector.domainCode + "&service=" + URLEncoder.encode(KmConnector.serviceURL, "UTF-8");
 	}
 
-}
+}*/
 
 /*package viettel.filter;
 

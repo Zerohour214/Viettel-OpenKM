@@ -107,12 +107,12 @@ public class LogoutPopup extends DialogBox implements ClickHandler {
 		super.hide();
 //
 
-		String logoutUrl = "https://10.58.71.179:8225/sso/logout";
-		final String service = "http://localhost:9000/kms/login_sso";
+//		String logoutUrl = "https://10.58.71.179:8225/sso/logout";
+//		final String service = "http://localhost:9000/kms/login_sso";
 
 		//VTX
-//		String logoutUrl = "https://192.168.202.85:8445/sso/logout";
-//		final String service = "http://192.168.202.201:8080/kms/login.jsp";
+		String logoutUrl = "https://192.168.202.85:8445/sso/logout";
+		final String service = "http://192.168.202.201:8080/kms/login.jsp";
 
 //		REAL
 //		String logoutUrl = "https://sso2.viettel.vn:8002/sso/logout";

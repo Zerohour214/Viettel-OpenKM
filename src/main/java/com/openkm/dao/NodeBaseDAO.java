@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.print.Doc;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -2482,6 +2484,10 @@ public class NodeBaseDAO {
 					OrgDocumentVTX orgDocumentVTX = new OrgDocumentVTX();
 					orgDocumentVTX.setOrgId(orgId);
 					orgDocumentVTX.setDocId(docId);
+
+					java.util.Date date= new java.util.Date();
+					Timestamp timestamp = new Timestamp(date.getTime());
+					orgDocumentVTX.setCreatedAt(timestamp);
 					session.save(orgDocumentVTX);
 					session.flush();
 					session.clear();
@@ -2573,6 +2579,10 @@ public class NodeBaseDAO {
 					UserDocumentTransmitVTX userDocumentTransmitVTX = new UserDocumentTransmitVTX();
 					userDocumentTransmitVTX.setUserId(userId);
 					userDocumentTransmitVTX.setDocId(docId);
+
+					java.util.Date date= new java.util.Date();
+					Timestamp timestamp = new Timestamp(date.getTime());
+					userDocumentTransmitVTX.setCreatedAt(timestamp);
 
 					session.save(userDocumentTransmitVTX);
 					OKMAuth.getInstance().grantUser(null, docId, userId, 1, false);
