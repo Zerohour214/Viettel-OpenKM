@@ -44,7 +44,7 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 	private HorizontalPanel hPanel;
 	public ScrollPanel scrollDirectoryPanel;
 	private VerticalPanel verticalDirectoryPanel;
-	private FolderSelectTree folderSelectTree;
+//	private FolderSelectTree folderSelectTree;
 	private Button cancelButton;
 	private Button actionButton;
 	public Status status;
@@ -71,10 +71,10 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 		scrollDirectoryPanel.setStyleName("okm-Popup-text");
 		verticalDirectoryPanel = new VerticalPanel();
 		verticalDirectoryPanel.setSize("100%", "100%");
-		folderSelectTree = new FolderSelectTree();
-		folderSelectTree.setSize("100%", "100%");
+//		folderSelectTree = new FolderSelectTree();
+//		folderSelectTree.setSize("100%", "100%");
 
-		verticalDirectoryPanel.add(folderSelectTree);
+//		verticalDirectoryPanel.add(folderSelectTree);
 		scrollDirectoryPanel.add(verticalDirectoryPanel);
 
 		cancelButton = new Button(OkmConstants.ICON_NO_BUTTON + Main.i18n("button.close"), new ClickHandler() {
@@ -306,7 +306,7 @@ public class OrganizationVtxSelectPopup extends DialogBox {
 		setText("Add organization");
 
 		// Resets to initial tree value
-		folderSelectTree.reset();
+//		folderSelectTree.reset();
 		super.show();
 	}
 

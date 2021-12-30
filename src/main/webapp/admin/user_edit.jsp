@@ -177,7 +177,7 @@
         </form>
         <br>
         <form id="userImportForm" enctype="multipart/form-data" action="Auth" method="post">
-            <input type="hidden" name="action" value="userCreateByFile"/>
+            <input type="hidden" name="action" value="${action_f}"/>
             <input type="hidden" name="persist" value="${persist}"/>
             <input type="hidden" name="csrft" value="${csrft}"/>
             <table class="form" width="372px">

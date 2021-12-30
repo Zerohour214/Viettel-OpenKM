@@ -659,7 +659,8 @@ public class ReportExportServlet extends BaseServlet {
 
 			TableRow dataRow2 = table2.addRow();
 			for (int col = 0; col < arrList.size(); ++col) {
-				dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
+				if(arrList.get(col) == null) dataRow2.getCells().get(col).addParagraph().appendText("");
+				else dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
 			}
 

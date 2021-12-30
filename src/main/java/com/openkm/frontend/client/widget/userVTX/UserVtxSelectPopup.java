@@ -54,7 +54,7 @@ public class UserVtxSelectPopup extends DialogBox {
 	private HorizontalPanel hPanel;
 	public ScrollPanel scrollDirectoryPanel;
 	private VerticalPanel verticalDirectoryPanel;
-	private FolderSelectTree folderSelectTree;
+//	private FolderSelectTree folderSelectTree;
 	private Button cancelButton;
 	private Button actionButton;
 	public Status status;
@@ -85,8 +85,8 @@ public class UserVtxSelectPopup extends DialogBox {
 		verticalDirectoryPanel = new VerticalPanel();
 		verticalDirectoryPanel.setSize("100%", "100%");
 
-		folderSelectTree = new FolderSelectTree();
-		folderSelectTree.setSize("100%", "100%");
+//		folderSelectTree = new FolderSelectTree();
+//		folderSelectTree.setSize("100%", "100%");
 
 		scrollDirectoryPanel.add(verticalDirectoryPanel);
 
@@ -157,7 +157,7 @@ public class UserVtxSelectPopup extends DialogBox {
 							table.setWidget(0, 2, new HTML("<b>Email</b>"));
 							table.setWidget(0, 3, new HTML(""));
 							for (int i = 0; i < jsonArray.size(); ++i) {
-								String code = jsonArray.get(i).isArray().get(1).isString().stringValue();
+								final String code = jsonArray.get(i).isArray().get(1).isString().stringValue();
 								String fullName = jsonArray.get(i).isArray().get(0).isString().stringValue();
 								String email = jsonArray.get(i).isArray().get(2).isString().stringValue();
 								table.setWidget(i+1, 0, new Label(code));
@@ -199,7 +199,7 @@ public class UserVtxSelectPopup extends DialogBox {
 							horizontalPanel.setWidth("60%");
 							horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
-							TextBox nameBox = new TextBox();
+							final TextBox nameBox = new TextBox();
 							nameBox.setValue(textSearch);
 							nameBox.setWidth("100%");
 							Button buttonSearch = new Button("<i class='glyphicons glyphicons-search'></i>");
@@ -269,7 +269,7 @@ public class UserVtxSelectPopup extends DialogBox {
 		setText("Add user");
 
 		// Resets to initial tree value
-		folderSelectTree.reset();
+//		folderSelectTree.reset();
 		super.show();
 	}
 

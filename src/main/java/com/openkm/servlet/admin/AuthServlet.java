@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -68,6 +69,7 @@ import java.util.*;
 /**
  * User servlet
  */
+@MultipartConfig
 public class AuthServlet extends BaseServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LoggerFactory.getLogger(AuthServlet.class);
@@ -146,6 +148,8 @@ public class AuthServlet extends BaseServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		log.debug("doPost({}, {})", request, response);
 		String action = WebUtils.getString(request, "action");
+		log.info("=================ACTION===========" + action);
+
 		String userId = request.getRemoteUser();
 		updateSessionManager(request);
 		request.setCharacterEncoding("UTF-8");
@@ -166,6 +170,9 @@ public class AuthServlet extends BaseServlet {
 					userDelete(userId, request, response);
 				} else if (action.equals("roleDelete")) {
 					roleDelete(userId, request, response);
+				} else {
+					userCreateByFile(userId, request, response);
+					response.sendRedirect(request.getContextPath() + request.getServletPath() + "?action=userList");
 				}
 
 				// Go to list
@@ -366,6 +373,7 @@ public class AuthServlet extends BaseServlet {
 			request.getSession().setAttribute("csrft", genCsrft);
 			ServletContext sc = getServletContext();
 			sc.setAttribute("action", WebUtils.getString(request, "action"));
+			sc.setAttribute("action_f", "userCreateByFile");
 			sc.setAttribute("persist", true);
 			sc.setAttribute("csrft", genCsrft);
 			sc.setAttribute("roles", AuthDAO.findAllRoles());

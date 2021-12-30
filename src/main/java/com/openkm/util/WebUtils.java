@@ -57,6 +57,9 @@ public class WebUtils {
 	 */
 	public static final String getString(HttpServletRequest request, String name) {
 		String value = request.getParameter(name);
+
+		log.info("===================ACTION_VALUE================" + name + "=============" + value);
+
 		String stringValue = EMPTY_STRING;
 
 		if (value != null) {
@@ -67,6 +70,7 @@ public class WebUtils {
 				// Ignore
 			}
 		}
+
 
 		return stringValue;
 	}
