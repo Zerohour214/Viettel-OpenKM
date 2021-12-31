@@ -79,8 +79,8 @@ public class DbOrganizationVTXModule implements OrgVTXModule, ApplicationContext
 	}
 
 	@Override
-	public void importOrg(InputStream is) {
-		OrganizationVTXDAO.getInstance().importOrg(is);
+	public String importOrg(InputStream is) {
+		return OrganizationVTXDAO.getInstance().importOrg(is);
 	}
 
 

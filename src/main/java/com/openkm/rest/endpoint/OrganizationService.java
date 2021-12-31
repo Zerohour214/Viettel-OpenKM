@@ -199,7 +199,7 @@ public class OrganizationService extends BaseServlet {
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("/importOrg")
-	public void importOrg(
+	public String importOrg(
 			List<Attachment> atts
 	) throws DatabaseException, IOException {
 		InputStream is = null;
@@ -207,7 +207,7 @@ public class OrganizationService extends BaseServlet {
 			is = att.getDataHandler().getInputStream();
 		}
 		OrgVTXModule om = ModuleManager.getOrgVTXModule();
-		om.importOrg(is);
+		return om.importOrg(is);
 	}
 
 	@GET

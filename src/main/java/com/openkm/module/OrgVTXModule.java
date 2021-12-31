@@ -26,5 +26,5 @@ public interface OrgVTXModule {
 
 	public void deleteOrg(Long orgId) throws DatabaseException;
 	public List<OrganizationVTX> getAllChild(long parent) throws DatabaseException;
-	public void importOrg(InputStream is);
+	public String importOrg(InputStream is);
 }

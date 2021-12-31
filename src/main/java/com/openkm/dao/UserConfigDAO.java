@@ -115,6 +115,40 @@ public class UserConfigDAO {
 		log.debug("updateProfile: void");
 	}
 
+
+	public static void insertProfile(String ucUser, int upId) throws DatabaseException {
+		log.debug("updateProfile({}, {})", ucUser, upId);
+		String qs = "insert into OKM_USER_CONFIG (UC_USER, UC_HOME_PATH, UC_HOME_NODE, UC_HOME_TYPE, UC_PROFILE) values (:user, :path, :node, :type, :profile)";
+		Session session = null;
+		Transaction tx = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			Query q = session.createSQLQuery(qs);
+			String repoRootPath = "/" + Repository.ROOT;
+			String repoRootUuid = NodeBaseDAO.getInstance().getUuidFromPath(repoRootPath);
+			NodeFolder nfHome = (NodeFolder) session.load(NodeFolder.class, repoRootUuid);
+
+			String path = NodeBaseDAO.getInstance().getPathFromUuid(session, nfHome.getUuid());
+			q.setLong("profile", upId);
+			q.setString("user", ucUser);
+			q.setString("path", path);
+			q.setString("node", nfHome.getUuid());
+			q.setString("type", Folder.TYPE);
+
+			q.executeUpdate();
+			HibernateUtil.commit(tx);
+		} catch (HibernateException | PathNotFoundException e) {
+			HibernateUtil.rollback(tx);
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+
+		log.debug("updateProfile: void");
+	}
+
 	/**
 	 * Delete
 	 */

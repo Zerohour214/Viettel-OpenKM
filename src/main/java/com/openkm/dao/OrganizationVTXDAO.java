@@ -246,16 +246,19 @@ public class OrganizationVTXDAO {
 
 	public void deleteOrg(Long orgId) throws DatabaseException {
 		log.debug("removeUserOrg({})");
-
+		String qs = "delete from ORGANIZATION_VTX where path like concat('%', :orgId, '%')";
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			OrganizationVTX organizationVTX = new OrganizationVTX();
+			/*OrganizationVTX organizationVTX = new OrganizationVTX();
 			organizationVTX.setId(orgId);
 
 			session.beginTransaction();
-			session.delete(organizationVTX);
-			session.getTransaction().commit();
+			session.delete(organizationVTX);*/
+			Query q = session.createSQLQuery(qs);
+			q.setLong("orgId", orgId);
+			q.executeUpdate();
+			//session.getTransaction().commit();
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
@@ -282,6 +285,7 @@ public class OrganizationVTXDAO {
 
 	public String importUserToOrg(InputStream fileContent) {
 		String NOT_EXIST = "Người dùng không tồn tại";
+		String NOT_EXIST_ORG = "Đơn vị không tồn tại";
 		String IN_ORG = "Người dùng đã được gán vào đơn vị khác";
 		try {
 			Workbook workbook = null;
@@ -289,29 +293,27 @@ public class OrganizationVTXDAO {
 			Sheet sheet = workbook.getSheet(0);
 			String userNotExist = "";
 			for (int i = 1; i < sheet.getRows(); ++i) {
-				String userId = sheet.getCell(0, i).getContents();
-				/*name = sheet.getCell(1, i).getContents(),
-						email = sheet.getCell(2, i).getContents(),
-				roles = sheet.getCell(3, i).getContents();
-				List<String> usrRoles = Arrays.asList(roles.split(","));
-				User user = new User();
-				user.setId(id);
-				user.setName(name);
-				user.setEmail(email);
-				user.setPassword(id);
-				user.setActive(true);
-				for (String rolId : usrRoles) {
-					user.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));
-				}
-				AuthDAO.createUser(user);*/
 
+				String userId = sheet.getCell(0, i).getContents();
+				String orgCode = sheet.getCell(1, i).getContents();
+				if(userId.equals("") || orgCode.equals("")) {
+					userNotExist += "Dòng thứ " + String.valueOf(i+1) + "," + "thiếu dữ liệu,";
+				}
 				User user = AuthDAO.findUserByPk(userId);
 				if (user == null) userNotExist += userId + "," + NOT_EXIST;
 				else {
-					String orgCode = sheet.getCell(1, i).getContents();
+
 					OrganizationVTX organizationVTX = UserDAO.getInstance().getOrgByUserId(userId);
-					if (organizationVTX == null)
-						addUserToOrg(userId, getOrganizationbyCode(orgCode).getId());
+					if (organizationVTX == null) {
+						OrganizationVTX orgByCode = getOrganizationbyCode(orgCode);
+						if(orgByCode != null) {
+							addUserToOrg(userId, orgByCode.getId());
+						}
+						else {
+							userNotExist += orgCode + "," + NOT_EXIST_ORG;
+						}
+					}
+
 					else {
 						userNotExist += userId + "," + IN_ORG;
 					}
@@ -360,8 +362,10 @@ public class OrganizationVTXDAO {
 		}
 	}
 
-	public void importOrg(InputStream is) {
+	public String importOrg(InputStream is) {
+		String warn = "";
 		try {
+
 			Workbook workbook = null;
 			workbook = Workbook.getWorkbook(is);
 			Sheet sheet = workbook.getSheet(0);
@@ -377,7 +381,13 @@ public class OrganizationVTXDAO {
 
 				if (parent != null && !parent.equals("")) {
 					OrganizationVTX orgParent = getOrganizationbyCode(parent);
-					newOrg.setOrgParent(orgParent.getId());
+					if(orgParent == null) {
+						warn += "Dòng thứ " + String.valueOf(i+1) + " " + parent + ",Mã đơn vị không tồn tại,";
+						continue;
+					}
+					else {
+						newOrg.setOrgParent(orgParent.getId());
+					}
 				} else {
 					newOrg.setOrgParent(-1L);
 				}
@@ -393,5 +403,6 @@ public class OrganizationVTXDAO {
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
+		return warn;
 	}
 }

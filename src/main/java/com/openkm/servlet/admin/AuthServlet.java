@@ -33,6 +33,7 @@ import com.openkm.core.DatabaseException;
 import com.openkm.core.MimeTypeConfig;
 import com.openkm.dao.AuthDAO;
 import com.openkm.dao.ProfileDAO;
+import com.openkm.dao.UserConfigDAO;
 import com.openkm.dao.bean.Profile;
 import com.openkm.dao.bean.Role;
 import com.openkm.dao.bean.User;
@@ -50,6 +51,7 @@ import com.openkm.validator.ValidatorException;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -390,7 +392,10 @@ public class AuthServlet extends BaseServlet {
 		InputStream fileContent = filePart.getInputStream();
 
 		Workbook workbook = null;
-		workbook = Workbook.getWorkbook(fileContent);
+		WorkbookSettings ws = new WorkbookSettings();
+		ws.setEncoding("Cp1252");
+		workbook = Workbook.getWorkbook(fileContent, ws);
+
 		Sheet sheet = workbook.getSheet(0);
 
 		StringBuilder error = new StringBuilder();
@@ -399,18 +404,23 @@ public class AuthServlet extends BaseServlet {
 			String id = sheet.getCell(0, i).getContents(),
 					name = sheet.getCell(1, i).getContents(),
 					email = sheet.getCell(2, i).getContents(),
-					roles = sheet.getCell(3, i).getContents();
+					roles = sheet.getCell(3, i).getContents(),
+					profile = sheet.getCell(4, i).getContents();
 
 			if(id.equals("")) {
-				error.append("Dòng thứ ").append(i).append(" không có mã nhân viên\n");
+				error.append("Dòng thứ ").append(i+1).append(" không có mã nhân viên\n");
 				continue;
 			}
 			if(name.equals("")) {
-				error.append("Dòng thứ ").append(i).append(" không có tên nhân viên\n");
+				error.append("Dòng thứ ").append(i+1).append(" không có tên nhân viên\n");
 				continue;
 			}
 			if(email.equals("")) {
-				error.append("Dòng thứ ").append(i).append(" không có email nhân viên\n");
+				error.append("Dòng thứ ").append(i+1).append(" không có email nhân viên\n");
+				continue;
+			}
+			if(profile.equals("")) {
+				error.append("Dòng thứ ").append(i+1).append(" không có profile nhân viên\n");
 				continue;
 			}
 
@@ -423,16 +433,24 @@ public class AuthServlet extends BaseServlet {
 				usr.setName(name);
 				usr.setPassword(id);
 				usr.setEmail(email);
-
 				usr.setActive(true);
+
+				Long idProfile = ProfileDAO.findByName(profile);
 
 
 				for (String rolId : usrRoles) {
-					usr.getRoles().add(AuthDAO.findRoleByPk(rolId.trim()));
+					Role role = AuthDAO.findRoleByPk(rolId.trim());
+					if(role == null) {
+						role = new Role();
+						role.setId("ROLE_USER");
+						role.setActive(true);
+					}
+					usr.getRoles().add(role);
 				}
 
 				AuthDAO.createUser(usr);
 
+				UserConfigDAO.insertProfile(usr.getId(), Math.toIntExact(idProfile));
 				// Activity log
 				UserActivity.log(userId, "ADMIN_USER_CREATE", usr.getId(), null, usr.toString());
 			} else {

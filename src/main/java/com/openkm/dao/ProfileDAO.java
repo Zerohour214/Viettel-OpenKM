@@ -131,6 +131,28 @@ public class ProfileDAO {
 	}
 
 	/**
+	 * Find by name
+	 */
+	public static Long findByName(String name) throws DatabaseException {
+		log.debug("findByName({})", name);
+		String qs = "from Profile prf where prf.name=:name";
+		Session session = null;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Query q = session.createQuery(qs);
+			q.setString("name", name);
+			Profile ret = (Profile) q.setMaxResults(1).uniqueResult();
+			log.debug("findByName: {}", ret);
+			return ret.getId();
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	/**
 	 * Find by pk
 	 */
 	@SuppressWarnings("unchecked")

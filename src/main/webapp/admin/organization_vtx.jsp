@@ -86,7 +86,7 @@
                         <i class="fa fa-user-plus"></i>
                     </button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                            data-bs-target="#importUserModal">
+                            data-bs-target="#importUserModal" id="import-user-modal">
                         <i class="fa fa-upload"></i>
                     </button>
 
@@ -616,10 +616,10 @@
                                     let warnStr = "";
                                     if(warnList[0] === "") warnList.shift()
                                     for(let i=0; i<warnList.length-1; i+=2) {
-
                                         warnStr += warnList[i] + " - " + warnList[i+1] + "\n";
                                     }
-                                    alert(warnStr);
+                                    if(warnStr !== "")
+                                        alert(warnStr);
                                     getUsersByOrgId(orgChoosed);
                                 }
                             }
@@ -641,8 +641,28 @@
                         contentType: false,
                         processData: false,
                         data: formData,
-                        success: () => {
-                            getAllOrgRoot();
+                        // success: () => {
+                        //     alert("Import đơn vị thành công");
+                        //     getAllOrgRoot();
+                        // }
+                        complete: function(jqXHR) {
+                            if(jqXHR.readyState === 4) {
+                                let warnList = jqXHR.responseText.split(",");
+                                let warnStr = "";
+                                if(warnList[0] === "") warnList.shift()
+                                for(let i=0; i<warnList.length-1; i+=2) {
+                                    warnStr += warnList[i] + " - " + warnList[i+1] + "\n";
+                                }
+                                if(warnStr !== ""){
+                                    alert(warnStr);
+                                    getAllOrgRoot();
+                                }
+                                else {
+                                    alert("Import đơn vị thành công");
+                                    getAllOrgRoot();
+                                }
+
+                            }
                         }
                     })
                 } else {
@@ -668,9 +688,15 @@
                 })
             })
 
-        $('#btn-export_org').click(() => {
-
+        $('#btn-import_org').click(() => {
+            document.getElementById('input-file-org').value = "";
         })
+
+        $('#import-user-modal').click(() => {
+            document.getElementById('input-file-user').value = "";
+        })
+
+
 
         }
     )

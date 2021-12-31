@@ -234,6 +234,15 @@ public class ProfileServlet extends BaseServlet {
 		log.debug("list: void");
 	}
 
+	private Long getIdProfileByName(String name) {
+		try {
+			return ProfileDAO.findByName(name);
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		return -1L;
+	}
+
 	/**
 	 * Fille user profile object
 	 */
