@@ -71,7 +71,8 @@
 
                         <div>
                             <a
-                               href="/kms/services/rest/organization/downloadTemplateImportOrg?type=ORG">Download template</a>
+                                href="/kms/services/rest/organization/downloadTemplateImportOrg?type=ORG">Download
+                                template</a>
                         </div>
                     </div>
                 </div>
@@ -167,7 +168,8 @@
 
                         <div>
                             <a
-                               href="/kms/services/rest/organization/downloadTemplateImportOrg?type=USER_ORG">Download template</a>
+                                href="/kms/services/rest/organization/downloadTemplateImportOrg?type=USER_ORG">Download
+                                template</a>
                         </div>
                     </div>
                 </div>
@@ -191,19 +193,20 @@
                         </div>
 
                         <div class="mt-3 form-group">
-                            <label for="myModal" class="form-label">Đơn vị cha:</label>
+                            <label for="orgSearchModal" class="form-label">Đơn vị cha:</label>
                             <div class="input-group">
                                 <input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
-                                       type="text" autocomplete="off" data-bs-toggle="modal" data-bs-target="#myModal">
+                                       type="text" autocomplete="off" data-bs-toggle="modal" data-bs-target="#orgSearchModal">
 
-                                    <button class="btn btn-danger" type="button" onclick="$('#orgParent').val(''); $('#orgParentId').val('');">
-                                        <i class="fa fa-remove"></i>
-                                    </button>
+                                <button class="btn btn-danger" type="button"
+                                        onclick="$('#orgParent').val(''); $('#orgParentId').val('');">
+                                    <i class="fa fa-remove"></i>
+                                </button>
 
 
                             </div>
-                                <input class="form-control" name="orgParentId" id="orgParentId"
-                                       type="hidden"/>
+                            <input class="form-control" name="orgParentId" id="orgParentId"
+                                   type="hidden"/>
 
                         </div>
 
@@ -214,7 +217,7 @@
                     </form>
                 </div>
 
-                <div class="modal fade" id="myModal">
+                <div class="modal fade" id="orgSearchModal">
                     <div class="modal-dialog modal-dialog-scrollable modal-lg ">
                         <div class="modal-content">
 
@@ -498,8 +501,8 @@
                     processData: false,
                     contentType: 'application/json',
                     success: (res) => {
-                        console.log(res)
                         getAllOrgRoot();
+                        $('#tbl-user-by-org tbody').empty();
                     }
                 })
             })
@@ -597,34 +600,35 @@
             })
 
             $('#import-user-org').click(e => {
-                    let files = document.getElementById('input-file-user').files;
-                    let formData = new FormData();
-                    if (files.length > 0) {
-                        formData.append("file", files[0]);
+                let files = document.getElementById('input-file-user').files;
+                let formData = new FormData();
+                if (files.length > 0) {
+                    formData.append("file", files[0]);
 
-                        $.ajax({
-                            url: '/kms/services/rest/organization/importUserToOrg',
-                            type: 'POST',
-                            enctype: 'multipart/form-data',
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            data: formData,
-                            complete: function(jqXHR) {
-                                if(jqXHR.readyState === 4) {
-                                    let warnList = jqXHR.responseText.split(",");
-                                    let warnStr = "";
-                                    if(warnList[0] === "") warnList.shift()
-                                    for(let i=0; i<warnList.length-1; i+=2) {
-                                        warnStr += warnList[i] + " - " + warnList[i+1] + "\n";
-                                    }
-                                    if(warnStr !== "")
-                                        alert(warnStr);
-                                    getUsersByOrgId(orgChoosed);
+                    $.ajax({
+                        url: '/kms/services/rest/organization/importUserToOrg',
+                        type: 'POST',
+                        enctype: 'multipart/form-data',
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: formData,
+                        complete: function (jqXHR) {
+                            if (jqXHR.readyState === 4) {
+                                let warnList = jqXHR.responseText.split(",");
+                                let warnStr = "";
+                                if (warnList[0] === "") warnList.shift()
+                                for (let i = 0; i < warnList.length - 1; i += 2) {
+                                    if(warnList[i] !== "" && warnList[i + 1] !== "")
+                                    warnStr += warnList[i] + " - " + warnList[i + 1] + "\n";
                                 }
+                                if (warnStr !== "")
+                                    alert(warnStr);
+                                getUsersByOrgId(orgChoosed);
                             }
-                        })
-                    }
+                        }
+                    })
+                }
             })
 
             $('#import-org-submit').click(e => {
@@ -645,19 +649,19 @@
                         //     alert("Import đơn vị thành công");
                         //     getAllOrgRoot();
                         // }
-                        complete: function(jqXHR) {
-                            if(jqXHR.readyState === 4) {
+                        complete: function (jqXHR) {
+                            if (jqXHR.readyState === 4) {
                                 let warnList = jqXHR.responseText.split(",");
                                 let warnStr = "";
-                                if(warnList[0] === "") warnList.shift()
-                                for(let i=0; i<warnList.length-1; i+=2) {
-                                    warnStr += warnList[i] + " - " + warnList[i+1] + "\n";
+                                if (warnList[0] === "") warnList.shift()
+                                for (let i = 0; i < warnList.length - 1; i += 2) {
+                                    if(warnList[i] !== "" && warnList[i + 1] !== "")
+                                    warnStr += warnList[i] + " - " + warnList[i + 1] + "\n";
                                 }
-                                if(warnStr !== ""){
+                                if (warnStr !== "") {
                                     alert(warnStr);
                                     getAllOrgRoot();
-                                }
-                                else {
+                                } else {
                                     alert("Import đơn vị thành công");
                                     getAllOrgRoot();
                                 }
@@ -688,14 +692,27 @@
                 })
             })
 
-        $('#btn-import_org').click(() => {
-            document.getElementById('input-file-org').value = "";
-        })
+            $('#orgSearchModal').on('show.bs.modal', function (e) {
+                $('#table-org-search tbody').empty()
+                $.ajax({
+                    url: '/kms/services/rest/organization/search',
+                    type: 'POST',
+                    processData: false,
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: $("#form-search-org").serialize(),
+                    success: (response) => {
+                        loadOrgSearchParent(response)
+                    }
+                });
+            })
 
-        $('#import-user-modal').click(() => {
-            document.getElementById('input-file-user').value = "";
-        })
+            $('#btn-import_org').click(() => {
+                document.getElementById('input-file-org').value = "";
+            })
 
+            $('#import-user-modal').click(() => {
+                document.getElementById('input-file-user').value = "";
+            })
 
 
         }

@@ -150,7 +150,6 @@ public class AuthServlet extends BaseServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		log.debug("doPost({}, {})", request, response);
 		String action = WebUtils.getString(request, "action");
-		log.info("=================ACTION===========" + action);
 
 		String userId = request.getRemoteUser();
 		updateSessionManager(request);
@@ -436,7 +435,10 @@ public class AuthServlet extends BaseServlet {
 				usr.setActive(true);
 
 				Long idProfile = ProfileDAO.findByName(profile);
-
+				if(idProfile == -1L) {
+					error.append("Dòng thứ ").append(i+1).append(" không tồn tại profile trong hệ thống\n");
+					continue;
+				}
 
 				for (String rolId : usrRoles) {
 					Role role = AuthDAO.findRoleByPk(rolId.trim());

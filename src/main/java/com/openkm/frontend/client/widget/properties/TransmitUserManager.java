@@ -92,7 +92,31 @@ public class TransmitUserManager {
 		categoriesImage.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				userVtxSelectPopup.show();
+				String userId = Main.get().workspaceUserProperties.getUser().getId();
+				RequestBuilder builder = new RequestBuilder(
+						RequestBuilder.GET, Main.CONTEXT + "/services/rest/auth/getRolesByUser/" + userId);
+				builder.setHeader("Accept", "application/json");
+
+				try {
+					builder.sendRequest(null, new RequestCallback() {
+								@Override
+								public void onResponseReceived(Request request,
+															   Response response) {
+
+									if(response.getText().contains("\"ROLE_TRANSMIT_USER\""))
+										userVtxSelectPopup.show();
+								}
+
+								@Override
+								public void onError(Request request, Throwable throwable) {
+
+								}
+							}
+					);
+				} catch (RequestException e) {
+					e.printStackTrace();
+				}
+
 			}
 		});
 

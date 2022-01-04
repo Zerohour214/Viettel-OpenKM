@@ -144,6 +144,7 @@ public class ProfileDAO {
 			q.setString("name", name);
 			Profile ret = (Profile) q.setMaxResults(1).uniqueResult();
 			log.debug("findByName: {}", ret);
+			if(ret == null) return -1L;
 			return ret.getId();
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);

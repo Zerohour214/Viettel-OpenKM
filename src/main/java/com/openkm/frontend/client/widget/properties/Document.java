@@ -79,8 +79,10 @@ public class Document extends Composite {
 	 */
 	public Document() {
 		categoryManager = new CategoryManager(CategoryManager.ORIGIN_DOCUMENT);
+
 		transmitOrganizationManager = new TransmitOrganizationManager(TransmitOrganizationManager.ORIGIN_DOCUMENT);
 		transmitUserManager = new TransmitUserManager(TransmitUserManager.ORIGIN_DOCUMENT);
+
 		keywordManager = new KeywordManager(ThesaurusSelectPopup.DOCUMENT_PROPERTIES);
 		document = new GWTDocument();
 		table = new FlexTable();
@@ -666,6 +668,8 @@ public class Document extends Composite {
 		}
 
 	}
+
+
 
 	public void setReadDoc(){
 		try {

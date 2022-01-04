@@ -2379,7 +2379,7 @@ public class NodeBaseDAO {
 
 	OrganizationVTXDAO organizationVTXDAO = new OrganizationVTXDAO();
 
-	public void getAllChildOfOrgChecked(List<String> org, List<Long> orgCheckeds) throws DatabaseException {
+	/*public void getAllChildOfOrgChecked(List<String> org, List<Long> orgCheckeds) throws DatabaseException {
 		for (String s : org) {
 			List<OrganizationVTX> vtxdaoList = organizationVTXDAO.getAllChild(Long.parseLong(s));
 			List<String> childs = new ArrayList<>();
@@ -2390,7 +2390,7 @@ public class NodeBaseDAO {
 			getAllChildOfOrgChecked(childs, orgCheckeds);
 		}
 
-	}
+	}*/
 
 	public OrgDocumentVTX getOrgDocById(String docId, Long orgId) throws DatabaseException {
 		String qs = "from OrgDocumentVTX o where o.docId = :docId and o.orgId = :orgId";

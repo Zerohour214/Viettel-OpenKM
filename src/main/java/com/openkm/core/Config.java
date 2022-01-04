@@ -424,6 +424,7 @@ public class Config {
 	public static String DEFAULT_USER_ROLE = "ROLE_USER";
 	public static String DEFAULT_ADMIN_ROLE = "ROLE_ADMIN";
 	public static String DEFAULT_REPORT_ROLE = "ROLE_REPORT";
+	public static String DEFAULT_REPORT_TRANSMIT = "ROLE_TRANSMIT";
 
 	public static List<String> WEBSERVICES_VISIBLE_PROPERTIES = new ArrayList<>();
 
@@ -1139,7 +1140,7 @@ public class Config {
 			// Logo icons & login texts
 			TEXT_BANNER = ConfigDAO.getString(PROPERTY_TEXT_BANNER, "&nbsp;");
 			values.put(PROPERTY_TEXT_BANNER, TEXT_BANNER);
-			TEXT_WELCOME = ConfigDAO.getString(PROPERTY_TEXT_WELCOME, "<p>Welcome to OpenKM !</p><p>Use a valid username and password to access to OpenKM user Desktop.</p>");
+			TEXT_WELCOME = ConfigDAO.getString(PROPERTY_TEXT_WELCOME, "<p>Welcome to Knowledge !</p><p>Use a valid username and password to access to Knowledge user Desktop.</p>");
 			values.put(PROPERTY_TEXT_WELCOME, TEXT_WELCOME);
 			TEXT_TITLE = ConfigDAO.getString(PROPERTY_TEXT_TITLE, "OpenKM");
 			values.put(PROPERTY_TEXT_TITLE, TEXT_TITLE);

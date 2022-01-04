@@ -637,7 +637,7 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		orgListBox = new ListBox();
 		orgListBox.setName("docOrgId");
 		orgListBox.setStyleName("okm-Input");
-		orgListBox.setVisible(true);
+		orgListBox.setVisible(false);
 		orgListBox.setWidth("200px");
 		docOrgLabel.setText("Đơn vị: ");
 		docOrgLabel.setWidth("150px");
@@ -660,8 +660,8 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		docAuthor.setStyleName("okm-TextArea");
 		docAuthorLabel.setText(Main.i18n("document.docAuthor"));
 		docAuthorLabel.setWidth("150px");
-		vtTable.setWidget(3, 0, docAuthorLabel);
-		vtTable.setWidget(3, 1, docAuthor);
+		vtTable.setWidget(2, 0, docAuthorLabel);
+		vtTable.setWidget(2, 1, docAuthor);
 
 		publishCom.setName("publishCom");
 		publishCom.setVisible(true);
@@ -685,11 +685,11 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		});
 		publishedYearLabel.setText(Main.i18n("document.publishedYear"));
 		publishedYearLabel.setWidth("150px");
-		vtTable.setWidget(4, 0, publishedYearLabel);
-		vtTable.setWidget(4, 1, publishedYear);
+		vtTable.setWidget(3, 0, publishedYearLabel);
+		vtTable.setWidget(3, 1, publishedYear);
 
 		pageNumber.setName("pageNumber");
-		pageNumber.setVisible(true);
+		pageNumber.setVisible(false);
 		pageNumber.setWidth("200px");
 		pageNumber.addKeyPressHandler(new KeyPressHandler() {
 			@Override
@@ -701,6 +701,7 @@ public class FancyFileUpload extends Composite implements HasText, HasChangeHand
 		pageNumber.setStyleName("okm-TextArea");
 		pageNumberLabel.setText(Main.i18n("document.pageNumber"));
 		pageNumberLabel.setWidth("150px");
+		pageNumberLabel.setVisible(false);
 		vtTable.setWidget(4, 3, pageNumberLabel);
 		vtTable.setWidget(4, 4, pageNumber);
 		mainPanel.add(new HTML("<br/>"));

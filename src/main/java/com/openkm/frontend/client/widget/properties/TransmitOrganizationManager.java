@@ -28,6 +28,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
@@ -89,7 +90,31 @@ public class TransmitOrganizationManager {
 		categoriesImage.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				organizationVtxSelectPopup.show();
+				String userId = Main.get().workspaceUserProperties.getUser().getId();
+				RequestBuilder builder = new RequestBuilder(
+						RequestBuilder.GET, Main.CONTEXT + "/services/rest/auth/getRolesByUser/" + userId);
+				builder.setHeader("Accept", "application/json");
+
+				try {
+					builder.sendRequest(null, new RequestCallback() {
+								@Override
+								public void onResponseReceived(Request request,
+															   Response response) {
+
+									if(response.getText().contains("\"ROLE_TRANSMIT_ORG\""))
+										organizationVtxSelectPopup.show();
+								}
+
+								@Override
+								public void onError(Request request, Throwable throwable) {
+
+								}
+							}
+					);
+				} catch (RequestException e) {
+					e.printStackTrace();
+				}
+
 			}
 		});
 
@@ -104,6 +129,8 @@ public class TransmitOrganizationManager {
 		categoriesImage.setVisible(false);
 
 		organizationVtxSelectPopup.setStyleName("okm-Popup");
+
+
 	}
 
 	/**
@@ -443,5 +470,6 @@ public class TransmitOrganizationManager {
 
 		organizationVtxSelectPopup.setOrgCheckeds(orgCheckeds, orgPathTrace);
 	}
+
 
 }

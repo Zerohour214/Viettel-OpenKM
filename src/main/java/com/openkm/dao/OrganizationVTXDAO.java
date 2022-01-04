@@ -1,5 +1,6 @@
 package com.openkm.dao;
 
+import com.openkm.bean.Document;
 import com.openkm.bean.OrganizationVTXBean;
 import com.openkm.core.DatabaseException;
 import com.openkm.dao.bean.Organization;
@@ -8,10 +9,10 @@ import com.openkm.dao.bean.User;
 import com.openkm.dao.bean.UserOrganizationVTX;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.*;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrganizationVTXDAO {
 	private static Logger log = LoggerFactory.getLogger(OrganizationVTXDAO.class);
@@ -246,19 +248,37 @@ public class OrganizationVTXDAO {
 
 	public void deleteOrg(Long orgId) throws DatabaseException {
 		log.debug("removeUserOrg({})");
-		String qs = "delete from ORGANIZATION_VTX where path like concat('%', :orgId, '%')";
+		String qs = "delete from ORGANIZATION_VTX where path like concat('%/', :orgId, '/%')";
+		String qs1 = "delete from USER_ORG_VTX where ORG_ID IN :orgIds";
+		String qs3 = "delete from ORG_DOC where org_id IN :orgIds";
+		List<Long> orgIdsSuit = getAllLevelChild(orgId).stream().map(obj -> obj.getId()).collect(Collectors.toList());
 		Session session = null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			/*OrganizationVTX organizationVTX = new OrganizationVTX();
-			organizationVTX.setId(orgId);
-
-			session.beginTransaction();
-			session.delete(organizationVTX);*/
 			Query q = session.createSQLQuery(qs);
 			q.setLong("orgId", orgId);
+			session.beginTransaction();
 			q.executeUpdate();
-			//session.getTransaction().commit();
+			session.getTransaction().commit();
+
+			session.flush();
+			session.clear();
+
+			q = session.createSQLQuery(qs1);
+			q.setParameterList("orgIds", orgIdsSuit);
+			session.beginTransaction();
+			q.executeUpdate();
+			session.getTransaction().commit();
+
+			session.flush();
+			session.clear();
+
+			q = session.createSQLQuery(qs3);
+			q.setParameterList("orgIds", orgIdsSuit);
+			session.beginTransaction();
+			q.executeUpdate();
+			session.getTransaction().commit();
+
 		} catch (HibernateException e) {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
@@ -283,13 +303,40 @@ public class OrganizationVTXDAO {
 		}
 	}
 
+	public List<OrganizationVTX> getAllLevelChild(Long parent) throws DatabaseException {
+		String qs = "Select o.ID id, o.NAME name, o.CODE code, o.PATH path, o.ORG_PARENT parent" +
+				" from ORGANIZATION_VTX o where o.path like concat('%/', :parent, '/%') ";
+
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			SQLQuery q = session.createSQLQuery(qs);
+			q.setLong("parent", parent);
+			q.setResultTransformer(Transformers.aliasToBean(OrganizationVTX.class));
+			q.addScalar("id", Hibernate.LONG);
+			q.addScalar("name");
+			q.addScalar("code");
+			q.addScalar("parent", Hibernate.LONG);
+			q.addScalar("path");
+			List<OrganizationVTX> ret = (List<OrganizationVTX>) q.list();
+			log.debug("getAllChild: {}", ret);
+			return ret;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
 	public String importUserToOrg(InputStream fileContent) {
 		String NOT_EXIST = "Người dùng không tồn tại";
 		String NOT_EXIST_ORG = "Đơn vị không tồn tại";
 		String IN_ORG = "Người dùng đã được gán vào đơn vị khác";
 		try {
 			Workbook workbook = null;
-			workbook = Workbook.getWorkbook(fileContent);
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setEncoding("Cp1252");
+			workbook = Workbook.getWorkbook(fileContent, ws);
 			Sheet sheet = workbook.getSheet(0);
 			String userNotExist = "";
 			for (int i = 1; i < sheet.getRows(); ++i) {
@@ -367,7 +414,9 @@ public class OrganizationVTXDAO {
 		try {
 
 			Workbook workbook = null;
-			workbook = Workbook.getWorkbook(is);
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setEncoding("Cp1252");
+			workbook = Workbook.getWorkbook(is, ws);
 			Sheet sheet = workbook.getSheet(0);
 
 			for (int i = 1; i < sheet.getRows(); ++i) {
