@@ -32,9 +32,12 @@ import com.openkm.dao.*;
 import com.openkm.dao.bean.*;
 import com.openkm.extension.dao.WikiPageDAO;
 import com.openkm.extension.dao.bean.WikiPage;
+import com.openkm.module.AuthModule;
+import com.openkm.module.ModuleManager;
 import com.openkm.module.common.CommonWorkflowModule;
 import com.openkm.module.db.stuff.DbAccessManager;
 import com.openkm.module.db.stuff.SecurityHelper;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.CloneUtils;
 import com.openkm.util.SystemProfiling;
 import org.apache.commons.io.IOUtils;
@@ -152,6 +155,16 @@ public class BaseFolderModule {
 		fld.setAuthor(nFolder.getAuthor());
 		fld.setUuid(nFolder.getUuid());
 		fld.setHasChildren(NodeFolderDAO.getInstance().hasChildren(nFolder.getUuid()));
+
+
+		try {
+			AuthModule am = ModuleManager.getAuthModule();
+			String ret = am.getName(null, nFolder.getAuthor());
+			fld.setFolderAuthor(ret);
+
+		} catch (PrincipalAdapterException e) {
+			e.printStackTrace();
+		}
 
 		// Get permissions
 		BaseModule.setPermissions(nFolder, fld);

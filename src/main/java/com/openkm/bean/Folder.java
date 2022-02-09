@@ -32,6 +32,15 @@ public class Folder extends Node {
 	private static final long serialVersionUID = 1L;
 	public static final String TYPE = "okm:folder";
 	private boolean hasChildren;
+	private String folderAuthor;
+
+	public String getFolderAuthor() {
+		return folderAuthor;
+	}
+
+	public void setFolderAuthor(String folderAuthor) {
+		this.folderAuthor = folderAuthor;
+	}
 
 	public boolean isHasChildren() {
 		return hasChildren;
