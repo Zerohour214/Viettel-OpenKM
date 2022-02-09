@@ -7503,12 +7503,12 @@ var Toolbar = function ToolbarClosure() {
       items.openFile.addEventListener('click', function (e) {
         eventBus.dispatch('openfile');
       });
-      items.print.addEventListener('click', function (e) {
+      /*items.print.addEventListener('click', function (e) {
         eventBus.dispatch('print');
       });
       items.download.addEventListener('click', function (e) {
         eventBus.dispatch('download');
-      });
+      });*/
       items.scaleSelect.oncontextmenu = noContextMenuHandler;
       localized.then(this._localized.bind(this));
     },

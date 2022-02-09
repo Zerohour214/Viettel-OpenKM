@@ -702,7 +702,8 @@ public class Util {
           NavToolsVisible: true,
           CursorToolsVisible: true,
           SearchToolsVisible: true,
-          localeChain: "en_US"
+          localeChain: "en_US",
+
         },
         {
           quality: "high",

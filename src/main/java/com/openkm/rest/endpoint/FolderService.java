@@ -252,6 +252,20 @@ public class FolderService {
 		}
 	}
 
+	@GET
+	@Path("/getUuidPath/{uuid}")
+	public String getUuidPath(@PathParam("uuid") String uuid) throws GenericException {
+		try {
+			log.debug("getPath({})", uuid);
+			FolderModule fm = ModuleManager.getFolderModule();
+			String path = fm.getUuidPath(null, uuid);
+			log.debug("getPath: {}", path);
+			return path;
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
 	@PUT
 	@Path("/createMissingFolders")
 	public void createMissingFolders(@QueryParam("fldPath") String fldPath) throws GenericException {

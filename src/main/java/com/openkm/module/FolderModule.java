@@ -204,4 +204,7 @@ public interface FolderModule {
 	 */
 	public String getPath(String token, String uuid) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
+
+	public String getUuidPath(String token, String uuid) throws AccessDeniedException, RepositoryException,
+			DatabaseException;
 }

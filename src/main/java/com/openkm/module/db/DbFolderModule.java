@@ -632,10 +632,10 @@ public class DbFolderModule implements FolderModule {
 				fldUuid = fldId;
 			}
 
-			if (fldPath.equals("/" + Repository.ROOT) || fldPath.equals("/" + Repository.PERSONAL) || fldPath.equals("/" + Repository.TEMPLATES)
+			/*if (fldPath.equals("/" + Repository.ROOT) || fldPath.equals("/" + Repository.PERSONAL) || fldPath.equals("/" + Repository.TEMPLATES)
 					|| fldPath.equals("/" + Repository.TRASH) || fldPath.equals("/" + Repository.MAIL)) {
-				long docCount = NodeBaseDAO.getInstance().getCount(NodeDocument.class.getSimpleName(), fldPath);
-				long fldCount = NodeBaseDAO.getInstance().getCount(NodeFolder.class.getSimpleName(), fldPath);
+				long docCount = NodeBaseDAO.getInstance().getNodeCountProperties(NodeDocument.class.getSimpleName(), fldPath);
+				long fldCount = NodeBaseDAO.getInstance().getNodeCountProperties(NodeFolder.class.getSimpleName(), fldPath);
 				long mailCount = NodeBaseDAO.getInstance().getCount(NodeMail.class.getSimpleName(), fldPath);
 
 				contentInfo.setDocuments(docCount);
@@ -643,7 +643,15 @@ public class DbFolderModule implements FolderModule {
 				contentInfo.setMails(mailCount);
 			} else {
 				contentInfo = BaseFolderModule.getContentInfo(fldUuid);
-			}
+			}*/
+
+			long docCount = NodeBaseDAO.getInstance().getNodeCountProperties(NodeDocument.class.getSimpleName(), fldPath);
+			long fldCount = NodeBaseDAO.getInstance().getNodeCountProperties(NodeFolder.class.getSimpleName(), fldPath);
+			long mailCount = NodeBaseDAO.getInstance().getCount(NodeMail.class.getSimpleName(), fldPath);
+
+			contentInfo.setDocuments(docCount);
+			contentInfo.setFolders(fldCount);
+			contentInfo.setMails(mailCount);
 
 			// Activity log
 			UserActivity.log(auth.getName(), "GET_FOLDER_CONTENT_INFO", fldUuid, fldPath, contentInfo.toString());
@@ -703,6 +711,15 @@ public class DbFolderModule implements FolderModule {
 	public String getPath(String token, String uuid) throws AccessDeniedException, RepositoryException, DatabaseException {
 		try {
 			return NodeBaseDAO.getInstance().getPathFromUuid(uuid);
+		} catch (PathNotFoundException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public String getUuidPath(String token, String uuid) throws AccessDeniedException, RepositoryException, DatabaseException {
+		try {
+			return NodeBaseDAO.getInstance().getUuidPathFromUuid(uuid);
 		} catch (PathNotFoundException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}

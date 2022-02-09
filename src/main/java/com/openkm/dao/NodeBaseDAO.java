@@ -95,11 +95,19 @@ public class NodeBaseDAO {
 		return calculatePathFromUuid(uuid);
 	}
 
+	public String getUuidPathFromUuid(String uuid) throws PathNotFoundException, DatabaseException {
+		return calculateUuidPathFromUuid(uuid);
+	}
+
 	/**
 	 * Get node path from UUID
 	 */
 	public String getPathFromUuid(Session session, String uuid) throws PathNotFoundException, HibernateException {
 		return calculatePathFromUuid(session, uuid);
+	}
+
+	public String getUuidPathFromUuid(Session session, String uuid) throws PathNotFoundException, HibernateException {
+		return calculateUuidPathFromUuid(session, uuid);
 	}
 
 	/**
@@ -178,6 +186,26 @@ public class NodeBaseDAO {
 		}
 	}
 
+	private String calculateUuidPathFromUuid(String uuid) throws PathNotFoundException, DatabaseException {
+		log.debug("calculatePathFromUuid({})", uuid);
+		Session session = null;
+
+		if (Config.ROOT_NODE_UUID.equals(uuid)) {
+			return "/";
+		}
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String path = getUuidPathFromUuid(session, uuid);
+			log.debug("calculatePathFromUuid: {}", path);
+			return path;
+		} catch (HibernateException e) {
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
 	/**
 	 * Get node path from UUID. This is the old one which calculates the path.
 	 */
@@ -193,6 +221,32 @@ public class NodeBaseDAO {
 				throw new PathNotFoundException(uuid);
 			} else {
 				path = "/".concat(node.getName()).concat(path);
+				childUuid = uuid;
+				uuid = node.getParent();
+
+				if (uuid.equals(childUuid)) {
+					log.warn("*** Node is its own parent: {} -> {} ***", uuid, path);
+					break;
+				}
+			}
+		} while (!Config.ROOT_NODE_UUID.equals(uuid));
+
+		log.debug("calculatePathFromUuid: {}", path);
+		return path;
+	}
+
+	private String calculateUuidPathFromUuid(Session session, String uuid) throws PathNotFoundException, HibernateException {
+		log.debug("calculatePathFromUuid({}, {})", session, uuid);
+		String childUuid = null;
+		String path = "";
+
+		do {
+			NodeBase node = (NodeBase) session.get(NodeBase.class, uuid);
+
+			if (node == null) {
+				throw new PathNotFoundException(uuid);
+			} else {
+				path = "/".concat(node.getUuid()).concat(path);
 				childUuid = uuid;
 				uuid = node.getParent();
 
@@ -1726,6 +1780,65 @@ public class NodeBaseDAO {
 		}
 
 		return total;
+	}
+
+	public long getNodeCountProperties(String nodeType, String path) throws PathNotFoundException, DatabaseException {
+		log.debug("getNodeCountProperties({}, {})", new Object[]{nodeType, path});
+		long begin = System.currentTimeMillis();
+		Session session = null;
+		Transaction tx = null;
+		long total = 0;
+
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+
+			String uuid = getUuidFromPath(path);
+			total = getNodeCountPropertiesHelper(session, nodeType, uuid);
+
+			HibernateUtil.commit(tx);
+
+			log.trace("getSubtreeCount.Path: {}, Time: {}", path, System.currentTimeMillis() - begin);
+			log.debug("getSubtreeCount: {}", total);
+			return total;
+		} catch (PathNotFoundException e) {
+			HibernateUtil.rollback(tx);
+			throw e;
+		} catch (DatabaseException e) {
+			HibernateUtil.rollback(tx);
+			throw e;
+		} catch (HibernateException e) {
+			HibernateUtil.rollback(tx);
+			throw new DatabaseException(e.getMessage(), e);
+		} finally {
+			HibernateUtil.close(session);
+		}
+	}
+
+	private long getNodeCountPropertiesHelper(Session session, String nodeType, String parentUuid)
+			throws HibernateException, DatabaseException {
+		log.debug("getSubtreeCountHelper({}, {})", new Object[]{nodeType, parentUuid});
+		String qs = "from NodeBase n where n.parent=:parent";
+		Query q = session.createQuery(qs).setCacheable(true);
+		q.setString("parent", parentUuid);
+		List<NodeBase> nodes = q.list();
+		long totalF = 0, totalD = 0;
+
+		for (NodeBase nBase : nodes) {
+			if (NodeFolder.class.getSimpleName().equals(nodeType) && nBase instanceof NodeFolder) {
+
+				totalF += 1;
+
+			}
+			else if (NodeDocument.class.getSimpleName().equals(nodeType) && nBase instanceof NodeDocument) {
+
+				totalD += 1;
+
+			}
+		}
+
+		if(NodeDocument.class.getSimpleName().equals(nodeType)) return totalD;
+		return totalF;
 	}
 
 	/**

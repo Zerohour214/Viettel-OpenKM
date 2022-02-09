@@ -295,7 +295,7 @@ public class Document extends Node {
 			if(vtProperties.get("publishedYear") != null && !vtProperties.get("publishedYear").toString().trim().isEmpty()){
 				setPublisedYear((Integer) vtProperties.get("publishedYear"));
 			}
-			if(vtProperties.get("publishedYear") != null && !vtProperties.get("pageNumber").toString().trim().isEmpty()){
+			if(vtProperties.get("pageNumber") != null && !vtProperties.get("pageNumber").toString().trim().isEmpty()){
 				setPageNumber((Integer) vtProperties.get("pageNumber"));
 			}
 			if (vtProperties.get("docAuthor") != null && !vtProperties.get("docAuthor").toString().trim().isEmpty()){

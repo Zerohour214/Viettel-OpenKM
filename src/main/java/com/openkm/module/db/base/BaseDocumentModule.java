@@ -37,7 +37,10 @@ import com.openkm.dao.bean.cache.UserItems;
 import com.openkm.extension.dao.WikiPageDAO;
 import com.openkm.extension.dao.bean.WikiPage;
 import com.openkm.frontend.client.Main;
+import com.openkm.module.AuthModule;
+import com.openkm.module.ModuleManager;
 import com.openkm.module.common.CommonWorkflowModule;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.CloneUtils;
 import com.openkm.util.DocConverter;
 import com.openkm.util.SystemProfiling;
@@ -259,7 +262,20 @@ public class BaseDocumentModule {
 			doc.setDocConfidentiality(0);
 		}
 		doc.setDocExpiredDate(nDocument.getDocExpiredDate());
-		doc.setDocAuthor(nDocument.getDocAuthor());
+
+		if(nDocument.getDocAuthor() == null || nDocument.getDocAuthor().isEmpty()) {
+			try {
+				AuthModule am = ModuleManager.getAuthModule();
+				String ret = am.getName(null, nDocument.getAuthor());
+				doc.setDocAuthor(ret);
+			} catch (PrincipalAdapterException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			doc.setDocAuthor(nDocument.getDocAuthor());
+		}
+
 		doc.setPublishCom(nDocument.getPublishCom());
 		if(nDocument.getPublishedYear() != null){
 			doc.setPublisedYear(nDocument.getPublishedYear());

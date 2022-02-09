@@ -191,6 +191,15 @@ public class OKMFolder implements FolderModule {
 		return path;
 	}
 
+	@Override
+	public String getUuidPath(String token, String uuid) throws AccessDeniedException, RepositoryException, DatabaseException {
+		log.debug("getPath({})", uuid);
+		FolderModule fm = ModuleManager.getFolderModule();
+		String path = fm.getUuidPath(token, uuid);
+		log.debug("getPath: {}", path);
+		return path;
+	}
+
 	/**
 	 * Create missing folders.
 	 */
