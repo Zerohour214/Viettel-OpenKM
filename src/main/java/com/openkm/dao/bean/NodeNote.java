@@ -21,6 +21,10 @@
 
 package com.openkm.dao.bean;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -52,6 +56,18 @@ public class NodeNote implements Serializable {
 	@Lob
 	@Type(type = "org.hibernate.type.StringClobType")
 	private String text;
+
+	@Transient
+	private String noteAuthor;
+
+
+	public String getNoteAuthor() {
+		return noteAuthor;
+	}
+
+	public void setNoteAuthor(String noteAuthor) {
+		this.noteAuthor = noteAuthor;
+	}
 
 	public String getUuid() {
 		return uuid;

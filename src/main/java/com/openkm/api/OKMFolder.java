@@ -200,6 +200,13 @@ public class OKMFolder implements FolderModule {
 		return path;
 	}
 
+	@Override
+	public List<Folder> getByThesaurus(String keyword) {
+		FolderModule fm = ModuleManager.getFolderModule();
+		List<Folder> ret = fm.getByThesaurus(keyword);
+		return ret;
+	}
+
 	/**
 	 * Create missing folders.
 	 */

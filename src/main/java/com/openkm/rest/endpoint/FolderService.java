@@ -21,11 +21,13 @@
 
 package com.openkm.rest.endpoint;
 
+import com.google.gson.Gson;
 import com.openkm.api.OKMFolder;
 import com.openkm.bean.ContentInfo;
 import com.openkm.bean.ExtendedAttributes;
 import com.openkm.bean.Folder;
 import com.openkm.core.MimeTypeConfig;
+import com.openkm.module.DocumentModule;
 import com.openkm.module.FolderModule;
 import com.openkm.module.ModuleManager;
 import com.openkm.rest.GenericException;
@@ -276,6 +278,17 @@ public class FolderService {
 		} catch (Exception e) {
 			throw new GenericException(e);
 		}
+	}
+
+	@GET
+	@Path("/getByThesaurus")
+	public String getByThesaurus(@QueryParam("keyword") String keyword)  {
+
+		FolderModule fm = ModuleManager.getFolderModule();
+		if(keyword == null) keyword = "";
+
+		String json = new Gson().toJson(fm.getByThesaurus(keyword));
+		return json;
 	}
 }
 

@@ -207,4 +207,6 @@ public interface FolderModule {
 
 	public String getUuidPath(String token, String uuid) throws AccessDeniedException, RepositoryException,
 			DatabaseException;
+
+    public List<Folder> getByThesaurus(String keyword);
 }

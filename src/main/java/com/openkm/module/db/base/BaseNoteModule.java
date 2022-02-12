@@ -63,6 +63,7 @@ public class BaseNoteModule {
 		note.setAuthor(nNote.getAuthor());
 		note.setText(nNote.getText());
 		note.setPath(notePath);
+		note.setNoteAuthor(nNote.getNoteAuthor());
 
 		log.debug("getProperties: {}", note);
 		return note;

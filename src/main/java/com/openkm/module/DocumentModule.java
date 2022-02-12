@@ -457,4 +457,6 @@ public interface DocumentModule {
     public void transmitToUser(String docId, String usrs) throws DatabaseException;
 
 	public List<User> getUsrsByDocId(String docId) throws DatabaseException;
+
+	public List<Document> getByThesaurus(String keyword);
 }

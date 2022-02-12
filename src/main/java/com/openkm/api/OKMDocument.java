@@ -391,4 +391,10 @@ public class OKMDocument implements DocumentModule {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.getUsrsByDocId(docId);
 	}
+
+	@Override
+	public List<Document> getByThesaurus(String keyword) {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.getByThesaurus(keyword);
+	}
 }

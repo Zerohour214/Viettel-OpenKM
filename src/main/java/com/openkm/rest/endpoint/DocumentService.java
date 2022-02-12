@@ -737,5 +737,17 @@ public class DocumentService {
 		return json;
 	}
 
+	@GET
+	@Path("/getByThesaurus")
+
+	public String getByThesaurus(@QueryParam("keyword") String keyword)  {
+
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		if(keyword == null) keyword = "";
+
+		String json = new Gson().toJson(dm.getByThesaurus(keyword));
+		return json;
+	}
+
 
 }

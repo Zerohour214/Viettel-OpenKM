@@ -724,4 +724,9 @@ public class DbFolderModule implements FolderModule {
 			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public List<Folder> getByThesaurus(String keyword) {
+		return NodeBaseDAO.getInstance().getFolderByThesaurus(keyword);
+	}
 }

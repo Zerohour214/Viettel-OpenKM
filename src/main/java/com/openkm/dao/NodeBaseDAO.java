@@ -22,6 +22,7 @@
 package com.openkm.dao;
 
 import com.openkm.api.OKMAuth;
+import com.openkm.api.OKMSearch;
 import com.openkm.bean.*;
 import com.openkm.core.*;
 import com.openkm.core.Config;
@@ -2738,5 +2739,33 @@ public class NodeBaseDAO {
 		} finally {
 			HibernateUtil.close(session);
 		}
+	}
+
+	public List<Document> getDocumentByThesaurus(String keyword) {
+		try {
+			List<Document> results = OKMSearch.getInstance().getDocumentsByKeyword(null, keyword);
+			return results;
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<Folder> getFolderByThesaurus(String keyword) {
+		try {
+			List<Folder> results = OKMSearch.getInstance().getFoldersByKeyword(null, keyword);
+			return results;
+		} catch (AccessDeniedException e) {
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

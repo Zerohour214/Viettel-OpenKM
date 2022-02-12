@@ -41,6 +41,7 @@ public class Note implements Serializable {
 	private String author;
 	private String text;
 	private String path;
+	private String noteAuthor;
 
 	public Calendar getDate() {
 		return date;
@@ -72,6 +73,14 @@ public class Note implements Serializable {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public String getNoteAuthor() {
+		return noteAuthor;
+	}
+
+	public void setNoteAuthor(String noteAuthor) {
+		this.noteAuthor = noteAuthor;
 	}
 
 	public String toString() {

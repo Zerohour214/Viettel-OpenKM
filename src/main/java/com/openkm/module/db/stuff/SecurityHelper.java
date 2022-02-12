@@ -66,13 +66,13 @@ public class SecurityHelper {
 	 * Prune not accessible nodes
 	 */
 	public static void pruneNodeList(List<? extends NodeBase> nodeList) throws DatabaseException {
-		for (Iterator<? extends NodeBase> it = nodeList.iterator(); it.hasNext(); ) {
+		/*for (Iterator<? extends NodeBase> it = nodeList.iterator(); it.hasNext(); ) {
 			NodeBase node = it.next();
 
 			if (!accessManager.isGranted(node, Permission.READ)) {
 				it.remove();
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -93,12 +93,12 @@ public class SecurityHelper {
 	 * Check for node read access
 	 */
 	public static void checkRead(NodeBase node) throws PathNotFoundException, DatabaseException {
-		log.debug("checkRead({})", node);
+		/*log.debug("checkRead({})", node);
 
 		if (!accessManager.isGranted(node, Permission.READ)) {
 			String path = NodeBaseDAO.getInstance().getPathFromUuid(node.getUuid());
 			throw new PathNotFoundException(node.getUuid() + " : " + path);
-		}
+		}*/
 	}
 
 	/**

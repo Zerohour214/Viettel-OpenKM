@@ -26,7 +26,10 @@ import com.openkm.core.DatabaseException;
 import com.openkm.core.PathNotFoundException;
 import com.openkm.dao.bean.NodeBase;
 import com.openkm.dao.bean.NodeNote;
+import com.openkm.module.AuthModule;
+import com.openkm.module.ModuleManager;
 import com.openkm.module.db.stuff.SecurityHelper;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.SystemProfiling;
 import org.hibernate.*;
 import org.slf4j.Logger;
@@ -66,6 +69,13 @@ public class NodeNoteDAO {
 			Query q = session.createQuery(qs).setCacheable(true);
 			q.setString("parent", parentUuid);
 			List<NodeNote> ret = q.list();
+
+			for(NodeNote note : ret) {
+				AuthModule am = ModuleManager.getAuthModule();
+				String res = am.getName(null, note.getAuthor());
+				note.setNoteAuthor(res);
+			}
+
 			initialize(ret);
 			HibernateUtil.commit(tx);
 			log.debug("findByParent: {}", ret);
@@ -79,9 +89,13 @@ public class NodeNoteDAO {
 		} catch (HibernateException e) {
 			HibernateUtil.rollback(tx);
 			throw new DatabaseException(e.getMessage(), e);
+		} catch (PrincipalAdapterException e) {
+			e.printStackTrace();
+			return null;
 		} finally {
 			HibernateUtil.close(session);
 		}
+
 	}
 
 	/**
