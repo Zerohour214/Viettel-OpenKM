@@ -29,7 +29,10 @@ import com.openkm.bean.ExtendedAttributes;
 import com.openkm.bean.LockInfo;
 import com.openkm.bean.Version;
 import com.openkm.core.*;
+import com.openkm.dao.bean.NodeDocument;
 import com.openkm.frontend.client.Main;
+import com.openkm.frontend.client.OKMException;
+import com.openkm.frontend.client.bean.extension.GWTActivity;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
 import com.openkm.module.OrgVTXModule;
@@ -54,6 +57,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -727,21 +731,17 @@ public class DocumentService {
 	@POST
 	@Path("/search")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getAllDoc(@FormParam("docName") String docName,
-							@FormParam("docCode") String docCode) throws DatabaseException {
+	public String getAllDoc(@FormParam("text") String text) throws DatabaseException {
 
 		DocumentModule dm = ModuleManager.getDocumentModule();
-		if(docCode == null) docCode = "";
-		if(docName == null) docName = "";
-		String json = new Gson().toJson(dm.search(docCode, docName));
+		if(text == null) text = "";
+		String json = new Gson().toJson(dm.search(text));
 		return json;
 	}
 
 	@GET
 	@Path("/getByThesaurus")
-
 	public String getByThesaurus(@QueryParam("keyword") String keyword)  {
-
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		if(keyword == null) keyword = "";
 
@@ -749,5 +749,32 @@ public class DocumentService {
 		return json;
 	}
 
+	@GET
+	@Path("/getLogActivityByDoc")
+	public String findByFilterByItem(@QueryParam("docId") String item) throws OKMException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+
+		String json = new Gson().toJson(dm.getLogActivityByDoc(item));
+		return json;
+	}
+
+	@POST
+	@Path("/getAllRelatedDoc")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String getAllRelatedDoc(@FormParam("docId") String docId) throws DatabaseException, AccessDeniedException, RepositoryException, PathNotFoundException {
+
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		if(docId == null || "".equals(docId.trim())) return "";
+		List<NodeDocument> ret = dm.getRelatedDocuments(dm.getProperties(null, docId).getDocCode(), docId);
+
+		/*List<Document> relatedDocs = new ArrayList<>();
+		for(Document doc : ret) {
+			if(!doc.getId().equals(docId))
+			relatedDocs.add(getProperties(doc.getId()));
+		}*/
+
+		String json = new Gson().toJson(ret);
+		return json;
+	}
 
 }

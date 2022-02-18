@@ -49,7 +49,7 @@ import java.util.*;
 
 @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-@Api(description = "gropertyGroup-service", value = "gropertyGroup-service")
+@Api(description = "propertyGroup-service", value = "propertyGroup-service")
 @Path("/propertyGroup")
 public class PropertyGroupService {
 	private static Logger log = LoggerFactory.getLogger(PropertyGroupService.class);

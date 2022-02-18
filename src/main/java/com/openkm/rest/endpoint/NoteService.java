@@ -55,6 +55,21 @@ public class NoteService {
 		}
 	}
 
+	@POST
+	@Path("/addWithName")
+	// The "text" parameter comes in the POST request body.
+	public Note addWithName(@QueryParam("nodeId") String nodeId, @QueryParam("text") String text, @QueryParam("author") String authorName) throws GenericException {
+		try {
+			log.debug("add({}, {})", new Object[]{nodeId, text});
+			NoteModule nm = ModuleManager.getNoteModule();
+			Note ret = nm.addWithName(null, nodeId, text, authorName);
+			log.debug("addNote: {}", ret);
+			return ret;
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
 	@GET
 	@Path("/get")
 	public Note get(@QueryParam("noteId") String noteId) throws GenericException {

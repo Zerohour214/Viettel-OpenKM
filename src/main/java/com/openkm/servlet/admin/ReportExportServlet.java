@@ -32,10 +32,8 @@ import com.openkm.dao.bean.OrganizationVTX;
 import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.DownloadReportUtils;
 import com.openkm.util.WebUtils;
+import com.spire.doc.*;
 import com.spire.doc.Document;
-import com.spire.doc.FileFormat;
-import com.spire.doc.Table;
-import com.spire.doc.TableRow;
 import net.sf.jxls.transformer.XLSTransformer;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -636,6 +634,9 @@ public class ReportExportServlet extends BaseServlet {
 
 		index1 = 1;
 		Table table2 = docSpire.getSections().get(0).getTables().get(4);
+
+		table2.autoFit(AutoFitBehaviorType.Fixed_Column_Widths);
+
 		for (KQTTReportBean elb : exportBeanList) {
 			List arrList = new ArrayList();
 			arrList.add(index1);
@@ -662,10 +663,13 @@ public class ReportExportServlet extends BaseServlet {
 				if(arrList.get(col) == null) dataRow2.getCells().get(col).addParagraph().appendText("");
 				else dataRow2.getCells().get(col).addParagraph().appendText(String.valueOf(arrList.get(col)));
 
+				if(col == 4) dataRow2.getCells().get(col).setCellWidth(50, CellWidthType.Point);
 			}
 
 			index1++;
 		}
+
+
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			docSpire.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);

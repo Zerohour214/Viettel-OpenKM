@@ -21,6 +21,7 @@
 
 package com.openkm.module.db;
 
+import com.google.gwt.core.client.GWT;
 import com.openkm.automation.AutomationException;
 import com.openkm.automation.AutomationManager;
 import com.openkm.automation.AutomationUtils;
@@ -31,6 +32,11 @@ import com.openkm.core.*;
 import com.openkm.dao.*;
 import com.openkm.dao.bean.*;
 import com.openkm.extension.core.ExtensionException;
+import com.openkm.extension.frontend.client.service.OKMActivityLogService;
+import com.openkm.extension.frontend.client.service.OKMActivityLogServiceAsync;
+import com.openkm.extension.servlet.ActivityLogServlet;
+import com.openkm.frontend.client.OKMException;
+import com.openkm.frontend.client.bean.extension.GWTActivity;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.common.CommonGeneralModule;
 import com.openkm.module.db.base.BaseDocumentModule;
@@ -1577,8 +1583,8 @@ public class DbDocumentModule implements DocumentModule {
 	}
 
 	@Override
-	public List<Document> search(String docCode, String docName) throws DatabaseException {
-		return NodeBaseDAO.getInstance().search(docCode, docName);
+	public List<NodeDocument> search(String text) throws DatabaseException {
+		return NodeBaseDAO.getInstance().search(text);
 	}
 
 
@@ -1595,6 +1601,17 @@ public class DbDocumentModule implements DocumentModule {
 	@Override
 	public List<Document> getByThesaurus(String keyword) {
 		return NodeBaseDAO.getInstance().getDocumentByThesaurus(keyword);
+	}
+
+	@Override
+	public List<GWTActivity> getLogActivityByDoc(String item) throws OKMException {
+		OKMActivityLogService okmActivityLogService = new ActivityLogServlet();
+		return okmActivityLogService.findByFilterByItem(item, "ALL_ACTIONS", false);
+	}
+
+	@Override
+	public List<NodeDocument> getRelatedDocuments(String docCode, String docId) {
+		return NodeBaseDAO.getInstance().getRelatedDocuments(docCode, docId);
 	}
 
 

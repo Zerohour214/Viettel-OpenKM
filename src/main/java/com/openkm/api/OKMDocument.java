@@ -24,9 +24,12 @@ package com.openkm.api;
 import com.openkm.automation.AutomationException;
 import com.openkm.bean.*;
 import com.openkm.core.*;
+import com.openkm.dao.bean.NodeDocument;
 import com.openkm.dao.bean.User;
 import com.openkm.dao.bean.UserDocumentTransmitVTX;
 import com.openkm.extension.core.ExtensionException;
+import com.openkm.frontend.client.OKMException;
+import com.openkm.frontend.client.bean.extension.GWTActivity;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
 import com.openkm.principal.PrincipalAdapterException;
@@ -375,9 +378,9 @@ public class OKMDocument implements DocumentModule {
 	}
 
 	@Override
-	public List<Document> search(String docCode, String docName) throws DatabaseException {
+	public List<NodeDocument> search(String text) throws DatabaseException {
 		DocumentModule dm = ModuleManager.getDocumentModule();
-		return dm.search(docCode, docName);
+		return dm.search(text);
 	}
 
 	@Override
@@ -396,5 +399,17 @@ public class OKMDocument implements DocumentModule {
 	public List<Document> getByThesaurus(String keyword) {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.getByThesaurus(keyword);
+	}
+
+	@Override
+	public List<GWTActivity> getLogActivityByDoc(String item) throws OKMException {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.getLogActivityByDoc(item);
+	}
+
+	@Override
+	public List<NodeDocument> getRelatedDocuments(String docCode, String docId) {
+		DocumentModule dm = ModuleManager.getDocumentModule();
+		return dm.getRelatedDocuments(docCode, docId);
 	}
 }

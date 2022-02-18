@@ -106,13 +106,14 @@ public class Preview extends Composite {
 
 		//for must read check
 		hPanelMustReads = new HorizontalPanel();
-		mustReadText = new HTML("<br/><b> Xác nhận đọc ?</b>");
+		mustReadText = new HTML("<br/><b> Xác nhận đọc và hiểu ?</b>");
 		hPanelMustReads.add(mustReadText);
 		hPanelMustReads.add(new HTML("&nbsp;"));
-		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\"></span>");
+		mustReadImage = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\" style=\"color: red; font-size: 25px\"></span>");
 		mustReadImage.addStyleName("okm-Hyperlink");
 
-		mustReadImageDisable = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew disable-Confirm-Button\"></span>");
+//		mustReadImageDisable = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew disable-Confirm-Button\" style=\"color: red\"></span>");
+		mustReadImageDisable = new HTML("<br/><span class=\"glyphicons glyphicons-ok-circle child-menuitem-glyphicon-renew\" style=\"color: green; font-size: 25px\"></span>");
 		mustReadImageDisable.addStyleName("disable-Confirm");
 		mustReadImageDisable.setVisible(false);
 		mustReadImage.addClickHandler(new ClickHandler() {
@@ -126,7 +127,7 @@ public class Preview extends Composite {
 		hPanelMustReads.setCellVerticalAlignment(mustReadText, HasAlignment.ALIGN_MIDDLE);
 		vPanelOut = new VerticalPanel();
 		vPanelOut.add(hPanelMustReads);
-		vPanelOut.setCellHorizontalAlignment(hPanelMustReads,HorizontalPanel.ALIGN_CENTER);
+		vPanelOut.setCellHorizontalAlignment(hPanelMustReads, HorizontalPanel.ALIGN_CENTER);
 		vPanelOut.add(vPanel);
 		initWidget(vPanelOut);
 	}

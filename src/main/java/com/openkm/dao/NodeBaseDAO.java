@@ -29,6 +29,7 @@ import com.openkm.core.Config;
 import com.openkm.dao.bean.*;
 import com.openkm.extension.dao.WikiPageDAO;
 import com.openkm.extension.dao.bean.WikiPage;
+import com.openkm.module.db.base.BaseDocumentModule;
 import com.openkm.module.db.base.BaseNoteModule;
 import com.openkm.module.db.stuff.SecurityHelper;
 import com.openkm.util.CloneUtils;
@@ -2640,24 +2641,22 @@ public class NodeBaseDAO {
 		}
 	}
 
-    public List<Document> search(String docCode, String docName) throws DatabaseException {
-		String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode FROM OKM_NODE_BASE nb \n" +
+    public List<NodeDocument> search(String text) throws DatabaseException {
+		/*String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode, nb.NBS_AUTHOR docAuthor, nb.NBS_CREATED " +
+				"FROM OKM_NODE_BASE nb \n" +
 				"JOIN OKM_NODE_DOCUMENT d\n" +
 				"ON nb.NBS_UUID = d.NBS_UUID\n" +
-				"WHERE nb.NBS_NAME LIKE CONCAT('%', :docName, '%')";
-
-		if(!docCode.trim().equals("") && docCode != null)
-				qs += " AND d.NDC_DOC_CODE LIKE CONCAT('%', :docCode, '%')";
+				"WHERE nb.NBS_NAME LIKE CONCAT('%', :text, '%') " +
+				"OR d.NDC_DOC_NAME LIKE CONCAT('%', :text, '%') " +
+				"OR d.NDC_DOC_CODE LIKE CONCAT('%', :text, '%') " +
+				"OR d.NDC_TEXT LIKE CONCAT('%', :text, '%') ";
 
 		Session session = null;
 
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			SQLQuery q =  session.createSQLQuery(qs);
-			q.setString("docName", docName);
-
-			if(!docCode.trim().equals("") && docCode != null)
-				q.setString("docCode", docCode);
+			q.setString("text", text);
 
 			q.setResultTransformer(Transformers.aliasToBean(Document.class));
 			q.addScalar("docName");
@@ -2673,7 +2672,22 @@ public class NodeBaseDAO {
 			throw new DatabaseException(e.getMessage(), e);
 		} finally {
 			HibernateUtil.close(session);
-		}
+		}*/
+
+		String sql = "from NodeDocument d " +
+				"where d.docCode like concat('%', :text, '%') " +
+				"or d.name like concat('%', :text, '%')" +
+				"or d.docName like concat('%', :text, '%')" +
+				"or d.text like concat('%', :text, '%') " +
+				"or d.id like concat('%', :text, '%')";
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Query query = session.createQuery(sql);
+
+		query.setParameter("text", text);
+
+		List<NodeDocument> ret = query.list();
+		return ret;
     }
 
     public void transmitToUser(String docId, String usrs) throws DatabaseException {
@@ -2767,5 +2781,27 @@ public class NodeBaseDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public List<NodeDocument> getRelatedDocuments(String docCode, String docId) {
+		String sql = "from NodeDocument d where d.docCode = :docCode ";
+
+		Session session = null;
+
+		session = HibernateUtil.getSessionFactory().openSession();
+
+		Query query = session.createQuery(sql);
+		query.setParameter("docCode", docCode);
+
+		List<NodeDocument> ret = query.list();
+		List<NodeDocument> relatedDocs = new ArrayList<>();
+		for(NodeDocument doc : ret) {
+			if(!doc.getUuid().equals(docId)) {
+				relatedDocs.add(doc);
+			}
+		}
+
+		return relatedDocs;
+
 	}
 }
