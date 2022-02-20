@@ -119,6 +119,9 @@ public class AuthServlet extends OKMRemoteServiceServlet implements OKMAuthServi
 					GWTUser user = new GWTUser();
 					user.setId(userId);
 					user.setUsername(OKMAuth.getInstance().getName(null, userId));
+
+					if(user.getId().equals("okmAdmin")) user.setEmail("okmAdmin@nomail.com");
+					else user.setEmail(OKMAuth.getInstance().getMail(null, userId));
 					gu.setUser(user);
 					guList.add(gu);
 				}
@@ -171,6 +174,9 @@ public class AuthServlet extends OKMRemoteServiceServlet implements OKMAuthServi
 					GWTUser user = new GWTUser();
 					user.setId(userId);
 					user.setUsername(OKMAuth.getInstance().getName(null, userId));
+
+					if(user.getId().equals("okmAdmin")) user.setEmail("okmAdmin@nomail.com");
+					else user.setEmail(OKMAuth.getInstance().getMail(null, userId));
 					gu.setUser(user);
 					guList.add(gu);
 				}

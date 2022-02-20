@@ -256,7 +256,7 @@ public class UserScrollTable extends Composite {
 	public void addRow(final GWTUser user, Integer permission, boolean modified) {
 		final int rows = dataTable.getRowCount();
 		dataTable.insertRow(rows);
-		dataTable.setHTML(rows, 0, user.getUsername());
+		dataTable.setHTML(rows, 0, user.getEmail().split("@")[0]);
 
 		if (modified) {
 			dataTable.getCellFormatter().addStyleName(rows, 0, "bold");
@@ -520,7 +520,7 @@ public class UserScrollTable extends Composite {
 		int rows = dataTable.getRowCount();
 		int col = 0;
 		dataTable.insertRow(rows);
-		dataTable.setHTML(rows, col++, user.getUsername());
+		dataTable.setHTML(rows, col++,  user.getEmail().split("@")[0]);
 
 		if (modified) {
 			dataTable.getCellFormatter().addStyleName(rows, 0, "bold");
@@ -568,7 +568,8 @@ public class UserScrollTable extends Composite {
 			if (dataTable.isRowSelected(selectedRow)) {
 				GWTUser user = new GWTUser();
 				user.setId(dataTable.getHTML(((Integer) dataTable.getSelectedRows().iterator().next()).intValue(), numberOfColumns - 1));
-				user.setUsername(dataTable.getHTML(((Integer) dataTable.getSelectedRows().iterator().next()).intValue(), 0));
+//				user.setUsername(dataTable.getHTML(((Integer) dataTable.getSelectedRows().iterator().next()).intValue(), 0));
+				user.setEmail(dataTable.getHTML(((Integer) dataTable.getSelectedRows().iterator().next()).intValue(), 0));
 				return user;
 			}
 		}

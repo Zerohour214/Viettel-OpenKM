@@ -32,6 +32,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GWTUser implements IsSerializable {
 	String id = "";
 	String username = "";
+	String email = "";
 
 	public String getId() {
 		return id;
@@ -47,6 +48,14 @@ public class GWTUser implements IsSerializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String toString() {

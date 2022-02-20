@@ -238,7 +238,7 @@ public class UserScrollTable extends Composite {
 	 * Removes all rows except the first
 	 */
 	private void removeAllRows() {
-		// Purge all rows 
+		// Purge all rows
 		while (dataTable.getRowCount() > 0) {
 			dataTable.removeRow(0);
 		}
