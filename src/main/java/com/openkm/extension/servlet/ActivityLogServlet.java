@@ -65,7 +65,7 @@ public class ActivityLogServlet extends OKMRemoteServiceServlet implements OKMAc
 					if (getChilds) {
 						activityList.add(GWTUtil.copy(activity));
 					} else {
-						// Root folders are added to limit filtering too 
+						// Root folders are added to limit filtering too
 						if (!activity.getAction().equals("GET_CHILDREN_DOCUMENTS") && !activity.getAction().equals("GET_CHILDREN_FOLDERS") &&
 								!activity.getAction().equals("GET_CHILDREN_MAILS") && !activity.getAction().equals("GET_ROOT_FOLDER") &&
 								!activity.getAction().equals("GET_CATEGORIES_FOLDER") && !activity.getAction().equals("GET_THESAURUS_FOLDER") &&
@@ -79,6 +79,27 @@ public class ActivityLogServlet extends OKMRemoteServiceServlet implements OKMAc
 		} catch (DatabaseException e) {
 			log.error(e.getMessage(), e);
 			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMActivityLogService, ErrorCode.CAUSE_Database), e.getMessage());
+		}
+
+		for(GWTActivity activity : activityList) {
+			switch (activity.getAction()) {
+				case "CREATE_DOCUMENT":
+					activity.setActionVi("Tạo tài liệu");
+					break;
+				case "GET_DOCUMENT_CONTENT":
+					activity.setActionVi("Tải xuống");
+					break;
+				case "CHECKOUT_DOCUMENT":
+					activity.setActionVi("Chỉnh sửa");
+					break;
+				case "GET_DOCUMENT_CONTENT_CHECKOUT":
+					activity.setActionVi("Tải xuống để chỉnh sửa");
+					break;
+				case "DELETE_DOCUMENT":
+					activity.setActionVi("Chuyển vào thùng rác");
+					break;
+
+			}
 		}
 
 		return activityList;

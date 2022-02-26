@@ -38,6 +38,7 @@ public class GWTActivity implements IsSerializable {
 	private String action;
 	private String item;
 	private String params;
+	private String actionVi;
 
 	public double getId() {
 		return id;
@@ -85,6 +86,14 @@ public class GWTActivity implements IsSerializable {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+
+	public String getActionVi() {
+		return actionVi;
+	}
+
+	public void setActionVi(String actionVi) {
+		this.actionVi = actionVi;
 	}
 
 	public String toString() {

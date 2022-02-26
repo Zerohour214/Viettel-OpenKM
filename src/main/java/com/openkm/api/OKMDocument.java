@@ -378,7 +378,7 @@ public class OKMDocument implements DocumentModule {
 	}
 
 	@Override
-	public List<NodeDocument> search(String text) throws DatabaseException {
+	public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException {
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		return dm.search(text);
 	}

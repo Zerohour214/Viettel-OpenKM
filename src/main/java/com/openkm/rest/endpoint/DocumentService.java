@@ -36,6 +36,7 @@ import com.openkm.frontend.client.bean.extension.GWTActivity;
 import com.openkm.module.DocumentModule;
 import com.openkm.module.ModuleManager;
 import com.openkm.module.OrgVTXModule;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.rest.GenericException;
 import com.openkm.rest.util.DocumentList;
 import com.openkm.rest.util.VersionList;
@@ -731,7 +732,7 @@ public class DocumentService {
 	@POST
 	@Path("/search")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getAllDoc(@FormParam("text") String text) throws DatabaseException {
+	public String getAllDoc(@FormParam("text") String text) throws DatabaseException, PrincipalAdapterException {
 
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		if(text == null) text = "";

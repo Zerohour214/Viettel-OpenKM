@@ -29,9 +29,11 @@ import com.openkm.core.Config;
 import com.openkm.dao.bean.*;
 import com.openkm.extension.dao.WikiPageDAO;
 import com.openkm.extension.dao.bean.WikiPage;
+import com.openkm.module.common.CommonAuthModule;
 import com.openkm.module.db.base.BaseDocumentModule;
 import com.openkm.module.db.base.BaseNoteModule;
 import com.openkm.module.db.stuff.SecurityHelper;
+import com.openkm.principal.PrincipalAdapterException;
 import com.openkm.util.CloneUtils;
 import com.openkm.util.FormatUtil;
 import com.openkm.util.PathUtils;
@@ -2641,7 +2643,7 @@ public class NodeBaseDAO {
 		}
 	}
 
-    public List<NodeDocument> search(String text) throws DatabaseException {
+    public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException {
 		/*String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode, nb.NBS_AUTHOR docAuthor, nb.NBS_CREATED " +
 				"FROM OKM_NODE_BASE nb \n" +
 				"JOIN OKM_NODE_DOCUMENT d\n" +
@@ -2687,6 +2689,12 @@ public class NodeBaseDAO {
 		query.setParameter("text", text);
 
 		List<NodeDocument> ret = query.list();
+		for(NodeDocument nodeDocument : ret) {
+			if(nodeDocument.getDocAuthor() == null || nodeDocument.getDocAuthor().isEmpty()) {
+				String docAuthor = CommonAuthModule.getName(nodeDocument.getAuthor());
+				nodeDocument.setDocAuthor(docAuthor);
+			}
+		}
 		return ret;
     }
 
