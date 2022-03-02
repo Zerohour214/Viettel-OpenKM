@@ -80,7 +80,7 @@ public class DbFolderModule implements FolderModule {
 			throw new RepositoryException("Invalid path: " + fld.getPath());
 		}
 
-		if((CATEGORIES.equals(PathUtils.getParent(fld.getPath())) || ROOT.equals(PathUtils.getParent(fld.getPath())) &&
+		if(((CATEGORIES.equals(PathUtils.getParent(fld.getPath())) || ROOT.equals(PathUtils.getParent(fld.getPath()))) &&
 				!PrincipalUtils.getRoles().contains(Config.DEFAULT_ADMIN_ROLE))){
 //			throw new OKMException(ErrorCode.get(ErrorCode.ORIGIN_OKMFolderService, ErrorCode.CAUSE_AccessDenied), "Chỉ có Admin mới có thể tạo quyển tạo mới thư mục từ Root!");
 			throw new AccessDeniedException("Only admin can create new folder from Root!");
