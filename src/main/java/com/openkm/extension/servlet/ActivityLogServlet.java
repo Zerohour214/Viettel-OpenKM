@@ -98,7 +98,6 @@ public class ActivityLogServlet extends OKMRemoteServiceServlet implements OKMAc
 				case "DELETE_DOCUMENT":
 					activity.setActionVi("Chuyển vào thùng rác");
 					break;
-
 			}
 		}
 

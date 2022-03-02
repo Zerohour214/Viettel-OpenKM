@@ -62,14 +62,17 @@ public class ReportExportServlet extends BaseServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LoggerFactory.getLogger(ReportExportServlet.class);
 
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
 
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException,
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
 			ServletException {
 		log.debug("doGet({}, {})", request, response);
-
-		ServletContext sc = getServletContext();
 		request.setCharacterEncoding("UTF-8");
+		ServletContext sc = getServletContext();
+
 		String dbegin = WebUtils.getString(request, "dbegin");
 		String dend = WebUtils.getString(request, "dend");
 		String user = WebUtils.getString(request, "user");
@@ -81,24 +84,23 @@ public class ReportExportServlet extends BaseServlet {
 		String typeReport = WebUtils.getString(request, "type_report");
 		String userId = request.getRemoteUser();
 
-
 		String orgIdTHDVB = WebUtils.getString(request, "orgIdTHDVB");
 		String docIdTHDVB = WebUtils.getString(request, "docIdTHDVB");
 		String orgNameTHDVB = WebUtils.getString(request, "orgNameTHDVB");
-		String docNameTHDVB = WebUtils.getString(request, "docNameTHDVB");
+		String docNameTHDVB = WebUtils.getStringDocName(request, "docNameTHDVB");
 
 		String orgIdKQTT = WebUtils.getString(request, "orgIdKQTT");
 		String docIdKQTT = WebUtils.getString(request, "docIdKQTT");
 		String orgNameKQTT = WebUtils.getString(request, "orgNameKQTT");
-		String docNameKQTT = WebUtils.getString(request, "docNameKQTT");
+		String docNameKQTT = WebUtils.getStringDocName(request, "docNameKQTT");
 
 		String orgIdTHCNVB = WebUtils.getString(request, "orgIdTHCNVB");
 		String docIdTHCNVB = WebUtils.getString(request, "docIdTHCNVB");
 		String orgNameTHCNVB = WebUtils.getString(request, "orgNameTHCNVB");
-		String docNameTHCNVB = WebUtils.getString(request, "docNameTHCNVB");
+		String docNameTHCNVB = WebUtils.getStringDocName(request, "docNameTHCNVB");
 
 		String docIdCLVB = WebUtils.getString(request, "docIdCLVB");
-		String docNameCLVB = WebUtils.getString(request, "docNameCLVB");
+		String docNameCLVB = WebUtils.getStringDocName(request, "docNameCLVB");
 
 		String group = WebUtils.getString(request,"orgNameKQTT");
 
@@ -233,6 +235,7 @@ public class ReportExportServlet extends BaseServlet {
 			sc.setAttribute("dendFilter", dend);
 			sc.setAttribute("userFilter", "".equals(user) ? "All" : user);
 			sc.setAttribute("users", OKMAuth.getInstance().getUsers(null));
+
 			sc.getRequestDispatcher("/admin/transmit_report.jsp").forward(request, response);
 
 		} catch (ParseException e) {

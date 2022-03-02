@@ -358,12 +358,12 @@
             })
 
             function loadDocSearch(jsonData) {
-                console.log(jsonData)
+
                 jsonData.forEach(doc => {
                     let tr = document.createElement('tr');
                     let tdName = document.createElement('td'), tdCode = document.createElement('td'),
                         tdChoose = document.createElement('td');
-                    tdName.innerText = doc.docName;
+                    tdName.innerText = doc.docName ? doc.docName : doc.name;
                     tdCode.innerText = doc.docCode ? doc.docCode : "";
 
                     let iconChoose = document.createElement('span');
@@ -374,19 +374,19 @@
 
                         switch (docInputTab) {
                             case "docNameTHDVB":
-                                $('#docIdTHDVB').val(doc.id)
+                                $('#docIdTHDVB').val(doc.uuid)
                                 $('#docNameTHDVB').val(doc.docName);
                                 break;
                             case "docNameKQTT":
-                                $('#docIdKQTT').val(doc.id)
+                                $('#docIdKQTT').val(doc.uuid)
                                 $('#docNameKQTT').val(doc.docName);
                                 break;
                             case "docNameCLVB":
-                                $('#docIdCLVB').val(doc.id)
+                                $('#docIdCLVB').val(doc.uuid)
                                 $('#docNameCLVB').val(doc.docName);
                                 break;
                             case "docNameTHCNVB":
-                                $('#docIdTHCNVB').val(doc.id)
+                                $('#docIdTHCNVB').val(doc.uuid)
                                 $('#docNameTHCNVB').val(doc.docName);
                                 break;
 
@@ -524,7 +524,7 @@
                                 <thead>
                                 <tr class="header">
                                     <td align="left" colspan="9">
-                                        <form action="ReportExport" style="width: 100vw" id="THDVB-form">
+                                        <form action="ReportExport" style="width: 100vw" id="THDVB-form" method="post">
 
                                                 <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
                                                        type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
@@ -643,7 +643,7 @@
                                 <tr class="header">
 
                                     <td align="left" colspan="9">
-                                        <form action="ReportExport" style="width: 100vw" id="KQTT-form">
+                                        <form action="ReportExport" style="width: 100vw" id="KQTT-form" method="post">
 
                                             <b>Đơn vị</b> <input type="text" name="orgNameKQTT" id="orgNameKQTT"
                                                                  size="20" autocomplete="off"
@@ -772,7 +772,7 @@
                                 <thead>
                                 <tr class="header">
                                     <td align="left" colspan="9">
-                                        <form action="ReportExport" style="width: 100vw">
+                                        <form action="ReportExport" style="width: 100vw" method="post">
                                             <b>Tài liệu</b> <input type="text" name="docNameCLVB" id="docNameCLVB"
                                                                    size="20" autocomplete="off"
                                                                    data-toggle="modal" data-target="#docSearchModal"
@@ -854,7 +854,7 @@
                                 <thead>
                                 <tr class="header">
                                     <td align="left" colspan="9">
-                                        <form action="ReportExport" style="width: 100vw" id="THCNVB-form">
+                                        <form action="ReportExport" style="width: 100vw" id="THCNVB-form" method="post">
                                                 <%--<input class="form-control" name="orgParent" id="orgParent" placeholder="Tìm đơn vị cha"
                                                        type="text" autocomplete="off" data-toggle="modal" data-target="#myModal">--%>
                                             <b>Đơn vị</b> <input type="text" name="orgNameTHCNVB" id="orgNameTHCNVB"

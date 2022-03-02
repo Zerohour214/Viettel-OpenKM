@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class WebUtils {
 	 * @return El valor String del parámetro o un String vacio si no existe.
 	 */
 	public static final String getString(HttpServletRequest request, String name) {
+
 		String value = request.getParameter(name);
 
 		log.info("===================ACTION_VALUE================" + name + "=============" + value);
@@ -63,14 +65,25 @@ public class WebUtils {
 		String stringValue = EMPTY_STRING;
 
 		if (value != null) {
-			try {
-				return new String(value.getBytes(Config.TOMCAT_CONNECTOR_URI_ENCODING), "UTF-8").trim();
-//				return new String(value.getBytes("UTF-8"), "UTF-8").trim();
-			} catch (UnsupportedEncodingException e) {
-				// Ignore
-			}
+			return new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).trim();
+//			return new String(value.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8).trim();
 		}
 
+		return stringValue;
+	}
+
+	public static final String getStringDocName(HttpServletRequest request, String name) {
+
+		String value = request.getParameter(name);
+
+		log.info("===================ACTION_VALUE================" + name + "=============" + value);
+
+		String stringValue = EMPTY_STRING;
+
+		if (value != null) {
+			return new String(value.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8).trim();
+//			return new String(value.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8).trim();
+		}
 
 		return stringValue;
 	}
