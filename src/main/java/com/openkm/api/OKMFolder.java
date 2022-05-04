@@ -43,6 +43,7 @@ public class OKMFolder implements FolderModule {
 	private static OKMFolder instance = new OKMFolder();
 
 	private OKMFolder() {
+
 	}
 
 	public static OKMFolder getInstance() {

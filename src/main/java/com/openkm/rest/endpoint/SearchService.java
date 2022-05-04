@@ -21,6 +21,7 @@
 
 package com.openkm.rest.endpoint;
 
+import com.openkm.bean.Folder;
 import com.openkm.bean.ResultSet;
 import com.openkm.core.MimeTypeConfig;
 import com.openkm.dao.bean.QueryParams;
@@ -232,6 +233,21 @@ public class SearchService {
 			SearchModule sm = ModuleManager.getSearchModule();
 			DocumentList dl = new DocumentList();
 			dl.getList().addAll(sm.getCategorizedDocuments(null, categoryId));
+			log.debug("getCategorizedDocuments: {}", dl);
+			return dl;
+		} catch (Exception e) {
+			throw new GenericException(e);
+		}
+	}
+
+	@GET
+	@Path("/getCategorizedFolders/{categoryId}")
+	public FolderList getCategorizedFolders(@PathParam("categoryId") String categoryId) throws GenericException {
+		try {
+			log.debug("getCategorizedDocuments({})", categoryId);
+			SearchModule sm = ModuleManager.getSearchModule();
+			FolderList dl = new FolderList();
+			dl.getList().addAll(sm.getCategorizedFolders(null, categoryId));
 			log.debug("getCategorizedDocuments: {}", dl);
 			return dl;
 		} catch (Exception e) {

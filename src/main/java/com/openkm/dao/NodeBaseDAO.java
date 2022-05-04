@@ -2643,7 +2643,7 @@ public class NodeBaseDAO {
 		}
 	}
 
-    public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException {
+    public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException, PathNotFoundException {
 		/*String qs = "SELECT nb.NBS_UUID id, nb.NBS_NAME docName, d.NDC_DOC_CODE docCode, nb.NBS_AUTHOR docAuthor, nb.NBS_CREATED " +
 				"FROM OKM_NODE_BASE nb \n" +
 				"JOIN OKM_NODE_DOCUMENT d\n" +
@@ -2678,8 +2678,8 @@ public class NodeBaseDAO {
 
 		String sql = "from NodeDocument d " +
 				"where d.docCode like concat('%', :text, '%') " +
-				"or d.name like concat('%', :text, '%')" +
-				"or d.docName like concat('%', :text, '%')" +
+				"or d.name like concat('%', :text, '%') " +
+				"or d.docName like concat('%', :text, '%') " +
 				"or d.text like concat('%', :text, '%') " +
 				"or d.id like concat('%', :text, '%')";
 
@@ -2693,6 +2693,7 @@ public class NodeBaseDAO {
 			if(nodeDocument.getDocAuthor() == null || nodeDocument.getDocAuthor().isEmpty()) {
 				String docAuthor = CommonAuthModule.getName(nodeDocument.getAuthor());
 				nodeDocument.setDocAuthor(docAuthor);
+				nodeDocument.setPath(NodeBaseDAO.getInstance().getPathFromUuid(nodeDocument.getUuid()));
 			}
 		}
 		return ret;

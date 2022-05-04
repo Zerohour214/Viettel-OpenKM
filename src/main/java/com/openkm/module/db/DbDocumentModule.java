@@ -1583,7 +1583,7 @@ public class DbDocumentModule implements DocumentModule {
 	}
 
 	@Override
-	public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException {
+	public List<NodeDocument> search(String text) throws DatabaseException, PrincipalAdapterException, PathNotFoundException {
 		return NodeBaseDAO.getInstance().search(text);
 	}
 

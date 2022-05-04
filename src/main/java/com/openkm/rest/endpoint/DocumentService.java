@@ -732,7 +732,7 @@ public class DocumentService {
 	@POST
 	@Path("/search")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getAllDoc(@FormParam("text") String text) throws DatabaseException, PrincipalAdapterException {
+	public String getAllDoc(@FormParam("text") String text) throws DatabaseException, PrincipalAdapterException, PathNotFoundException {
 
 		DocumentModule dm = ModuleManager.getDocumentModule();
 		if(text == null) text = "";

@@ -358,7 +358,6 @@
             })
 
             function loadDocSearch(jsonData) {
-
                 jsonData.forEach(doc => {
                     let tr = document.createElement('tr');
                     let tdName = document.createElement('td'), tdCode = document.createElement('td'),
@@ -1074,14 +1073,14 @@
                             <div class="modal-header">
                                 <form id="form-search-doc" class="row" style="width: 100%;">
 
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" placeholder="Mã tài liệu"
-                                               name="docCode">
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" placeholder="Mã tài liệu, tên tài liệu"
+                                               name="text">
                                     </div>
-                                    <div class="col-md-5">
+                                    <%--<div class="col-md-5">
                                         <input type="text" class="form-control" placeholder="Tên tài liệu"
                                                name="docName">
-                                    </div>
+                                    </div>--%>
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-success" id="docSearchSubmitBtn">
                                             Tìm kiếm

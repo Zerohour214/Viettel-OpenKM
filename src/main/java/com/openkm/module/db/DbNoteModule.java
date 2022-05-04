@@ -106,7 +106,7 @@ public class DbNoteModule implements NoteModule {
 
 			NodeBase node = NodeBaseDAO.getInstance().findByPk(nodeUuid);
 
-			text = FormatUtil.sanitizeInput(text);
+			text = FormatUtil.sanitizeInput(text != null ? text : "");
 			NodeNote nNote = BaseNoteModule.create(nodeUuid, auth.getName(), text);
 			newNote = BaseNoteModule.getProperties(nNote, nNote.getUuid());
 
