@@ -4,7 +4,7 @@
   Actual: <Context path="/OpenKM" reloadable="false" crossContext="true" allowLinking="true">
   Reason: http://old.nabble.com/Tomcat-failing-to-process-JAR%27s-within-web-app-td31070894.html
 -->
-<Context path="/kms" reloadable="false" crossContext="true" allowLinking="true">
+<Context path="/OpenKM" reloadable="false" crossContext="true" allowLinking="true">
 
     <!-- maxActive: Maximum number of dB connections in pool. Make sure you
          configure your mysqld max_connections large enough to handle
